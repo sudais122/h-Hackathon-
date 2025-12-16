@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome - FixIt AWKUM</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        /* --- GLOBAL RESET & FONT --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+
+        /* --- BACKGROUND IMAGE SETTINGS --- */
+        body {
+            /* Flex to center everything on the screen */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            
+            /* Background Image with Dark Overlay */
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+                        url('https://images.unsplash.com/photo-1562774053-701939374585?q=80&w=1920&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: white;
+        }
+
+        /* --- MAIN CONTAINER --- */
+        .container {
+            text-align: center;
+            width: 100%;
+            max-width: 900px;
+            padding: 20px;
+        }
+
+        /* --- LOGO AREA --- */
+        .logo-area {
+            margin-bottom: 3rem;
+        }
+        .logo-area i {
+            font-size: 4rem;
+            color: #BD2426; /* AWKUM Red */
+            background: white;
+            padding: 20px;
+            border-radius: 50%;
+            margin-bottom: 1rem;
+        }
+        .logo-area h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+        .logo-area p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        /* --- CARD CONTAINER (ROW ALIGNMENT) --- */
+        .card-container {
+            display: flex;             /* This makes items align in a row */
+            justify-content: center;   /* Center them horizontally */
+            gap: 30px;                 /* Space between the two cards */
+            flex-wrap: wrap;           /* Allows wrapping on very small mobile screens */
+        }
+
+        /* --- LOGIN CARD STYLES --- */
+        .login-card {
+            background: rgba(255, 255, 255, 0.1); /* Glass effect */
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 2.5rem;
+            border-radius: 15px;
+            text-decoration: none;
+            color: white;
+            width: 280px;
+            transition: transform 0.3s, background 0.3s;
+        }
+
+        .login-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #BD2426;
+        }
+
+        .icon-box {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #BD2426;
+        }
+
+        .login-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-card span {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* --- RESPONSIVE MOBILE --- */
+        @media (max-width: 600px) {
+            .card-container {
+                flex-direction: column; /* Stack vertically on small phones */
+                align-items: center;
+            }
+            .logo-area h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <div class="logo-area">
+            <i class="fas fa-university"></i>
+            <h1>FixIt AWKUM</h1>
+            <p>Campus Complaint Management System</p>
+        </div>
+
+        <div class="card-container">
+            <a href="UserLogin.html" class="login-card">
+                <div class="icon-box">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <h3>Student Login</h3>
+                <span>Report an issue anonymously</span>
+            </a>
+
+            <a href="AdminLogin.html" class="login-card">
+                <div class="icon-box">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <h3>Admin Login</h3>
+                <span>Manage and resolve reports</span>
+            </a>
+        </div>
+
+        <p style="margin-top: 40px; font-size: 0.8rem; opacity: 0.6;">&copy; 2025 Abdul Wali Khan University Mardan</p>
+
+    </div>
+
+</body>
+</html>

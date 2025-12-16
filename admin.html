@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - FixIt AWKUM</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<style>
+    /* --- MODERN DARK MODE (Midnight Blue Theme) --- */
+    body.dark-mode { background-color: #0f172a; color: #cbd5e1; }
+    body.dark-mode .sidebar { background-color: #1e293b; border-right: 1px solid #334155; }
+    body.dark-mode .sidebar-menu a { color: #94a3b8; }
+    body.dark-mode .sidebar-menu a.active { background: #334155; color: #f8fafc; border-left: 4px solid #BD2426; border-radius: 0; }
+    body.dark-mode .sidebar-menu a:hover { color: #f1f5f9; }
+    body.dark-mode .main-content { background-color: #0f172a; }
+    body.dark-mode header, body.dark-mode .card, body.dark-mode .card-single { background-color: #1e293b; color: #e2e8f0; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5); border: 1px solid #334155; }
+    body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode header h2, body.dark-mode .user-wrapper h4 { color: #f8fafc; }
+    body.dark-mode .user-wrapper small { color: #94a3b8; }
+    body.dark-mode table td { color: #cbd5e1; }
+    body.dark-mode table thead tr { border-color: #334155; }
+    body.dark-mode table tbody tr { border-color: #334155; }
+    body.dark-mode .card-header { border-bottom: 1px solid #334155; }
+    body.dark-mode .card-single div:last-child i { color: #ef4444; }
+    #theme-btn { cursor: pointer; font-size: 1.2rem; color: #333; margin-right: 20px; transition: 0.3s; }
+    body.dark-mode #theme-btn { color: #ffffff; }
+
+    /* --- ORIGINAL CSS --- */
+    :root { --main-color: #BD2426; --color-dark: #1D2231; --text-grey: #8390A2; }
+    * { padding: 0; margin: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    body { background: #f1f5f9; transition: background-color 0.3s, color 0.3s; }
+    .sidebar { width: 250px; position: fixed; left: 0; top: 0; height: 100%; background: var(--main-color); z-index: 100; transition: width 300ms, left 300ms, background-color 0.3s; overflow: hidden; }
+    .sidebar.hide { width: 0 !important; }
+    .sidebar-brand { height: 90px; padding: 1rem 0rem 1rem 2rem; color: #fff; white-space: nowrap; }
+    .sidebar-brand span { display: inline-block; padding-right: 1rem; font-size: 1.5rem; font-weight: bold; }
+    .sidebar-menu { margin-top: 1rem; }
+    .sidebar-menu li { width: 100%; margin-bottom: 1.7rem; list-style: none; }
+    .sidebar-menu a { padding-left: 2rem; display: block; color: #fff; font-size: 1.1rem; text-decoration: none; display: flex; align-items: center; white-space: nowrap; cursor: pointer; }
+    .sidebar-menu a span.badge { background: #fff; color: var(--main-color); padding: 3px 8px; border-radius: 50%; font-size: 0.8rem; margin-left: auto; margin-right: 20px; }
+    .sidebar-menu a.active { background: #fff; padding-top: 1rem; padding-bottom: 1rem; color: var(--main-color); border-radius: 30px 0px 0px 30px; }
+    .sidebar-menu a i { font-size: 1.5rem; padding-right: 1rem; }
+    
+    .main-content { transition: margin-left 300ms, background-color 0.3s; margin-left: 250px; }
+    .main-content.hide { margin-left: 0 !important; }
+    
+    header { background: #fff; display: flex; justify-content: space-between; padding: 1rem 1.5rem; box-shadow: 2px 2px 5px rgba(0,0,0,0.2); position: fixed; left: 250px; width: calc(100% - 250px); top: 0; z-index: 100; transition: left 300ms, width 300ms, background-color 0.3s; }
+    header.hide { left: 0 !important; width: 100% !important; }
+    #menu-btn { cursor: pointer; font-size: 1.5rem; margin-right: 1rem; }
+    .user-wrapper { display: flex; align-items: center; }
+    .user-wrapper img { border-radius: 50%; margin-right: 1rem; }
+    
+    /* UPDATED MAIN SECTION FOR WIDTH */
+    main { 
+        margin-top: 85px; 
+        padding: 2rem 1rem; /* Reduced padding to make content wider */
+        background: #f1f5f9; 
+        min-height: calc(100vh - 90px); 
+        transition: background-color 0.3s; 
+        width: 100%;
+    }
+    
+    .cards { display: grid; grid-template-columns: repeat(3, 1fr); grid-gap: 2rem; cursor: pointer; }
+    .card-single { display: flex; justify-content: space-between; background: #fff; padding: 2rem; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: transform 0.2s, background-color 0.3s; }
+    .card-single:hover { transform: translateY(-5px); border-bottom: 5px solid var(--main-color); }
+    .card-single div:last-child i { font-size: 2rem; color: var(--main-color); }
+    
+    /* UPDATED GRID AND CARD WIDTHS */
+    .recent-grid { margin-top: 3.5rem; width: 100%; display: block; }
+    .projects { width: 100%; }
+    .card { background: #fff; border-radius: 5px; transition: background-color 0.3s; width: 100%; }
+    
+    .card-header { padding: 1.5rem; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; }
+    
+    .table-responsive { width: 100%; overflow-x: auto; }
+    table { border-collapse: collapse; width: 100%; }
+    thead tr { border-top: 1px solid #f0f0f0; border-bottom: 2px solid #f0f0f0; }
+    
+    /* UPDATED TABLE CELL PADDING */
+    td { padding: 1rem 1.5rem; font-size: .95rem; color: #222; }
+    
+    .status-dot { height: 10px; width: 10px; display: inline-block; border-radius: 50%; margin-right: 5px; }
+    .status-dot.Transport { background: #f39c12; }
+    .status-dot.Hostel { background: #3498db; }
+    .status-dot.Academic { background: #8e44ad; }
+    .status-dot.Cafeteria { background: #e74c3c; } 
+    .status-dot.Other { background: #333; }
+    .status.pending { color: #f39c12; font-weight: bold; }
+    .status.resolved { color: #2ecc71; font-weight: bold; }
+    .action-btn { padding: 5px 15px; border: 1px solid var(--main-color); color: white; background: transparent; border-radius: 5px; cursor: pointer; transition: all 0.3s; }
+    .action-btn:hover { background: var(--main-color); color: white; }
+    .action-btn:disabled { background: #ccc; color: #666; border-color: #ccc; cursor: not-allowed; }
+    
+    /* Code Style for Hash */
+    .hash-code { font-family: monospace; background: #eee; padding: 2px 5px; border-radius: 4px; color: #555; }
+    body.dark-mode .hash-code { background: #333; color: #ccc; }
+
+    @media only screen and (max-width: 1024px) { .sidebar { width: 60px; } .sidebar .sidebar-brand, .sidebar h2 { display: none; } .sidebar-menu a { padding-left: 1rem; } .sidebar-menu a span { display: none; } .sidebar-menu a i { font-size: 1.5rem; margin-right: 0; } .main-content { margin-left: 60px; } header { left: 60px; width: calc(100% - 60px); } .sidebar.hide { width: 0 !important; } .main-content.hide { margin-left: 0 !important; } header.hide { left: 0 !important; width: 100% !important; } }
+    @media only screen and (max-width: 768px) { .cards { grid-template-columns: 100%; } .sidebar { left: -100% !important; width: 250px !important; } header h2 { font-size: 1.2rem; } header { width: 100% !important; left: 0 !important; } .main-content { width: 100%; margin-left: 0 !important; } .sidebar.mobile-show { left: 0 !important; z-index: 200; } }
+</style>
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-university"></i> <span>AWKUM Admin</span>
+        </div>
+        <div class="sidebar-menu">
+            <ul>
+                <li><a href="javascript:void(0)" class="active" onclick="switchView('dashboard', this)"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="javascript:void(0)" onclick="switchView('resolved', this)"><i class="fas fa-check-circle"></i> Resolved</a></li>
+                <li><a href="javascript:void(0)" onclick="switchView('students', this)"><i class="fas fa-users"></i> Student Users</a></li>
+                <li><a href="Welcome.html"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="main-content">
+        
+        <header>
+            <h2>
+                <label id="menu-btn">
+                    <i class="fas fa-bars"></i>
+                </label>
+                Dashboard
+            </h2>
+            
+            <div class="user-wrapper">
+                <i class="fas fa-moon" id="theme-btn" title="Toggle Dark Mode"></i>
+                <img src="https://ui-avatars.com/api/?name=Admin+User&background=BD2426&color=fff" width="40px" height="40px" alt="">
+                <div>
+                    <h4>Admin User</h4>
+                    <small>Super Admin</small>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <div class="cards" id="stats-cards">
+                <div class="card-single">
+                    <div>
+                        <h1 id="total-count">0</h1>
+                        <span>Total Issues</span>
+                    </div>
+                    <div>
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                </div>
+
+                <div class="card-single">
+                    <div>
+                        <h1 id="pending-count">0</h1>
+                        <span>Pending</span>
+                    </div>
+                    <div>
+                        <i class="fas fa-clock"></i>
+                    </div>
+                </div>
+
+                <div class="card-single">
+                    <div>
+                        <h1 id="resolved-count">0</h1>
+                        <span>Resolved</span>
+                    </div>
+                    <div>
+                        <i class="fas fa-check"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="recent-grid">
+                <div class="projects">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 id="table-title">Recent Problems Reported</h3>
+                            <div id="action-btn-container">
+                                <button onclick="clearAllData()" style="background: #e74c3c; border-color: #e74c3c;" class="action-btn">Clear All</button>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table width="100%">
+                                    <thead id="table-head">
+                                    </thead>
+                                    <tbody id="table-body">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+<script>
+    // --- 1. DARK MODE LOGIC ---
+    const themeBtn = document.getElementById('theme-btn');
+    const body = document.body;
+
+    if(localStorage.getItem('adminTheme') === 'dark') {
+        body.classList.add('dark-mode');
+        themeBtn.classList.replace('fa-moon', 'fa-sun');
+    }
+
+    themeBtn.addEventListener('click', () => {
+        body.classList.toggle('dark-mode');
+        if(body.classList.contains('dark-mode')) {
+            themeBtn.classList.replace('fa-moon', 'fa-sun');
+            localStorage.setItem('adminTheme', 'dark');
+        } else {
+            themeBtn.classList.replace('fa-sun', 'fa-moon');
+            localStorage.setItem('adminTheme', 'light');
+        }
+    });
+
+    // --- 2. SWITCH VIEW LOGIC (Dashboard vs Resolved vs Students) ---
+    function switchView(viewName, element) {
+        // Highlight active sidebar item
+        if(element) {
+            document.querySelectorAll('.sidebar-menu a').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+        }
+
+        const statsCards = document.getElementById('stats-cards');
+        const tableTitle = document.getElementById('table-title');
+        const actionBtnContainer = document.getElementById('action-btn-container');
+
+        if (viewName === 'dashboard') {
+            statsCards.style.display = 'grid'; // Show stats
+            tableTitle.innerText = "All Campus Issues";
+            actionBtnContainer.innerHTML = `<button onclick="clearAllData()" style="background: #e74c3c; border-color: #e74c3c;" class="action-btn">Clear All</button>`;
+            loadDashboardData('all');
+        } 
+        else if (viewName === 'resolved') {
+            statsCards.style.display = 'grid'; // Show stats
+            tableTitle.innerText = "Resolved Issues Only";
+            actionBtnContainer.innerHTML = ``; // Remove clear button for safety in filtered view
+            loadDashboardData('resolved');
+        } 
+        else if (viewName === 'students') {
+            statsCards.style.display = 'none'; // Hide stats
+            tableTitle.innerText = "Registered Students";
+            actionBtnContainer.innerHTML = ``; 
+            loadStudentData();
+        }
+    }
+
+    // --- 3. LOAD ISSUES (Filtered) ---
+    function loadDashboardData(filter) {
+        const tableHead = document.getElementById('table-head');
+        const tableBody = document.getElementById('table-body');
+        const totalDisplay = document.getElementById('total-count');
+        const pendingDisplay = document.getElementById('pending-count');
+        const resolvedDisplay = document.getElementById('resolved-count');
+
+        // Set Headers for Issues
+        tableHead.innerHTML = `
+            <tr>
+                <td>Category</td>
+                <td>Location</td>
+                <td>Description</td>
+                <td>Status</td>
+                <td>Action</td>
+            </tr>
+        `;
+
+        let issues = JSON.parse(localStorage.getItem('awkumComplaints')) || [];
+        
+        let total = 0, pending = 0, resolved = 0;
+        let htmlRows = '';
+
+        // Calculate Stats
+        issues.forEach(i => {
+            total++;
+            if(i.status === 'Pending') pending++;
+            if(i.status === 'Resolved') resolved++;
+        });
+
+        // Filter List
+        let displayIssues = issues;
+        if (filter === 'resolved') {
+            displayIssues = issues.filter(i => i.status === 'Resolved');
+        }
+
+        if (displayIssues.length === 0) {
+            htmlRows = "<tr><td colspan='5' style='text-align:center;'>No records found.</td></tr>";
+        } else {
+            displayIssues.slice().reverse().forEach((issue) => {
+                let btnHTML = '';
+                if (issue.status === 'Resolved') {
+                    btnHTML = `<button class="action-btn" disabled>Done</button>`;
+                } else {
+                    btnHTML = `<button class="action-btn" onclick="markAsResolved(${issue.id})">Mark Resolve</button>`;
+                }
+
+                htmlRows += `
+                    <tr>
+                        <td><span class="status-dot ${issue.category}"></span> ${issue.category}</td>
+                        <td>${issue.location}</td>
+                        <td>${issue.description}</td>
+                        <td><span class="status ${issue.status.toLowerCase()}">${issue.status}</span></td>
+                        <td>${btnHTML}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        tableBody.innerHTML = htmlRows;
+        totalDisplay.innerText = total;
+        pendingDisplay.innerText = pending;
+        resolvedDisplay.innerText = resolved;
+    }
+
+    // --- 4. LOAD STUDENTS (Mock Data + Hashed Password) ---
+    function loadStudentData() {
+        const tableHead = document.getElementById('table-head');
+        const tableBody = document.getElementById('table-body');
+
+        // Set Headers for Students
+        tableHead.innerHTML = `
+            <tr>
+                <td>Student Name</td>
+                <td>Reg No.</td>
+                <td>Department</td>
+                <td>Email</td>
+                <td>Password (Hash)</td>
+            </tr>
+        `;
+
+        // Mock Data
+        const students = [
+            { name: 'Ali Khan', reg: '19-AWKUM-CS-101', dept: 'Computer Science', email: 'ali@awkum.edu.pk', pass: '5f4dcc3b5aa765d61d8327deb882cf99' },
+            { name: 'Sara Ahmed', reg: '20-AWKUM-ENG-045', dept: 'English', email: 'sara@awkum.edu.pk', pass: 'e10adc3949ba59abbe56e057f20f883e' },
+            { name: 'Bilal Khan', reg: '21-AWKUM-MGT-012', dept: 'Management', email: 'bilal@awkum.edu.pk', pass: '202cb962ac59075b964b07152d234b70' },
+            { name: 'Ayesha Gul', reg: '19-AWKUM-BIO-099', dept: 'Biotechnology', email: 'ayesha@awkum.edu.pk', pass: '81dc9bdb52d04dc20036dbd8313ed055' }
+        ];
+
+        let htmlRows = '';
+        students.forEach(std => {
+            htmlRows += `
+                <tr>
+                    <td style="font-weight:bold;">${std.name}</td>
+                    <td>${std.reg}</td>
+                    <td>${std.dept}</td>
+                    <td>${std.email}</td>
+                    <td><span class="hash-code">${std.pass}</span></td>
+                </tr>
+            `;
+        });
+
+        tableBody.innerHTML = htmlRows;
+    }
+
+    // --- 5. ACTIONS ---
+    function markAsResolved(id) {
+        let issues = JSON.parse(localStorage.getItem('awkumComplaints'));
+        const issueIndex = issues.findIndex(i => i.id === id);
+        if (issueIndex > -1) {
+            issues[issueIndex].status = 'Resolved';
+            localStorage.setItem('awkumComplaints', JSON.stringify(issues));
+            loadDashboardData('all');
+        }
+    }
+
+    function clearAllData() {
+        if(confirm("Delete ALL reports? Cannot undo.")) {
+            localStorage.removeItem('awkumComplaints');
+            loadDashboardData('all');
+        }
+    }
+
+    // Initial Load
+    window.onload = function() {
+        loadDashboardData('all');
+    };
+
+    // --- 6. SIDEBAR MOBILE TOGGLE ---
+    const menuBtn = document.querySelector('#menu-btn');
+    const sidebar = document.querySelector('.sidebar');
+    const mainContent = document.querySelector('.main-content');
+    const header = document.querySelector('header');
+
+    menuBtn.addEventListener('click', () => {
+        if (window.innerWidth < 768) {
+            sidebar.classList.toggle('mobile-show');
+        } else {
+            sidebar.classList.toggle('hide');
+            mainContent.classList.toggle('hide');
+            header.classList.toggle('hide');
+        }
+    });
+</script>
+</body>
+</html>

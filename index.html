@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FixIt AWKUM - Student Problem Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        /* --- GLOBAL VARIABLES --- */
+        :root {
+            /* Official AWKUM Brand Colors approx */
+            --primary: #BD2426;   /* Deep Red */
+            --dark: #404040;      /* Dark Grey */
+            --light: #f4f4f4;
+            --white: #ffffff;
+            --accent: #e74c3c;
+        }
+
+        /* --- GLOBAL STYLES --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light);
+            color: #333;
+            /* Do NOT add display:flex here, it breaks the scroll */
+        }
+
+        /* --- HEADER --- */
+        header {
+            background-color: var(--white);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--dark);
+        }
+
+        .logo span { color: var(--primary); }
+
+        nav a {
+            text-decoration: none;
+            color: var(--dark);
+            margin-left: 20px;
+            font-weight: 500;
+        }
+
+        .btn-report {
+            background-color: var(--primary);
+            color: white !important;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        .btn-report:hover { background-color: #a01e20; }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            background: linear-gradient(rgba(189, 36, 38, 0.9), rgba(64, 64, 64, 0.8)), url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+            background-size: cover;
+            background-position: center;
+            height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            padding: 20px;
+        }
+        .hero h1 { font-size: 2.5rem; margin-bottom: 10px; }
+        .cta-button {
+            margin-top: 15px;
+            background: white;
+            color: var(--primary);
+            padding: 10px 20px;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 25px;
+        }
+
+        /* --- CONTAINER --- */
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            padding: 40px 10%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* --- FORM SECTION --- */
+        .form-wrapper {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            height: fit-content;
+        }
+
+        .form-wrapper h2 { margin-bottom: 20px; color: var(--dark); }
+
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; }
+        .input-group input, .input-group select, .input-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .submit-btn:hover { background-color: #a01e20; }
+
+        /* --- ISSUES LIST --- */
+        .issues-list {
+            flex: 1;
+            min-width: 300px;
+        }
+        .issues-list h2{ padding-bottom: 10px; }
+        
+        .issue-card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border-left: 5px solid var(--primary);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .tag {
+            display: inline-block;
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+            color: white;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        .action-btn{
+            color: white;
+        }
+        .form-wrapper h2{
+            color: white;
+        }
+        /* Tag Colors */
+        .tag.transport { background-color: #f39c12; }
+        .tag.hostel { background-color: #3498db; }
+        .tag.academic { background-color: #8e44ad; }
+        .tag.cafeteria { background-color: #e74c3c; }
+        .tag.other { background-color: #95a5a6; }
+
+        .issue-card h3 { font-size: 1.1rem; margin-bottom: 5px; }
+        .issue-card p { font-size: 0.9rem; color: #666; margin-bottom: 10px; }
+
+        .meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: #999;
+        }
+
+        .status { font-weight: bold; }
+        .status.pending { color: #e67e22; }
+        .status.resolved { color: #27ae60; }
+
+        /* --- CHAT BOARD STYLES --- */
+        .chat-wrapper {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            height: 500px; /* Fixed height for chat */
+            overflow: hidden;
+            margin-top: 20px; /* Spacing if wrapped */
+        }
+
+        .chat-header {
+            background-color: var(--dark);
+            color: white;
+            padding: 15px;
+            border-bottom: 3px solid var(--primary);
+        }
+        .chat-header h3 { margin: 0; font-size: 1.1rem; }
+        .chat-header p { margin: 0; font-size: 0.8rem; opacity: 0.8; }
+
+        .chat-box {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background-color: #f9f9f9;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* Message Bubbles */
+        .message {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .bot-message {
+            background-color: #e0e0e0;
+            color: #333;
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+        }
+
+        .user-message {
+            background-color: var(--primary);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+        }
+
+        .contact-highlight {
+            display: block;
+            margin-top: 5px;
+            font-weight: bold;
+            color: var(--primary);
+            background: white;
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 10px;
+            background: white;
+            border-top: 1px solid #ddd;
+        }
+        .chat-input input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            outline: none;
+            margin-right: 10px;
+        }
+        .chat-input button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .chat-input button:hover { background-color: #a01e20; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: var(--dark);
+            color: white;
+            margin-top: 50px;
+        }
+
+        /* --- DARK MODE OVERRIDES --- */
+        body.dark-mode { background-color: #121212; color: #e0e0e0; }
+        body.dark-mode header, 
+        body.dark-mode .form-wrapper, 
+        body.dark-mode .issue-card,
+        body.dark-mode .chat-wrapper,
+        body.dark-mode .chat-input {
+            background-color: #1e1e1e;
+            color: #ffffff;
+        }
+        body.dark-mode .logo { color: #fff; }
+        body.dark-mode nav a { color: #fff; }
+        body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
+            background-color: #2d2d2d;
+            border-color: #444;
+            color: #fff;
+        }
+        body.dark-mode #theme-btn { color: #fbbf24; }
+        body.dark-mode .chat-box { background-color: #1a1a1a; }
+        body.dark-mode .bot-message { background-color: #333; color: #fff; }
+        body.dark-mode .contact-highlight { background-color: #333; border-color: #555; }
+        
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            header { flex-direction: column; padding: 15px !important; text-align: center; }
+            .logo { margin-bottom: 15px; }
+            nav { width: 100%; display: flex; justify-content: center; gap: 15px; align-items: center; }
+            .hero { height: 250px; }
+            .hero h1 { font-size: 1.8rem; }
+            .container { padding: 20px 5%; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <i class="fas fa-university"></i> FixIt <span>AWKUM</span>
+        </div>
+        <nav>
+            <i class="fas fa-moon" id="theme-btn" title="Toggle Dark Mode"></i>
+            <a href="login.html">Logout</a> 
+            <a href="#report" class="btn-report">Report Issue</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h1>Face a Problem in Campus?</h1>
+        <p>Don't stay silent. Report issues regarding Transport, Hostels, or Academics anonymously.</p>
+        <a href="#report" class="cta-button">File a Complaint Now</a>
+    </section>
+
+    <div class="container" id="report">
+        
+        <div class="form-wrapper">
+            <h2><i class="fas fa-bullhorn"></i> Report a New Issue</h2>
+            <form id="issueForm">
+                <div class="input-group">
+                    <label>Category</label>
+                    <select id="category" required>
+                        <option value="">Select Category...</option>
+                        <option value="Transport">Transport / Buses</option>
+                        <option value="Hostel">Hostel Facilities</option>
+                        <option value="Academic">Academics / Classrooms</option>
+                        <option value="Cafeteria">Cafeteria / Hygiene</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Location (e.g., Garden Campus, Dept of CS)</label>
+                    <input type="text" id="location" placeholder="Where is the problem?" required>
+                </div>
+                <div class="input-group">
+                    <label>Description</label>
+                    <textarea id="desc" rows="5" placeholder="Describe the issue in detail..." required></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Submit Report</button>
+            </form>
+        </div>
+
+        <div class="issues-list">
+            <h2>Recent Campus Reports</h2>
+            <div id="feed-container"></div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 FixIt AWKUM | Built for the Students of Mardan</p>
+    </footer>
+
+    <script>
+        // --- 1. DARK MODE LOGIC ---
+        const themeBtn = document.getElementById('theme-btn');
+        const body = document.body;
+
+        if(localStorage.getItem('theme') === 'dark') {
+            body.classList.add('dark-mode');
+            themeBtn.classList.replace('fa-moon', 'fa-sun');
+        }
+
+        themeBtn.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            if(body.classList.contains('dark-mode')) {
+                themeBtn.classList.replace('fa-moon', 'fa-sun');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                themeBtn.classList.replace('fa-sun', 'fa-moon');
+                localStorage.setItem('theme', 'light');
+            }
+        });
+
+        // --- 2. LOAD FEED LOGIC ---
+        document.addEventListener('DOMContentLoaded', loadFeed);
+
+        // --- 3. SAVE ISSUE LOGIC ---
+        document.getElementById('issueForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const category = document.getElementById('category').value;
+            const location = document.getElementById('location').value;
+            const desc = document.getElementById('desc').value;
+
+            const newComplaint = {
+                id: Date.now(),
+                category: category,
+                location: location,
+                description: desc,
+                status: "Pending",
+                date: new Date().toLocaleDateString()
+            };
+
+            let complaints = JSON.parse(localStorage.getItem('awkumComplaints')) || [];
+            complaints.push(newComplaint);
+            localStorage.setItem('awkumComplaints', JSON.stringify(complaints));
+
+            document.getElementById('issueForm').reset();
+            loadFeed(); 
+        });
+
+        // --- 4. RENDER LIST LOGIC ---
+        function loadFeed() {
+            const feedContainer = document.getElementById('feed-container');
+            const complaints = JSON.parse(localStorage.getItem('awkumComplaints')) || [];
+            
+            feedContainer.innerHTML = "";
+
+            if (complaints.length === 0) {
+                feedContainer.innerHTML = "<p style='text-align:center; opacity:0.7;'>No reports yet. Be the first!</p>";
+                return;
+            }
+
+            complaints.slice().reverse().forEach(issue => {
+                const catMap = {
+                    'Transport': 'transport', 'Hostel': 'hostel',
+                    'Academic': 'academic', 'Cafeteria': 'cafeteria', 'Other': 'other'
+                };
+                const tagClass = catMap[issue.category] || 'other';
+                
+                const cardHTML = `
+                    <div class="issue-card">
+                        <div class="tag ${tagClass}">${issue.category}</div>
+                        <h3>${issue.location}</h3>
+                        <p>${issue.description}</p>
+                        <div class="meta">
+                            <span><i class="fas fa-clock"></i> ${issue.date}</span>
+                            <span class="status ${issue.status.toLowerCase()}">${issue.status}</span>
+                        </div>
+                    </div>
+                `;
+                feedContainer.innerHTML += cardHTML;
+            });
+        }
+
+        // --- 5. CHAT BOT LOGIC ---
+        function sendMessage() {
+            const inputField = document.getElementById("userInput");
+            const chatBox = document.getElementById("chatBox");
+            const userText = inputField.value.trim();
+
+            if (userText === "") return;
+
+            addMessage(userText, 'user-message');
+            inputField.value = ""; 
+
+            setTimeout(() => {
+                const botResponse = getDepartmentEmail(userText.toLowerCase());
+                addMessage(botResponse, 'bot-message');
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }, 500);
+        }
+
+        function addMessage(text, className) {
+            const chatBox = document.getElementById("chatBox");
+            const msgDiv = document.createElement("div");
+            msgDiv.className = `message ${className}`;
+            msgDiv.innerHTML = text;
+            chatBox.appendChild(msgDiv);
+        }
+    </script>
+
+</body>
+</html>

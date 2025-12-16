@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - AWKUM Voice</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+        :root {
+            --primary-color: #BD2426; /* AWKUM Maroon */
+            --primary-dark: #8a1a1c;
+            --admin-color: #2c3e50;   /* Dark Blue for Admin */
+            --text-dark: #333;
+            --bg-color: #f0f2f5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: var(--bg-color);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-container {
+            background: #fff;
+            width: 850px;
+            height: 500px;
+            display: flex;
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        /* Left Side (Branding) */
+        .login-header {
+            flex: 1;
+            background: linear-gradient(135deg, var(--admin-color), #1a252f); /* Changed to Admin Colors */
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .logo-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .login-header h2 { font-size: 2rem; margin-bottom: 10px; }
+        .login-header p { font-size: 0.9rem; opacity: 0.8; }
+
+        /* Right Side (Form) */
+        .login-form {
+            flex: 1.2;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .login-form h3 { color: var(--text-dark); margin-bottom: 5px; font-size: 1.8rem; }
+        .text-muted { color: #888; margin-bottom: 30px; font-size: 0.9rem; }
+
+        /* Inputs */
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px 12px 45px; /* space for icon */
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            outline: none;
+            transition: border 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: var(--admin-color);
+        }
+
+        /* Options (Remember me) */
+        .options {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: #555;
+            margin-bottom: 25px;
+        }
+
+        /* Buttons */
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 12px 1rem;
+            width: 100%;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            color: white;
+            transition: transform 0.2s, opacity 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1rem;
+        }
+
+        .btn:hover { opacity: 0.9; transform: translateY(-2px); }
+
+        .btn-admin { background-color: var(--admin-color); }
+
+        /* Responsive (Mobile) */
+        @media (max-width: 768px) {
+            .login-container { flex-direction: column; width: 90%; height: auto; }
+            .login-header { padding: 30px; }
+            .login-form { padding: 30px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        
+        <div class="login-header">
+            <i class="fas fa-user-shield logo-icon"></i>
+            <h2>Admin Portal</h2>
+            <p>Secure login for AWKUM Administrators.</p>
+        </div>
+
+        <div class="login-form">
+            <h3>Welcome Back</h3>
+            <p class="text-muted">Please enter your admin credentials</p>
+            
+            <form id="authForm">
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="username" placeholder="Admin Username" required>
+                </div>
+                
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" placeholder="Password" required>
+                </div>
+
+                <div class="options">
+                    <label><input type="checkbox"> Remember me</label>
+                    </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn btn-admin" onclick="handleAdminLogin()">
+                          Admin Login
+                    </button>
+                </div>
+            </form>
+
+            </div>
+    </div>
+
+    <script>
+        function handleAdminLogin() {
+            // 1. Get the input values
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            // 2. Simple Validation
+            if(username === "" || password === "") {
+                alert("Please enter both Username and Password.");
+                return;
+            }
+
+            // 3. Admin Credentials Check
+            // Username: admin
+            // Password: awkum123
+            if (username === 'admin' && password === 'awkum123') {
+                // REDIRECT TO THE ADMIN DASHBOARD
+                window.location.href = "admin.html"; 
+            }
+        }
+    </script>
+</body>
+</html>

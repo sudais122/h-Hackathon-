@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account - AWKUM Voice</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+        :root {
+            --primary-color: #BD2426; /* AWKUM Maroon */
+            --primary-dark: #8a1a1c;
+            --text-dark: #333;
+            --bg-color: #f0f2f5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: var(--bg-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .signup-container {
+            background: #fff;
+            width: 900px;
+            display: flex;
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        /* Left Side (Branding) */
+        .signup-header {
+            flex: 1;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .logo-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .signup-header h2 { font-size: 2rem; margin-bottom: 10px; }
+        .signup-header p { font-size: 0.9rem; opacity: 0.8; }
+        
+        /* Right Side (Form) */
+        .signup-form {
+            flex: 1.3;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .signup-form h3 { color: var(--text-dark); margin-bottom: 5px; font-size: 1.8rem; }
+        .text-muted { color: #888; margin-bottom: 25px; font-size: 0.9rem; }
+
+        /* Error Box */
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #f5c6cb;
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+            display: none;
+            text-align: center;
+        }
+        
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #c3e6cb;
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+            display: none;
+            text-align: center;
+        }
+
+        /* Inputs Grid */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* 2 columns */
+            gap: 15px;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .input-group.full-width {
+            grid-column: span 2;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px 15px 12px 40px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            outline: none;
+            transition: border 0.3s;
+            font-size: 0.9rem;
+            background: white;
+            /* Fix for text overflow in select */
+            text-overflow: ellipsis;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            border-color: var(--primary-color);
+        }
+
+        /* Group Heading Style inside Select */
+        optgroup {
+            font-weight: bold;
+            color: var(--primary-color);
+            background: #f9f9f9;
+        }
+
+        /* Button */
+        .btn-signup {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-top: 10px;
+            transition: opacity 0.2s;
+        }
+
+        .btn-signup:hover { opacity: 0.9; }
+
+        .footer-text { margin-top: 20px; font-size: 0.85rem; text-align: center; }
+        .footer-text a { color: var(--primary-color); text-decoration: none; font-weight: bold; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .signup-container { flex-direction: column; width: 100%; }
+            .signup-header { padding: 30px; }
+            .signup-form { padding: 20px; }
+            .form-grid { grid-template-columns: 1fr; } 
+            .input-group.full-width { grid-column: span 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="signup-container">
+        
+        <div class="signup-header">
+            <i class="fas fa-user-plus logo-icon"></i>
+            <h2>Join AWKUM Voice</h2>
+            <p>Be part of the solution. Register to report issues.</p>
+        </div>
+
+        <div class="signup-form">
+            <h3>Create Account</h3>
+            <p class="text-muted">Fill in your details to get started</p>
+            
+            <div id="error-box" class="error-message"></div>
+            <div id="success-box" class="success-message"></div>
+
+            <form id="signupForm">
+                <div class="form-grid">
+                    <div class="input-group">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="fullname" placeholder="Full Name" required>
+                    </div>
+
+                    <div class="input-group">
+                        <i class="fas fa-id-card"></i>
+                        <input type="text" id="regNo" placeholder="Reg. No (e.g., 19-AWKUM-CS...)" required>
+                    </div>
+
+                    <div class="input-group full-width">
+                        <i class="fas fa-building"></i>
+                        <select id="department" required>
+                            <option value="">Select Department...</option>
+                            
+                            <optgroup label="Physical & Numerical Sciences">
+                                <option value="CS">Computer Science</option>
+                                <option value="Mathematics">Mathematics</option>
+                                <option value="Physics">Physics</option>
+                                <option value="Statistics">Statistics</option>
+                                <option value="Geology">Geology</option>
+                            </optgroup>
+
+                            <optgroup label="Chemical & Life Sciences">
+                                <option value="Chemistry">Chemistry</option>
+                                <option value="Botany">Botany</option>
+                                <option value="Zoology">Zoology</option>
+                                <option value="Biochemistry">Biochemistry</option>
+                                <option value="Biotechnology">Biotechnology</option>
+                                <option value="Microbiology">Microbiology</option>
+                                <option value="Environmental">Environmental Sciences</option>
+                                <option value="Pharmacy">Pharmacy</option>
+                            </optgroup>
+
+                            <optgroup label="Social Sciences">
+                                <option value="Education">Education</option>
+                                <option value="Law">Law</option>
+                                <option value="PoliticalScience">Political Science</option>
+                                <option value="IR">International Relations (IR)</option>
+                                <option value="Sociology">Sociology</option>
+                                <option value="Psychology">Psychology</option>
+                                <option value="Journalism">Journalism & Mass Comm</option>
+                                <option value="PakStudies">Pakistan Studies</option>
+                                <option value="HPE">Health & Physical Education</option>
+                            </optgroup>
+
+                            <optgroup label="Arts & Humanities">
+                                <option value="English">English</option>
+                                <option value="IslamicStudies">Islamic Studies</option>
+                                <option value="Pashto">Pashto</option>
+                                <option value="PCA">Pakhtunkhwa College of Arts</option>
+                            </optgroup>
+
+                            <optgroup label="Business & Economics">
+                                <option value="Economics">Economics</option>
+                                <option value="Tourism">Tourism & Hospitality</option>
+                                <option value="IBSL">IBSL (Business & Leadership)</option>
+                            </optgroup>
+
+                            <optgroup label="Agriculture">
+                                <option value="Agronomy">Agronomy</option>
+                                <option value="Entomology">Entomology</option>
+                                <option value="Horticulture">Horticulture</option>
+                                <option value="FoodScience">Food Science & Technology</option>
+                            </optgroup>
+
+                            <optgroup label="Others/Colleges">
+                                <option value="Veterinary">Veterinary Sciences</option>
+                                <option value="WomenCollege">University College for Women</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <div class="input-group full-width">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="email" placeholder="Email Address" required>
+                    </div>
+
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" placeholder="Password" required>
+                    </div>
+
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+                    </div>
+                </div>
+
+                <button type="button" class="btn-signup" onclick="handleSignup()">Register</button>
+            </form>
+
+            <div class="footer-text">
+                <p>Already have an account? <a href="User.html">Login here</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function handleSignup() {
+            const fullname = document.getElementById('fullname').value;
+            const regNo = document.getElementById('regNo').value;
+            const department = document.getElementById('department').value; // Get Department
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            const errorBox = document.getElementById('error-box');
+            const successBox = document.getElementById('success-box');
+
+            // Reset messages
+            errorBox.style.display = 'none';
+            successBox.style.display = 'none';
+
+            // 1. Basic Empty Check (Added department check)
+            if(!fullname || !regNo || !department || !email || !password || !confirmPassword) {
+                errorBox.innerText = "Please fill in all fields (including Department).";
+                errorBox.style.display = 'block';
+                return;
+            }
+
+            // 2. Password Match Check
+            if(password !== confirmPassword) {
+                errorBox.innerText = "Passwords do not match.";
+                errorBox.style.display = 'block';
+                return;
+            }
+
+            // 3. Password Length Check
+            if(password.length < 6) {
+                errorBox.innerText = "Password must be at least 6 characters long.";
+                errorBox.style.display = 'block';
+                return;
+            }
+
+            // 4. Success Simulation
+            successBox.innerText = "Account created successfully! Redirecting to login...";
+            successBox.style.display = 'block';
+
+            // Wait 2 seconds then go to login page
+            setTimeout(function(){
+                window.location.href = "login.html"; 
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
