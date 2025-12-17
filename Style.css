@@ -1096,3 +1096,234 @@ footer {
 
     @media only screen and (max-width: 1024px) { .sidebar { width: 60px; } .sidebar .sidebar-brand, .sidebar h2 { display: none; } .sidebar-menu a { padding-left: 1rem; } .sidebar-menu a span { display: none; } .sidebar-menu a i { font-size: 1.5rem; margin-right: 0; } .main-content { margin-left: 60px; } header { left: 60px; width: calc(100% - 60px); } .sidebar.hide { width: 0 !important; } .main-content.hide { margin-left: 0 !important; } header.hide { left: 0 !important; width: 100% !important; } }
     @media only screen and (max-width: 768px) { .cards { grid-template-columns: 100%; } .sidebar { left: -100% !important; width: 250px !important; } header h2 { font-size: 1.2rem; } header { width: 100% !important; left: 0 !important; } .main-content { width: 100%; margin-left: 0 !important; } .sidebar.mobile-show { left: 0 !important; z-index: 200; } }
+
+/* problem styling */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+/* --- THEME VARIABLES --- */
+:root {
+    /* Light Mode (Default) */
+    --bg-body: #f4f6f8;
+    --bg-card: #ffffff;
+    --text-main: #333333;
+    --text-muted: #666666;
+    --primary: #BD2426; /* AWKUM Maroon */
+    --navbar-bg: rgba(255, 255, 255, 0.95);
+    --shadow: 0 4px 20px rgba(0,0,0,0.08);
+    --overlay-color: rgba(0, 0, 0, 0.6); /* Darkens images */
+}
+
+/* Dark Mode Override */
+[data-theme="dark"] {
+    --bg-body: #121212;
+    --bg-card: #1e1e1e;
+    --text-main: #ffffff;
+    --text-muted: #b0b0b0;
+    --primary: #ff4d4d; /* Brighter red for dark mode */
+    --navbar-bg: rgba(30, 30, 30, 0.95);
+    --shadow: 0 4px 20px rgba(0,0,0,0.5);
+    --overlay-color: rgba(0, 0, 0, 0.8);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; transition: background 0.3s, color 0.3s; }
+
+body {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bg-body);
+    background-image: url('https://images.unsplash.com/photo-1562774053-701939374585?q=80&w=1920&auto=format&fit=crop'); 
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    /* Blend the image with the background color */
+    background-blend-mode: overlay; 
+    color: var(--text-main);
+    min-height: 100vh;
+}
+
+/* --- NAVBAR --- */
+.navbar {
+    background: var(--navbar-bg);
+    backdrop-filter: blur(10px);
+    padding: 15px 5%;
+    width: 100vw;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.brand {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.theme-btn {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    color: var(--text-main);
+    cursor: pointer;
+    padding: 5px;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-info { text-align: right; }
+.user-info .name { display: block; font-weight: 600; font-size: 0.9rem; }
+.user-info .reg { font-size: 0.75rem; color: var(--text-muted); }
+
+.btn-logout {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* --- DASHBOARD --- */
+.dashboard-container {
+    width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* Welcome Banner */
+.welcome-banner {
+    background: linear-gradient(135deg, var(--primary), #8a1a1c);
+    color: white;
+    padding: 3rem;
+    border-radius: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+    box-shadow: 0 10px 30px rgba(189, 36, 38, 0.4);
+}
+
+.welcome-content h1 { font-size: 2rem; margin-bottom: 10px; }
+.wave { display: inline-block; animation: wave 2s infinite; }
+
+.stats-container { display: flex; gap: 20px; }
+.stat-card {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(5px);
+    padding: 15px 30px;
+    border-radius: 12px;
+    text-align: center;
+    min-width: 100px;
+}
+.stat-card h3 { font-size: 1.8rem; font-weight: 700; }
+.stat-card span { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
+
+.section-heading {
+    margin-bottom: 25px;
+    font-size: 1.4rem;
+    color: var(--text-main);
+    border-left: 5px solid var(--primary);
+    padding-left: 15px;
+}
+
+/* --- CARD GRID --- */
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 25px;
+    padding-bottom: 50px;
+}
+
+.card {
+    height: 180px;
+    border-radius: 15px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s;
+    background-size: cover;
+    background-position: center;
+}
+
+.card:hover { transform: translateY(-8px); }
+
+/* The dark overlay on top of the image */
+.card-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: var(--overlay-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    transition: background 0.3s;
+}
+
+.problems{
+    display: flex;
+    flex-direction: column;
+}
+.card:hover .card-overlay {
+    background: rgba(189, 36, 38, 0.85); /* Turn red on hover */
+}
+
+.card i { font-size: 2.5rem; margin-bottom: 15px; }
+.card h3 { font-size: 1.4rem; font-weight: 600; }
+.card p { font-size: 0.8rem; opacity: 0.8; margin-top: 5px; }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .welcome-banner { flex-direction: column; text-align: center; gap: 20px; }
+    .user-info { display: none; }
+}
+
+@keyframes wave {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(20deg); }
+}/* Updated Welcome Banner (No Stats) */
+.welcome-banner {
+    background: linear-gradient(135deg, var(--primary), #8a1a1c);
+    color: white;
+    padding: 3rem;
+    border-radius: 20px;
+    display: flex;
+    justify-content: center; /* Centers the text horizontally */
+    align-items: center;
+    text-align: center;      /* Ensures text lines are centered */
+    margin-bottom: 40px;
+    box-shadow: 0 10px 30px rgba(189, 36, 38, 0.4);
+}
+
+.welcome-content h1 {
+    font-size: 2.2rem;
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+.welcome-content p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    max-width: 600px; /* Keeps the text from getting too wide */
+    margin: 0 auto;
+}
+
+/* Delete the .stats-container and .stat-card CSS styles as they are no longer needed */

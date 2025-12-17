@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - FixIt AWKUM</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="brand">
+            <i class="fas fa-university"></i>
+            FixIt AWKUM
+        </div>
+        
+        <div class="nav-right">
+            <button class="theme-btn" id="theme-toggle" title="Switch Theme">
+                <i class="fas fa-moon"></i>
+            </button>
+
+            <div class="user-profile">
+                <div class="user-info">
+                    <span class="name">Welcome, Student</span>
+                    <span class="reg">Reg: 2025-CS-101</span>
+                </div>
+                <button class="btn-logout" onclick="window.location.href='UserLogin.html'">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        
+        <div class="welcome-banner">
+            <div class="welcome-content">
+                <h1>Hello, Student! <span class="wave">👋</span></h1>
+                <p>We are here to help. Select a category below to report an issue.</p>
+            </div>
+        </div>
+
+        <h3 class="section-heading">Browse Categories</h3>
+
+        <div class="category-grid">
+            
+            <div class="card" style="background-image: url('https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=500&q=60');" onclick="goToForm('Academics')">
+                <div class="card-overlay">
+                    <i class="fas fa-graduation-cap"></i>
+                    <h3>Academics</h3>
+                    <p>Classes, Lectures, Faculty</p>
+                </div>
+            </div>
+
+            <div class="card" style="background-image: url('https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=500&q=60');" onclick="goToForm('Hostel')">
+                <div class="card-overlay">
+                    <i class="fas fa-bed"></i>
+                    <h3>Hostel</h3>
+                    <p>Room, Water, Maintenance</p>
+                </div>
+            </div>
+
+            <div class="card" style="background-image: url('https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&w=500&q=60');" onclick="goToForm('Transport')">
+                <div class="card-overlay">
+                    <i class="fas fa-bus"></i>
+                    <h3>Transport</h3>
+                    <p>Bus Late, Route Issues</p>
+                </div>
+            </div>
+
+            <div class="card" style="background-image: url('https://images.unsplash.com/photo-1565123409695-7428308b9815?auto=format&fit=crop&w=500&q=60');" onclick="goToForm('Cafeteria')">
+                <div class="card-overlay">
+                    <i class="fas fa-utensils"></i>
+                    <h3>Cafeteria</h3>
+                    <p>Food Quality, Hygiene</p>
+                </div>
+            </div>
+
+            <div class="card" style="background-image: url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=500&q=60');" onclick="goToForm('IT Support')">
+                <div class="card-overlay">
+                    <i class="fas fa-wifi"></i>
+                    <h3>IT & Wi-Fi</h3>
+                    <p>Internet, Login Issues</p>
+                </div>
+            </div>
+
+            <div class="card" style="background-image: url('https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=500&q=60');" onclick="goToForm('Library')">
+                <div class="card-overlay">
+                    <i class="fas fa-book"></i>
+                    <h3>Library</h3>
+                    <p>Books, Quiet Zones</p>
+                </div>
+            </div>
+
+            <div class="card" style="background-image: url('https://images.unsplash.com/photo-1581578731117-10d52143b1e8?auto=format&fit=crop&w=500&q=60');" onclick="goToForm('Cleanliness')">
+                <div class="card-overlay">
+                    <i class="fas fa-broom"></i>
+                    <h3>Cleanliness</h3>
+                    <p>Washrooms, Trash</p>
+                </div>
+            </div>
+
+            <div class="card" style="background-image: url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=500&q=60');" onclick="goToForm('Other')">
+                <div class="card-overlay">
+                    <i class="fas fa-comment-dots"></i>
+                    <h3>Other</h3>
+                    <p>General Complaints</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
