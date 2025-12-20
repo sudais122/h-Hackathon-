@@ -68,14 +68,14 @@ nav a {
     background: linear-gradient(rgba(189, 36, 38, 0.9), rgba(64, 64, 64, 0.8)), url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
     background-size: cover;
     background-position: center;
-    height: 300px;
+    height: 250px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
     color: white;
-    padding: 20px;
+    padding: 10px;
 }
 .hero h1 { font-size: 2.5rem; margin-bottom: 10px; }
 .cta-button {
@@ -1055,34 +1055,50 @@ footer {
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; transition: background 0.3s, color 0.3s; }
+/* --- GLOBAL VARIABLES --- */
+:root {
+    --primary: #bd2426;       /* AWKUM Red */
+    --primary-dark: #8a1a1c;
+    --text-main: #333;
+    --text-muted: #666;
+    --bg-body: #f4f7f6;
+    --navbar-bg: rgba(255, 255, 255, 0.95);
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
 
+/* --- BODY & BACKGROUND --- */
 body {
     background-color: var(--bg-body);
-    background-image: url('https://propakistani.pk/wp-content/uploads/2021/06/Abdul-Wali-Khan-university.jpg'); 
+    height: 100vh;
+    /* Update this path to where you saved the cleaned image */
+    background-image: url('https://scontent-mct1-1.xx.fbcdn.net/v/t1.6435-9/53071301_1307963346025049_7634841368401018880_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=127cfc&_nc_ohc=cQrnWPrpaoQQ7kNvwFZBR_F&_nc_oc=AdnUTEHfvH9pw6vP_ewdRD7MnIxueO3Pj94VOvKFkZXogiw0re2OJcDa4IOrgzHLZO0&_nc_zt=23&_nc_ht=scontent-mct1-1.xx&_nc_gid=1p8tK-Z0lXvA7J4m2TRE1w&oh=00_AfnbTgUtTD4hBGV1etWGS4ekbo7b1o1jBB6mk6DdAbuE9g&oe=696B74CB'); 
     background-size: cover;
     background-position: center;
-    padding-top: 8rem;
     background-attachment: fixed;
     background-blend-mode: overlay; 
+    padding-top: 80px; 
     color: var(--text-main);
     min-height: 100vh;
     display: flex;
-    flex-direction: column;
+    padding-top: 5rem;
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
-
 /* --- NAVBAR --- */
 .navbar {
     background: var(--navbar-bg);
     backdrop-filter: blur(10px);
     padding: 15px 5%;
-    width: 100vw; 
+    width: 100%; 
     display: flex;
     justify-content: space-between;
     align-items: center;
     box-shadow: var(--shadow);
     position: fixed;
     top: 0;
-    z-index: 100;
+    left: 0;
+    z-index: 1000;
+    height: 70px; 
 }
 
 .brand {
@@ -1126,14 +1142,40 @@ body {
     padding: 8px 12px;
     border-radius: 8px;
     cursor: pointer;
+    transition: background 0.3s;
 }
 
-/* --- DASHBOARD --- */
+.btn-logout:hover {
+    background: var(--primary-dark);
+}
 .dashboard-container {
     width: 100%; 
     max-width: 1200px;
-    margin: 40px auto;
+    margin: 20px auto;
     padding: 0 20px;
+    box-sizing: border-box;
+    flex: 1; 
+}
+
+.welcome-banner {
+    background: linear-gradient(135deg, var(--primary), #8a1a1c);
+    color: white;
+    padding: 2rem;
+    margin-top: 6rem;
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 40px;
+    box-shadow: 0 10px 30px rgba(189, 36, 38, 0.4);
+    position: relative; 
+    overflow: hidden; 
+}
+
+.welcome-content {
+    position: relative;
+    z-index: 2;
 }
 
 .welcome-content h1 { 
@@ -1145,13 +1187,9 @@ body {
 .welcome-content p { 
     font-size: 1.1rem; 
     opacity: 0.9; 
+    color: white;
     max-width: 600px; 
     margin: 0 auto; 
-}
-
-.wave {
-    display: inline-block;
-    animation: wave 2s infinite; 
 }
 
 .section-heading {
@@ -1160,32 +1198,36 @@ body {
     color: var(--text-main);
     border-left: 5px solid var(--primary);
     padding-left: 15px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-radius: 0 5px 5px 0;
 }
+
 .category-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 25px;
     padding-bottom: 50px;
 }
 
+/* --- CARDS --- */
 .card {
-    height: 180px;
+    height: 200px;
     border-radius: 15px;
     position: relative;
     overflow: hidden;
     cursor: pointer;
     box-shadow: var(--shadow);
-    transition: transform 0.3s;
-    
-    /* ADD THESE FOUR LINES */
-    background-size: cover;       /* Forces the 1280px width to fit the card */
-    background-position: center;  /* Centers the hostel image */
+    transition: transform 0.3s, box-shadow 0.3s;
+    background-size: cover;      
+    background-position: center; 
     background-repeat: no-repeat;
-    display: block;               /* Ensures it renders as a box */
+    display: block;              
 }
 
 .card:hover{
      transform: translateY(-8px);
+     box-shadow: 0 10px 20px rgba(0,0,0,0.2);
 }
 
 .card-overlay {
@@ -1194,8 +1236,10 @@ body {
     left: 0; 
     width: 100%; 
     height: 100%;
-    /* Change 0.6 to 0.3 to make the image more visible */
-    background: rgba(0, 0, 0, 0.3); 
+    
+    /* UPDATED: Darker overlay (0.6) makes text clearer */
+    background: rgba(0, 0, 0, 0.6); 
+    
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -1208,40 +1252,25 @@ body {
 }
 
 .card:hover .card-overlay {
-    background: rgba(189, 36, 38, 0.85);
+    /* Red overlay on hover */
+    background: rgba(189, 36, 38, 0.9);
 }
 
-.card i { font-size: 2.5rem; margin-bottom: 15px; }
-.card h3 { font-size: 1.4rem; font-weight: 600; }
-.card p { font-size: 0.8rem; opacity: 0.8; margin-top: 5px; }
+.card i { font-size: 2.5rem; margin-bottom: 10px; }
+.card h3 { font-size: 1.4rem; font-weight: 600; margin: 5px 0; }
+.card p { font-size: 0.9rem; opacity: 1; margin-top: 0; font-weight: 400; }
 
-/* --- RESPONSIVE ADJUSTMENTS --- */
-@media (max-width: 420px) {
-    #probbody{
-        padding-top: 60rem;
-    }
-}
 @media (max-width: 1024px) {
     .dashboard-container {
         padding: 0 15px;
     }
 }
-@media (max-width: 1195px) {
-    body{
-        padding-top: 18rem;
-    }
-}
-@media (max-width: 900px) {
-    body{
-        padding-top: 32rem;
-    }
-}
+
 @media (max-width: 768px) {
-    body{
-        padding-top: 57rem;
+    body {
+        padding-top: 80px; 
     }
-}
-@media (max-width: 768px) {
+
     .navbar {
         padding: 15px 20px;
     }
@@ -1253,6 +1282,7 @@ body {
     .brand {
         font-size: 1.2rem; 
     }
+    
     .welcome-banner {
         padding: 2rem 1rem; 
         flex-direction: column;
@@ -1266,14 +1296,40 @@ body {
     .welcome-content p {
         font-size: 0.95rem;
     }
+    
     .category-grid {
         gap: 15px;
-        grid-template-columns: repeat(auto-fit, minmax(100%, 1fr)); 
+        grid-template-columns: repeat(auto-fit, minmax(100%, 1fr)); /* Full width cards on mobile */
     }
     
     .card {
         height: 160px; 
     }
+}
+@media (max-width: 1155px) {
+    .welcome-banner{
+        margin-top: 18rem;
+    }
+}
+@media (max-width: 870px) {
+    .welcome-banner{
+        margin-top: 32rem;
+    }
+}
+@media (max-width: 768px) {
+    .welcome-banner{
+        margin-top: 60rem;
+    }
+}
+@media (max-width: 380px) {
+    .welcome-banner{
+        margin-top: 70rem;
+    }
+}
+/* --- ANIMATIONS --- */
+.wave {
+    display: inline-block;
+    animation: wave 2s infinite; 
 }
 
 @keyframes wave {
@@ -1281,44 +1337,7 @@ body {
     50% { transform: rotate(20deg); }
 }
 
-
-/* --- ANIMATED WELCOME BANNER --- */
-.welcome-banner {
-    background: linear-gradient(135deg, var(--primary), #8a1a1c);
-    color: white;
-    padding: 2rem;
-    border-radius: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    margin-bottom: 40px;
-    box-shadow: 0 10px 30px rgba(189, 36, 38, 0.4);
-    position: relative; 
-    overflow: hidden; 
-}
-
-/* Ensure text stays on top of the floating icons */
-.welcome-content {
-    position: relative;
-    z-index: 2;
-}
-
-.welcome-content h1 {
-    font-size: 2.2rem;
-    margin-bottom: 10px;
-    font-weight: 700;
-}
-
-.welcome-content p {
-    font-size: 1.1rem;
-    opacity: 0.9;
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-/* --- FLOATING ICONS ANIMATION --- */
-/* --- FLOATING ICONS ANIMATION --- */
+/* Floating Icons Logic */
 .floating-icons {
     position: absolute;
     top: 0;
@@ -1332,74 +1351,19 @@ body {
 
 .floating-icons i {
     position: absolute;
-    color: rgba(255, 255, 255, 0.15); /* Subtle visibility */
-    /* This applies the new 'drift' animation */
+    color: rgba(255, 255, 255, 0.15); 
     animation: drift 20s infinite linear alternate;
 }
 
-/* We give each icon a different starting position 
-   AND a different duration so they never look synchronized.
-*/
+.icon-1 { top: 10%; left: 5%; font-size: 3.5rem; animation-duration: 25s; }
+.icon-2 { top: 70%; left: 85%; font-size: 3rem; animation-duration: 18s; animation-delay: -5s; }
+.icon-3 { top: 40%; left: 45%; font-size: 5rem; animation-duration: 30s; animation-delay: -10s; }
+.icon-4 { top: 80%; left: 15%; font-size: 2.5rem; animation-duration: 22s; animation-delay: -2s; }
+.icon-5 { top: 15%; left: 75%; font-size: 3.5rem; animation-duration: 20s; animation-delay: -7s; }
 
-/* Icon 1: Top Left - Moves slowly */
-.icon-1 { 
-    top: 10%; 
-    left: 5%; 
-    font-size: 3.5rem; 
-    animation-duration: 25s; 
-}
-
-/* Icon 2: Bottom Right - Moves faster */
-.icon-2 { 
-    top: 70%; 
-    left: 85%; 
-    font-size: 3rem; 
-    animation-duration: 18s; 
-    animation-delay: -5s; /* Starts animation mid-way */
-}
-
-/* Icon 3: Center - Very large, moves very slowly */
-.icon-3 { 
-    top: 40%; 
-    left: 45%; 
-    font-size: 5rem; 
-    animation-duration: 30s; 
-    animation-delay: -10s;
-}
-
-/* Icon 4: Bottom Left */
-.icon-4 { 
-    top: 80%; 
-    left: 15%; 
-    font-size: 2.5rem; 
-    animation-duration: 22s; 
-    animation-delay: -2s;
-}
-
-/* Icon 5: Top Right */
-.icon-5 { 
-    top: 15%; 
-    left: 75%; 
-    font-size: 3.5rem; 
-    animation-duration: 20s; 
-    animation-delay: -7s;
-}
 @keyframes drift {
-    0% {
-        transform: translate(0, 0) rotate(0deg);
-    }
-    33% {
-        transform: translate(80px, -50px) rotate(10deg);
-    }
-    66% {
-        transform: translate(-40px, 40px) rotate(-5deg);
-    }
-    100% {
-        transform: translate(30px, -60px) rotate(5deg);
-    }
-}
-.wave { display: inline-block; animation: wave 1s infinite; }
-@keyframes wave {
-    0%, 100% { transform: rotate(0deg); }
-    50% { transform: rotate(20deg); }
+    0% { transform: translate(0, 0) rotate(0deg); }
+    33% { transform: translate(80px, -50px) rotate(10deg); }
+    66% { transform: translate(-40px, 40px) rotate(-5deg); }
+    100% { transform: translate(30px, -60px) rotate(5deg); }
 }

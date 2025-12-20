@@ -162,87 +162,83 @@
     </style>
 </head>
 <body>
-
-    <div class="login-container">
-        
+    <div class="login-container">  
         <div class="login-header">
             <i class="fas fa-university logo-icon"></i>
             <h2>FixIt AWKUM</h2>
             <p>Empowering students to solve campus problems.</p>
         </div>
 
-        <div class="login-form">
-            <h3>Welcome Back</h3>
-            <p class="text-muted">Please enter your credentials</p>
-            
-            <div id="error-box" class="error-message">
-                <i class="fas fa-exclamation-circle"></i> Invalid Username or Password.
-            </div>
-
-            <form id="authForm">
-                <div class="input-group">
-                    <i class="fas fa-envelope"></i>
-                    <input type="text" id="email" placeholder="Email or Reg Number" required>
-                </div>
-                
-                <div class="input-group">
-                    <i class="fas fa-lock"></i>
-                    <input type="password" id="password" placeholder="Password" required>
-                </div>
-
-                <div class="options">
-                    <label><input type="checkbox"> Remember me</label>
-                    <a href="forgetpass.html">Forgot Password?</a>
-                </div>
-                <div class="button-group">
-                    <a href="Problems.html"><button type="button" class="btn btn-student" onclick="handleLogin()">Login</button></a>
-                </div>
-            </form>
-
-            <div class="footer-text">
-                <p>Not registered? <a href="Signup.html">Create an Account</a></p>
-            </div>
+<div class="login-form">
+    <h3>Welcome Back</h3>
+    <p class="text-muted">Please enter your credentials</p>
+    
+    <div id="error-box" class="error-message" style="display: none; color: #BD2426; margin-bottom: 10px;">
         </div>
+
+    <form id="authForm" onsubmit="return false;">
+        <div class="input-group">
+            <i class="fas fa-envelope"></i>
+            <input type="text" id="email" placeholder="Email" required>
+        </div>
+        
+        <div class="input-group">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="password" placeholder="Password" required>
+        </div>
+
+        <div class="options">
+            <label><input type="checkbox"> Remember me</label>
+            <a href="forgetpass.html">Forgot Password?</a>
+        </div>
+        
+        <div class="button-group">
+            <button type="button" class="btn btn-student" onclick="handleLogin()">Login</button>
+        </div>
+    </form>
+
+    <div class="footer-text">
+        <p>Not registered? <a href="Signup.html">Create an Account</a></p>
+    </div>
+</div>
     </div>
 
-    <script>
-        function handleLogin() {
-            // 1. Get elements
-            const emailField = document.getElementById('email');
-            const passField = document.getElementById('password');
-            const errorBox = document.getElementById('error-box');
+<script>
+    function handleLogin() {
+        // 1. Get elements
+        const emailField = document.getElementById('email');
+        const passField = document.getElementById('password');
+        const errorBox = document.getElementById('error-box');
 
-            const email = emailField.value.trim();
-            const password = passField.value.trim();
+        const email = emailField.value.trim();
+        const password = passField.value.trim();
 
-            // 2. Hide error box initially (reset)
-            errorBox.style.display = 'none';
-            emailField.style.borderColor = '#ddd';
-            passField.style.borderColor = '#ddd';
+        // 2. Hide error box initially (reset styles)
+        errorBox.style.display = 'none';
+        emailField.style.borderColor = '#ddd';
+        passField.style.borderColor = '#ddd';
 
-            // 3. Simple Check if Empty
-            if(email === "" || password === "") {
-                errorBox.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Please fill in all fields.';
-                errorBox.style.display = 'block';
-                return;
-            }
-
-            // 4. CHECK CREDENTIALS
-            // Valid User: student
-            // Valid Pass: student123
-            if (email === 'student' && password === 'student123') {
-                // SUCCESS
-                window.location.href = "index.html"; 
-            } else {
-                // FAILURE - Show Error Message Box
-                errorBox.innerHTML = '<i class="fas fa-times-circle"></i> Incorrect username or password.';
-                errorBox.style.display = 'block';
-                
-                // Highlight inputs red
-                emailField.style.borderColor = '#BD2426';
-                passField.style.borderColor = '#BD2426';
-            }
+        // 3. Simple Check if Empty
+        if (email === "" || password === "") {
+            errorBox.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Please fill in all fields.';
+            errorBox.style.display = 'block';
+            return; // Stop here
         }
-    </script>
+
+        // 4. Validate Credentials
+        if (email === 'student' && password === 'student123') {
+            // SUCCESS: Redirect to the next page
+            window.location.href = "Problems.html"; 
+        } else {
+            // FAILURE: Show error message
+            errorBox.innerHTML = '<i class="fas fa-times-circle"></i> Incorrect username or password.';
+            errorBox.style.display = 'block';
+            
+            // Highlight borders in red
+            emailField.style.borderColor = '#BD2426';
+            passField.style.borderColor = '#BD2426';
+        }
+    }
+</script>
 </body>
 </html>
