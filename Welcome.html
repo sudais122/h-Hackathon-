@@ -19,7 +19,7 @@
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            color: black;
+            color: white;
         }
         .container {
             text-align: center;
@@ -27,22 +27,35 @@
             max-width: 900px;
             padding: 20px;
         }
-
-        /* --- LOGO AREA --- */
         .logo-area {
+<<<<<<< HEAD
             
+=======
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+>>>>>>> d07086a05b20768242c9fa6a18863da58e349226
             margin-bottom: 3rem;
-        }
-        .logo-area i {
-            font-size: 4rem;
-            color: #BD2426; /* AWKUM Red */
-            background: white;
-            padding: 20px;
             border-radius: 50%;
-            margin-bottom: 1rem;
+        }
+        .img{
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+            width: 140px;
+            border-radius: 50%;
+            background-color: rgb(255, 255, 255);
+            height: 140px;
+        }
+        .logo-area img {
+            width: 100px;
+            height: 100px;
         }
         .logo-area h1 {
             font-size: 3rem;
+            margin-top: 1rem;
             margin-bottom: 0.5rem;
             font-weight: 700;
         }
@@ -53,15 +66,15 @@
 
         /* --- CARD CONTAINER (ROW ALIGNMENT) --- */
         .card-container {
-            display: flex;             /* This makes items align in a row */
-            justify-content: center;   /* Center them horizontally */
-            gap: 30px;                 /* Space between the two cards */
-            flex-wrap: wrap;           /* Allows wrapping on very small mobile screens */
+            display: flex;             
+            justify-content: center;   
+            gap: 30px;                 
+            flex-wrap: wrap;           
         }
 
         /* --- LOGIN CARD STYLES --- */
         .login-card {
-            background: rgba(255, 255, 255, 0.1); /* Glass effect */
+            background: rgba(255, 255, 255, 0.1); 
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
             padding: 2.5rem;
@@ -109,7 +122,7 @@
     <div class="container">
         
         <div class="logo-area">
-            <i class="fas fa-university"></i>
+            <div class="img"><img src="Imges/Logo.jpeg" alt=""></div>
             <h1>FixIt AWKUM</h1>
             <p>Campus Complaint Management System</p>
         </div>
