@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oters</title>
+    <title>General Issues</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -94,6 +94,7 @@
             padding: 40px 10%;
             max-width: 1200px;
             margin: 0 auto;
+            align-items: flex-start; /* Aligns columns to top */
         }
 
         /* --- FORM SECTION --- */
@@ -104,7 +105,7 @@
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            height: fit-content;
+            height: fit-content; /* Critical for calculating height */
         }
 
         .form-wrapper h2 { margin-bottom: 20px; color: var(--dark); }
@@ -137,6 +138,20 @@
         }
         .issues-list h2{ padding-bottom: 10px; }
         
+        /* NEW SCROLLBAR CSS START */
+        #feed-container {
+            overflow-y: auto; 
+            padding-right: 10px; 
+            /* Height is set dynamically via JS */
+        }
+
+        /* Custom Scrollbar Styling */
+        #feed-container::-webkit-scrollbar { width: 8px; }
+        #feed-container::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        #feed-container::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
+        #feed-container::-webkit-scrollbar-thumb:hover { background: #a01e20; }
+        /* NEW SCROLLBAR CSS END */
+
         .issue-card {
             background: white;
             padding: 20px;
@@ -155,16 +170,10 @@
             margin-bottom: 10px;
             text-transform: uppercase;
         }
-        .action-btn{
-            color: white;
-        }
-        .form-wrapper h2{
-            color: white;
-        }
-        .tag.transport { background-color: #f39c12; }
-        .tag.hostel { background-color: #3498db; }
-        .tag.academic { background-color: #8e44ad; }
-        .tag.cafeteria { background-color: #e74c3c; }
+        .action-btn{ color: white; }
+        .form-wrapper h2{ color: var(--dark); } 
+
+        .tag.general { background-color: #57606f; } /* Dark Slate Gray for General */
         .tag.other { background-color: #95a5a6; }
 
         .issue-card h3 { font-size: 1.1rem; margin-bottom: 5px; }
@@ -175,11 +184,15 @@
             justify-content: space-between;
             font-size: 0.8rem;
             color: #999;
+            align-items: center;
         }
+        
+        .meta i { margin-right: 5px; }
 
         .status { font-weight: bold; }
         .status.pending { color: #e67e22; }
         .status.resolved { color: #27ae60; }
+        
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -198,12 +211,11 @@
         body.dark-mode { background-color: #121212; color: #e0e0e0; }
         body.dark-mode header, 
         body.dark-mode .form-wrapper, 
-        body.dark-mode .issue-card,
-        body.dark-mode .chat-wrapper,
-        body.dark-mode .chat-input {
+        body.dark-mode .issue-card {
             background-color: #1e1e1e;
             color: #ffffff;
         }
+        body.dark-mode .form-wrapper h2 { color: #fff; }
         body.dark-mode .logo { color: #fff; }
         body.dark-mode nav a { color: #fff; }
         body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
@@ -212,9 +224,6 @@
             color: #fff;
         }
         body.dark-mode #theme-btn { color: #fbbf24; }
-        body.dark-mode .chat-box { background-color: #1a1a1a; }
-        body.dark-mode .bot-message { background-color: #333; color: #fff; }
-        body.dark-mode .contact-highlight { background-color: #333; border-color: #555; }
         
         /* RESPONSIVE */
         @media (max-width: 768px) {
@@ -224,6 +233,7 @@
             .hero { height: 250px; }
             .hero h1 { font-size: 1.8rem; }
             .container { padding: 20px 5%; }
+            #feed-container { max-height: none !important; } /* Reset scroll on mobile */
         }
     </style>
 </head>
@@ -244,10 +254,11 @@
         <p>Report any issues not covered in specific sections, including facilities, staff, or services.</p>
         <a href="#report" class="cta-button">File a Complaint Now</a>
     </section>
+
     <div class="container" id="report">
         
         <div class="form-wrapper">
-            <h2><i class="fas fa-bullhorn"></i> Report a New Issue</h2>
+            <h2><i class="fas fa-bullhorn"></i> Report General Issue</h2>
             <form id="issueForm">
                 <div class="input-group">
                     <label>Category</label>
@@ -257,9 +268,9 @@
                         <option value="Electricity Issue">Electricity Issue</option>
                         <option value="Room Maintenance">Room Maintenance</option>
                         <option value="Cleanliness">Cleanliness</option>
-                        <option value="Internet Issue">Internet Issue</option>
                         <option value="Security Concern">Security Concern</option>
-                        <option value="other">Other</option>
+                        <option value="Admin Issue">Administration Issue</option>
+                        <option value="Other">Other</option>
                     </select>
                 </div>
                 <div class="input-group">
@@ -275,7 +286,7 @@
         </div>
 
         <div class="issues-list">
-            <h2>Recent Campus Reports</h2>
+            <h2>Recent General Reports</h2>
             <div id="feed-container"></div>
         </div>
     </div>
@@ -311,17 +322,24 @@
         // --- 3. SAVE ISSUE LOGIC ---
         document.getElementById('issueForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            const category = document.getElementById('category').value;
+            
+            // Get values
+            const subCategory = document.getElementById('category').value;
             const location = document.getElementById('location').value;
             const desc = document.getElementById('desc').value;
+            const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            // FORCE 'General' PREFIX
+            const formattedCategory = `General: ${subCategory}`;
 
             const newComplaint = {
                 id: Date.now(),
-                category: category,
+                category: formattedCategory, 
                 location: location,
                 description: desc,
                 status: "Pending",
-                date: new Date().toLocaleDateString()
+                date: new Date().toLocaleDateString(),
+                time: currentTime 
             };
 
             let complaints = JSON.parse(localStorage.getItem('awkumComplaints')) || [];
@@ -339,58 +357,60 @@
             
             feedContainer.innerHTML = "";
 
-            if (complaints.length === 0) {
+            // FILTER: ONLY SHOW GENERAL ISSUES
+            const genIssues = complaints.filter(issue => issue.category.startsWith('General'));
+
+            if (genIssues.length === 0) {
                 feedContainer.innerHTML = "<p style='text-align:center; opacity:0.7;'>No reports yet. Be the first!</p>";
+                adjustFeedHeight();
                 return;
             }
 
-            complaints.slice().reverse().forEach(issue => {
-                const catMap = {
-                    'Transport': 'transport', 'Hostel': 'hostel',
-                    'Academic': 'academic', 'Cafeteria': 'cafeteria', 'Other': 'other'
-                };
-                const tagClass = catMap[issue.category] || 'other';
+            genIssues.slice().reverse().forEach(issue => {
+                let tagClass = 'other';
+                // If starts with General, make it gray
+                if(issue.category.startsWith('General')) {
+                    tagClass = 'general';
+                }
                 
+                const timeDisplay = issue.time ? ` at ${issue.time}` : "";
+
                 const cardHTML = `
                     <div class="issue-card">
                         <div class="tag ${tagClass}">${issue.category}</div>
                         <h3>${issue.location}</h3>
                         <p>${issue.description}</p>
                         <div class="meta">
-                            <span><i class="fas fa-clock"></i> ${issue.date}</span>
+                            <span><i class="fas fa-clock"></i> ${issue.date}${timeDisplay}</span>
                             <span class="status ${issue.status.toLowerCase()}">${issue.status}</span>
                         </div>
                     </div>
                 `;
                 feedContainer.innerHTML += cardHTML;
             });
-        }
-        // --- 5. CHAT BOT LOGIC ---
-        function sendMessage() {
-            const inputField = document.getElementById("userInput");
-            const chatBox = document.getElementById("chatBox");
-            const userText = inputField.value.trim();
 
-            if (userText === "") return;
-
-            addMessage(userText, 'user-message');
-            inputField.value = ""; 
-
-            setTimeout(() => {
-                const botResponse = getDepartmentEmail(userText.toLowerCase());
-                addMessage(botResponse, 'bot-message');
-                chatBox.scrollTop = chatBox.scrollHeight;
-            }, 500);
+            // Adjust height after content loads
+            adjustFeedHeight();
         }
 
-        function addMessage(text, className) {
-            const chatBox = document.getElementById("chatBox");
-            const msgDiv = document.createElement("div");
-            msgDiv.className = `message ${className}`;
-            msgDiv.innerHTML = text;
-            chatBox.appendChild(msgDiv);
+        // --- 5. HEIGHT ADJUSTMENT LOGIC (SCROLLBAR) ---
+        function adjustFeedHeight() {
+            const formWrapper = document.querySelector('.form-wrapper');
+            const feedContainer = document.getElementById('feed-container');
+            const listHeaderHeight = 50; 
+
+            // Only on Desktop (> 768px)
+            if (window.innerWidth > 768 && formWrapper && feedContainer) {
+                const formHeight = formWrapper.offsetHeight;
+                const maxListHeight = formHeight - listHeaderHeight;
+                feedContainer.style.maxHeight = maxListHeight + "px";
+            } else {
+                feedContainer.style.maxHeight = "none";
+            }
         }
+
+        window.addEventListener('resize', adjustFeedHeight);
+
     </script>
-    <script src="script.js"></script>
 </body>
 </html>

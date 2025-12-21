@@ -184,3 +184,5 @@ function goToForm(category) {
                 feedContainer.innerHTML += cardHTML;
             });
         }
+
+

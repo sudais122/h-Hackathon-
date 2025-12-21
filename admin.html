@@ -22,6 +22,12 @@
     body.dark-mode table tbody tr { border-color: #334155; }
     body.dark-mode .card-header { border-bottom: 1px solid #334155; }
     body.dark-mode .card-single div:last-child i { color: #ef4444; }
+    body.dark-mode .filter-input { background-color: #334155; color: #fff; border: 1px solid #475569; }
+    body.dark-mode .filter-input::placeholder { color: #94a3b8; }
+    body.dark-mode .modal-content { background-color: #1e293b; color: #e2e8f0; border: 1px solid #334155; }
+    body.dark-mode .modal-header h3 { color: #f8fafc; }
+    body.dark-mode .btn-cancel { background-color: #334155; color: #fff; border: 1px solid #475569; }
+    body.dark-mode .btn-cancel:hover { background-color: #475569; }
     #theme-btn { cursor: pointer; font-size: 1.2rem; color: #333; margin-right: 20px; transition: 0.3s; }
     body.dark-mode #theme-btn { color: #ffffff; }
 
@@ -48,42 +54,40 @@
     #menu-btn { cursor: pointer; font-size: 1.5rem; margin-right: 1rem; }
     .user-wrapper { display: flex; align-items: center; }
     .user-wrapper img { border-radius: 50%; margin-right: 1rem; }
-    /* UPDATED MAIN SECTION FOR WIDTH */
-    main { 
-        margin-top: 85px; 
-        padding: 2rem 1rem; /* Reduced padding to make content wider */
-        background: #f1f5f9; 
-        min-height: calc(100vh - 90px); 
-        transition: background-color 0.3s; 
-        width: 100%;
-    }
+    
+    main { margin-top: 85px; padding: 2rem 1rem; background: #f1f5f9; min-height: calc(100vh - 90px); transition: background-color 0.3s; width: 100%; }
     
     .cards { display: grid; grid-template-columns: repeat(3, 1fr); grid-gap: 2rem; cursor: pointer; }
     .card-single { display: flex; justify-content: space-between; background: #fff; padding: 2rem; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: transform 0.2s, background-color 0.3s; }
     .card-single div:last-child i { font-size: 2rem; color: var(--main-color); }
     
-    /* UPDATED GRID AND CARD WIDTHS */
     .recent-grid { margin-top: 3.5rem; width: 100%; display: block; }
     .projects { width: 100%; }
     .card { background: #fff; border-radius: 5px; transition: background-color 0.3s; width: 100%; }
-    
     .card-header { padding: 1.5rem; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; }
     
+    /* --- FILTER CSS --- */
+    .filter-container { padding: 1rem 1.5rem; display: flex; gap: 15px; flex-wrap: wrap; border-bottom: 1px solid #eee; justify-content: flex-end; }
+    .filter-input { padding: 8px 12px; border: 1px solid #ddd; border-radius: 5px; outline: none; font-size: 0.9rem; min-width: 200px; }
+
     .table-responsive { width: 100%; overflow-x: auto; }
     table { border-collapse: collapse; width: 100%; }
     thead tr { border-top: 1px solid #f0f0f0; border-bottom: 2px solid #f0f0f0; }
-    
-    /* UPDATED TABLE CELL PADDING */
     td { padding: 1rem 1.5rem; font-size: .95rem; color: #222; }
     
     .status-dot { height: 10px; width: 10px; display: inline-block; border-radius: 50%; margin-right: 5px; }
     .status-dot.Transport { background: #f39c12; }
     .status-dot.Hostel { background: #3498db; }
     .status-dot.Academic { background: #8e44ad; }
-    .status-dot.Cafeteria { background: #e74c3c; } 
-    .status-dot.Other { background: #333; }
+    .status-dot.Cafeteria { background: #e74c3c; }
+    .status-dot.Library { background: #16a085; }
+    .status-dot.General { background: #57606f; }
+    .status-dot.IT { background: #95a5a6; }
+    .status-dot.Other { background: #95a5a6; }
+
     .status.pending { color: #f39c12; font-weight: bold; }
     .status.resolved { color: #2ecc71; font-weight: bold; }
+    
     .action-btn { padding: 5px 15px; border: 1px solid var(--main-color); color: rgb(0, 0, 0); background: transparent; border-radius: 5px; cursor: pointer; transition: all 0.3s; }
     .action-btn:hover { background: var(--main-color); color: white; }
     .action-btn:disabled { background: #ccc; color: #666; border-color: #ccc; cursor: not-allowed; }
@@ -91,6 +95,21 @@
     .hash-code { font-family: monospace; background: #eee; padding: 2px 5px; border-radius: 4px; color: #555; }
     body.dark-mode .hash-code { background: #333; color: #ccc; }
 
+    /* --- MODAL STYLES --- */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); display: none; justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(3px); animation: fadeIn 0.2s ease-out; }
+    .modal-content { background: white; padding: 30px; border-radius: 12px; width: 400px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); transform: scale(0.9); animation: scaleUp 0.2s ease-out forwards; }
+    .modal-header i { font-size: 3rem; color: #e74c3c; margin-bottom: 15px; }
+    .modal-body h3 { margin-bottom: 10px; color: #333; }
+    .modal-body p { color: #666; margin-bottom: 25px; font-size: 0.95rem; }
+    .modal-footer { display: flex; justify-content: center; gap: 15px; }
+    .btn-modal { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.2s; }
+    .btn-cancel { background: #e2e8f0; color: #334155; }
+    .btn-cancel:hover { background: #cbd5e1; }
+    .btn-confirm { background: #e74c3c; color: white; }
+    .btn-confirm:hover { background: #c0392b; }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes scaleUp { from { transform: scale(0.8); } to { transform: scale(1); } }
     @media only screen and (max-width: 1024px) { .sidebar { width: 60px; } .sidebar .sidebar-brand, .sidebar h2 { display: none; } .sidebar-menu a { padding-left: 1rem; } .sidebar-menu a span { display: none; } .sidebar-menu a i { font-size: 1.5rem; margin-right: 0; } .main-content { margin-left: 60px; } header { left: 60px; width: calc(100% - 60px); } .sidebar.hide { width: 0 !important; } .main-content.hide { margin-left: 0 !important; } header.hide { left: 0 !important; width: 100% !important; } }
     @media only screen and (max-width: 768px) { .cards { grid-template-columns: 100%; } .sidebar { left: -100% !important; width: 250px !important; } header h2 { font-size: 1.2rem; } header { width: 100% !important; left: 0 !important; } .main-content { width: 100%; margin-left: 0 !important; } .sidebar.mobile-show { left: 0 !important; z-index: 200; } }
 </style>
@@ -110,54 +129,31 @@
     </div>
 
     <div class="main-content">
-        
         <header>
             <h2>
-                <label id="menu-btn">
-                    <i class="fas fa-bars"></i>
-                </label>
+                <label id="menu-btn"><i class="fas fa-bars"></i></label>
                 Dashboard
             </h2>
-            
             <div class="user-wrapper">
                 <i class="fas fa-moon" id="theme-btn" title="Toggle Dark Mode"></i>
                 <img src="https://ui-avatars.com/api/?name=Admin+User&background=BD2426&color=fff" width="40px" height="40px" alt="">
-                <div>
-                    <h4>Admin</h4>
-                </div>
+                <div><h4>Admin</h4></div>
             </div>
         </header>
 
         <main>
             <div class="cards" id="stats-cards">
                 <div class="card-single">
-                    <div>
-                        <h1 id="total-count">0</h1>
-                        <span>Total Issues</span>
-                    </div>
-                    <div>
-                        <i class="fas fa-clipboard-list"></i>
-                    </div>
+                    <div><h1 id="total-count">0</h1><span>Total Issues</span></div>
+                    <div><i class="fas fa-clipboard-list"></i></div>
                 </div>
-
                 <div class="card-single">
-                    <div>
-                        <h1 id="pending-count">0</h1>
-                        <span>Pending</span>
-                    </div>
-                    <div>
-                        <i class="fas fa-clock"></i>
-                    </div>
+                    <div><h1 id="pending-count">0</h1><span>Pending</span></div>
+                    <div><i class="fas fa-clock"></i></div>
                 </div>
-
                 <div class="card-single">
-                    <div>
-                        <h1 id="resolved-count">0</h1>
-                        <span>Resolved</span>
-                    </div>
-                    <div>
-                        <i class="fas fa-check"></i>
-                    </div>
+                    <div><h1 id="resolved-count">0</h1><span>Resolved</span></div>
+                    <div><i class="fas fa-check"></i></div>
                 </div>
             </div>
             <div class="recent-grid">
@@ -166,17 +162,27 @@
                         <div class="card-header">
                             <h3 id="table-title">Recent Problems Reported</h3>
                             <div id="action-btn-container">
-                                <button onclick="clearAllData()" style="background: #e74c3c; border-color: #e74c3c; color: white;" class="action-btn">Clear All</button>
+                                <button onclick="openModal()" style="background: #e74c3c; border-color: #e74c3c; color: white;" class="action-btn">Clear All</button>
                             </div>
+                        </div>
+
+                        <div class="filter-container" id="filter-bar">
+                            <select id="category-filter" class="filter-input" onchange="applyFilters()">
+                                <option value="All">All Categories</option>
+                                <option value="Transport">Transport</option>
+                                <option value="Hostel">Hostel</option>
+                                <option value="Academic">Academic</option>
+                                <option value="Cafeteria">Cafeteria</option>
+                                <option value="IT">IT Support</option>
+                                <option value="Other">Other</option>
+                            </select>
                         </div>
 
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table width="100%">
-                                    <thead id="table-head">
-                                    </thead>
-                                    <tbody id="table-body">
-                                    </tbody>
+                                    <thead id="table-head"></thead>
+                                    <tbody id="table-body"></tbody>
                                 </table>
                             </div>
                         </div>
@@ -185,6 +191,21 @@
             </div>
         </main>
     </div>
+
+    <div id="confirm-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header"><i class="fas fa-exclamation-triangle"></i></div>
+            <div class="modal-body">
+                <h3>Are you sure?</h3>
+                <p>You are about to delete <strong>ALL</strong> reported issues. This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal btn-cancel" onclick="closeModal()">Cancel</button>
+                <button class="btn-modal btn-confirm" onclick="confirmClear()">Yes, Clear All</button>
+            </div>
+        </div>
+    </div>
+
 <script>
     const themeBtn = document.getElementById('theme-btn');
     const body = document.body;
@@ -204,6 +225,7 @@
             localStorage.setItem('adminTheme', 'light');
         }
     });
+    
     function switchView(viewName, element) {
         if(element) {
             document.querySelectorAll('.sidebar-menu a').forEach(el => el.classList.remove('active'));
@@ -213,36 +235,56 @@
         const statsCards = document.getElementById('stats-cards');
         const tableTitle = document.getElementById('table-title');
         const actionBtnContainer = document.getElementById('action-btn-container');
+        const filterBar = document.getElementById('filter-bar');
 
         if (viewName === 'dashboard') {
             statsCards.style.display = 'grid'; 
+            filterBar.style.display = 'flex'; 
             tableTitle.innerText = "All Campus Issues";
-            actionBtnContainer.innerHTML = `<button onclick="clearAllData()" style="background: #e74c3c; border-color: #e74c3c;" class="action-btn">Clear All</button>`;
-            loadDashboardData('all');
+            actionBtnContainer.innerHTML = `<button onclick="openModal()" style="background: #e74c3c; border-color: #e74c3c; color: white;" class="action-btn">Clear All</button>`;
+            applyFilters(); 
         } 
         else if (viewName === 'resolved') {
             statsCards.style.display = 'grid'; 
+            filterBar.style.display = 'flex'; 
             tableTitle.innerText = "Resolved Issues Only";
             actionBtnContainer.innerHTML = ``; 
-            loadDashboardData('resolved');
+            applyFilters('resolved_view');
         } 
         else if (viewName === 'students') {
             statsCards.style.display = 'none'; 
+            filterBar.style.display = 'none'; 
             tableTitle.innerText = "Registered Students";
             actionBtnContainer.innerHTML = ``; 
             loadStudentData();
         }
     }
 
-    // --- 3. LOAD ISSUES (Filtered) ---
-    function loadDashboardData(filter) {
+    function applyFilters(viewMode = null) {
+        const categoryVal = document.getElementById('category-filter').value;
+        const isResolvedView = viewMode === 'resolved_view' || document.querySelector('.sidebar-menu a[onclick*="resolved"]').classList.contains('active');
+
+        let issues = JSON.parse(localStorage.getItem('awkumComplaints')) || [];
+        
+        const filteredIssues = issues.filter(issue => {
+            const mainCategory = issue.category.split(':')[0].trim(); 
+            const matchesCategory = categoryVal === 'All' || mainCategory === categoryVal;
+            let matchesView = true;
+            if(isResolvedView) {
+                matchesView = (issue.status === 'Resolved');
+            }
+            return matchesCategory && matchesView;
+        });
+
+        renderTable(filteredIssues);
+        updateStats(issues); 
+    }
+
+    function renderTable(data) {
         const tableHead = document.getElementById('table-head');
         const tableBody = document.getElementById('table-body');
-        const totalDisplay = document.getElementById('total-count');
-        const pendingDisplay = document.getElementById('pending-count');
-        const resolvedDisplay = document.getElementById('resolved-count');
 
-        // Set Headers for Issues
+        // NAME COLUMN REMOVED FOR PRIVACY
         tableHead.innerHTML = `
             <tr>
                 <td>Category</td>
@@ -253,49 +295,52 @@
             </tr>
         `;
 
-        let issues = JSON.parse(localStorage.getItem('awkumComplaints')) || [];
-        
-        let total = 0, pending = 0, resolved = 0;
-        let htmlRows = '';
+        if (data.length === 0) {
+            tableBody.innerHTML = "<tr><td colspan='5' style='text-align:center;'>No records found matching filters.</td></tr>";
+            return;
+        }
 
+        let htmlRows = '';
+        data.slice().reverse().forEach((issue) => {
+            let btnHTML = '';
+            if (issue.status === 'Resolved') {
+                btnHTML = `<button class="action-btn" disabled>Done</button>`;
+            } else {
+                btnHTML = `<button class="action-btn" onclick="markAsResolved(${issue.id})">Mark Resolve</button>`;
+            }
+
+            const mainCategory = issue.category.split(':')[0].trim();
+
+            htmlRows += `
+                <tr>
+                    <td>
+                        <span class="status-dot ${mainCategory}"></span> 
+                        ${issue.category}
+                    </td>
+                    <td>${issue.location}</td>
+                    <td>${issue.description}</td>
+                    <td><span class="status ${issue.status.toLowerCase()}">${issue.status}</span></td>
+                    <td>${btnHTML}</td>
+                </tr>
+            `;
+        });
+
+        tableBody.innerHTML = htmlRows;
+    }
+
+    function updateStats(issues) {
+        let total = 0, pending = 0, resolved = 0;
         issues.forEach(i => {
             total++;
             if(i.status === 'Pending') pending++;
             if(i.status === 'Resolved') resolved++;
         });
-        let displayIssues = issues;
-        if (filter === 'resolved') {
-            displayIssues = issues.filter(i => i.status === 'Resolved');
-        }
 
-        if (displayIssues.length === 0) {
-            htmlRows = "<tr><td colspan='5' style='text-align:center;'>No records found.</td></tr>";
-        } else {
-            displayIssues.slice().reverse().forEach((issue) => {
-                let btnHTML = '';
-                if (issue.status === 'Resolved') {
-                    btnHTML = `<button class="action-btn" disabled>Done</button>`;
-                } else {
-                    btnHTML = `<button class="action-btn" onclick="markAsResolved(${issue.id})">Mark Resolve</button>`;
-                }
-
-                htmlRows += `
-                    <tr>
-                        <td><span class="status-dot ${issue.category}"></span> ${issue.category}</td>
-                        <td>${issue.location}</td>
-                        <td>${issue.description}</td>
-                        <td><span class="status ${issue.status.toLowerCase()}">${issue.status}</span></td>
-                        <td>${btnHTML}</td>
-                    </tr>
-                `;
-            });
-        }
-
-        tableBody.innerHTML = htmlRows;
-        totalDisplay.innerText = total;
-        pendingDisplay.innerText = pending;
-        resolvedDisplay.innerText = resolved;
+        document.getElementById('total-count').innerText = total;
+        document.getElementById('pending-count').innerText = pending;
+        document.getElementById('resolved-count').innerText = resolved;
     }
+
     function loadStudentData() {
         const tableHead = document.getElementById('table-head');
         const tableBody = document.getElementById('table-body');
@@ -309,7 +354,6 @@
             </tr>
         `;
 
-        // Mock Data
         const students = [
             { name: 'Ali Khan', reg: '19-AWKUM-CS-101', dept: 'Computer Science', email: 'ali@awkum.edu.pk', pass: '5f4dcc3b5aa765d61d8327deb882cf99' },
             { name: 'Sara Ahmed', reg: '20-AWKUM-ENG-045', dept: 'English', email: 'sara@awkum.edu.pk', pass: 'e10adc3949ba59abbe56e057f20f883e' },
@@ -332,25 +376,30 @@
 
         tableBody.innerHTML = htmlRows;
     }
+
     function markAsResolved(id) {
         let issues = JSON.parse(localStorage.getItem('awkumComplaints'));
         const issueIndex = issues.findIndex(i => i.id === id);
         if (issueIndex > -1) {
             issues[issueIndex].status = 'Resolved';
             localStorage.setItem('awkumComplaints', JSON.stringify(issues));
-            loadDashboardData('all');
+            applyFilters(); 
         }
     }
 
-    function clearAllData() {
-        if(confirm("Delete ALL reports? Cannot undo.")) {
-            localStorage.removeItem('awkumComplaints');
-            loadDashboardData('all');
-        }
+    function openModal() { document.getElementById('confirm-modal').style.display = 'flex'; }
+    function closeModal() { document.getElementById('confirm-modal').style.display = 'none'; }
+
+    function confirmClear() {
+        localStorage.removeItem('awkumComplaints');
+        applyFilters();
+        closeModal();
     }
+
     window.onload = function() {
-        loadDashboardData('all');
+        applyFilters();
     };
+    
     const menuBtn = document.querySelector('#menu-btn');
     const sidebar = document.querySelector('.sidebar');
     const mainContent = document.querySelector('.main-content');
