@@ -306,12 +306,11 @@
             </div>
         </div>
     </div>
-
     <script>
-        function handleSignup() {
+        async function handleSignup() {
             const fullname = document.getElementById('fullname').value;
             const regNo = document.getElementById('regNo').value;
-            const department = document.getElementById('department').value; // Get Department
+            const department = document.getElementById('department').value;
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
@@ -319,39 +318,51 @@
             const errorBox = document.getElementById('error-box');
             const successBox = document.getElementById('success-box');
 
-            // Reset messages
             errorBox.style.display = 'none';
             successBox.style.display = 'none';
 
-            // 1. Basic Empty Check (Added department check)
+            // Basic Validation
             if(!fullname || !regNo || !department || !email || !password || !confirmPassword) {
                 errorBox.innerText = "Please fill in all fields (including Department).";
                 errorBox.style.display = 'block';
                 return;
             }
 
-            // 2. Password Match Check
             if(password !== confirmPassword) {
                 errorBox.innerText = "Passwords do not match.";
                 errorBox.style.display = 'block';
                 return;
             }
 
-            // 3. Password Length Check
-            if(password.length < 6) {
-                errorBox.innerText = "Password must be at least 6 characters long.";
+            // Send to Backend
+            try {
+                const response = await fetch('http://localhost:5000/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        fullname, regNo, department, email, password
+                    })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    successBox.innerText = "Account created successfully! Redirecting...";
+                    successBox.style.display = 'block';
+                    document.getElementById('signupForm').reset();
+                    setTimeout(() => {
+                        window.location.href = "UserLogin.html"; // Redirect to login
+                    }, 2000);
+                } else {
+                    errorBox.innerText = result.error || "Registration failed.";
+                    errorBox.style.display = 'block';
+                }
+
+            } catch (error) {
+                console.error(error);
+                errorBox.innerText = "Cannot connect to server. Is the backend running?";
                 errorBox.style.display = 'block';
-                return;
             }
-
-            // 4. Success Simulation
-            successBox.innerText = "Account created successfully! Redirecting to login...";
-            successBox.style.display = 'block';
-
-            // Wait 2 seconds then go to login page
-            setTimeout(function(){
-                window.location.href = "login.html"; 
-            }, 2000);
         }
     </script>
 </body>

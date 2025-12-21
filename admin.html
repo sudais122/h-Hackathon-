@@ -340,43 +340,53 @@
         document.getElementById('pending-count').innerText = pending;
         document.getElementById('resolved-count').innerText = resolved;
     }
-
-    function loadStudentData() {
+    async function loadStudentData() {
         const tableHead = document.getElementById('table-head');
         const tableBody = document.getElementById('table-body');
+        
+        // Setup Table Headers
         tableHead.innerHTML = `
             <tr>
                 <td>Student Name</td>
                 <td>Reg No.</td>
                 <td>Department</td>
                 <td>Email</td>
-                <td>Password (Hash)</td>
+                <td>Password</td>
             </tr>
         `;
 
-        const students = [
-            { name: 'Ali Khan', reg: '19-AWKUM-CS-101', dept: 'Computer Science', email: 'ali@awkum.edu.pk', pass: '5f4dcc3b5aa765d61d8327deb882cf99' },
-            { name: 'Sara Ahmed', reg: '20-AWKUM-ENG-045', dept: 'English', email: 'sara@awkum.edu.pk', pass: 'e10adc3949ba59abbe56e057f20f883e' },
-            { name: 'Bilal Khan', reg: '21-AWKUM-MGT-012', dept: 'Management', email: 'bilal@awkum.edu.pk', pass: '202cb962ac59075b964b07152d234b70' },
-            { name: 'Ayesha Gul', reg: '19-AWKUM-BIO-099', dept: 'Biotechnology', email: 'ayesha@awkum.edu.pk', pass: '81dc9bdb52d04dc20036dbd8313ed055' }
-        ];
+        tableBody.innerHTML = "<tr><td colspan='5' style='text-align:center;'>Loading users...</td></tr>";
 
-        let htmlRows = '';
-        students.forEach(std => {
-            htmlRows += `
-                <tr>
-                    <td style="font-weight:bold;">${std.name}</td>
-                    <td>${std.reg}</td>
-                    <td>${std.dept}</td>
-                    <td>${std.email}</td>
-                    <td><span class="hash-code">${std.pass}</span></td>
-                </tr>
-            `;
-        });
+        try {
+            // Fetch users from server
+            const response = await fetch('http://localhost:5000/api/users');
+            const students = await response.json();
 
-        tableBody.innerHTML = htmlRows;
+            if (students.length === 0) {
+                tableBody.innerHTML = "<tr><td colspan='5' style='text-align:center;'>No registered students yet.</td></tr>";
+                return;
+            }
+
+            let htmlRows = '';
+            students.forEach(std => {
+                htmlRows += `
+                    <tr>
+                        <td style="font-weight:bold;">${std.fullname}</td>
+                        <td>${std.regNo}</td>
+                        <td>${std.department}</td>
+                        <td>${std.email}</td>
+                        <td><span class="hash-code">${std.password}</span></td>
+                    </tr>
+                `;
+            });
+
+            tableBody.innerHTML = htmlRows;
+
+        } catch (error) {
+            console.error(error);
+            tableBody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:red;'>Error connecting to server.</td></tr>";
+        }
     }
-
     function markAsResolved(id) {
         let issues = JSON.parse(localStorage.getItem('awkumComplaints'));
         const issueIndex = issues.findIndex(i => i.id === id);
