@@ -4,6 +4,8 @@ const multer = require('multer');
 const cors = require('cors');
 const fs = require('fs');
 
+// Note: bcrypt import removed
+
 const app = express();
 
 app.use(cors());
@@ -22,20 +24,30 @@ if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, 'uploads/'),
-    filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
+    filename: (req, file, cb) => cb(null, Date.now().toLocaleString() + '-' + file.originalname)
 });
 const upload = multer({ storage: storage });
 
 // --- ROUTES ---
 
-// 1. REGISTER
+// 1. REGISTER (Reverted to Plain Text)
 app.post('/api/register', async (req, res) => {
     try {
         const { fullname, regNo, department, email, password } = req.body;
+        
         const existingUser = await usersDb.findOne({ $or: [{ email: email }, { regNo: regNo }] });
         if (existingUser) return res.status(400).json({ error: "User already exists." });
 
-        const newUser = { fullname, regNo, department, email, password, role: "Student", joined: new Date().toLocaleString() };
+        const newUser = { 
+            fullname, 
+            regNo, 
+            department, 
+            email, 
+            password: password, // Storing exact password typed
+            role: "Student", 
+            joined: new Date().toLocaleString() 
+        };
+        
         await usersDb.insert(newUser);
         res.json({ message: "Registration Successful!" });
     } catch (error) {
@@ -43,11 +55,14 @@ app.post('/api/register', async (req, res) => {
     }
 });
 
-// 2. LOGIN
+// 2. LOGIN (Reverted to Simple Check)
 app.post('/api/login', async (req, res) => {
     try {
         const { email, password } = req.body;
+        
+        // Find user where BOTH email and password match
         const user = await usersDb.findOne({ email: email, password: password });
+        
         if (user) {
             res.json({ message: "Login Successful", user: user });
         } else {
@@ -71,7 +86,6 @@ app.post('/api/submit', upload.single('image'), async (req, res) => {
             imagePath: imagePath,
             status: "Pending",
             date: new Date().toLocaleString(),
-            timestamp: Date.now() 
         };
         const doc = await complaintsDb.insert(newComplaint); 
         res.json({ message: "Saved!", data: doc });
@@ -80,11 +94,10 @@ app.post('/api/submit', upload.single('image'), async (req, res) => {
     }
 });
 
-// 4. GET MY COMPLAINTS (This was likely missing!)
+// 4. GET MY COMPLAINTS
 app.get('/api/my-complaints', async (req, res) => {
     try {
         const userEmail = req.query.email;
-        // Find complaints where email matches the user
         const myIssues = await complaintsDb.find({ email: userEmail }).sort({ timestamp: -1 });
         res.json(myIssues);
     } catch (error) {
@@ -117,12 +130,27 @@ app.post('/api/update-status', async (req, res) => {
     } catch (error) { res.status(500).json({ error: error.message }); }
 });
 
-// 8. DELETE ALL (For Admin)
+// 8. DELETE ALL COMPLAINTS (For Admin)
 app.delete('/api/complaints', async (req, res) => {
     try {
         await complaintsDb.remove({}, { multi: true });
-        res.json({ message: "Deleted All" });
+        res.json({ message: "Deleted All Complaints" });
     } catch (error) { res.status(500).json({ error: error.message }); }
+});
+
+// 9. DELETE SINGLE USER
+app.delete('/api/users/:id', async (req, res) => {
+    try {
+        const userId = req.params.id;
+        const numRemoved = await usersDb.remove({ _id: userId }, {});
+        
+        if (numRemoved === 0) {
+            return res.status(404).json({ error: "User not found" });
+        }
+        res.json({ message: "User Deleted Successfully" });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
 app.listen(3001, () => {

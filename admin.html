@@ -92,6 +92,10 @@
     .action-btn:hover { background: var(--main-color); color: white; }
     .action-btn:disabled { background: #ccc; color: #666; border-color: #ccc; cursor: not-allowed; }
     
+    /* Delete Button Specific */
+    .btn-delete { color: #e74c3c; border-color: #e74c3c; }
+    .btn-delete:hover { background: #e74c3c; color: white; }
+
     .hash-code { font-family: monospace; background: #eee; padding: 2px 5px; border-radius: 4px; color: #555; }
     body.dark-mode .hash-code { background: #333; color: #ccc; }
 
@@ -258,7 +262,7 @@
             filterBar.style.display = 'none'; 
             tableTitle.innerText = "Registered Students";
             actionBtnContainer.innerHTML = ``; 
-            loadStudentData();
+            loadStudentData(); // Calls the function below
         }
     }
 
@@ -279,14 +283,10 @@
         tableBody.innerHTML = "<tr><td colspan='5' style='text-align:center;'>Loading data from server...</td></tr>";
 
         try {
-            // FETCH FROM SERVER
             const response = await fetch('http://localhost:3001/api/complaints');
             let issues = await response.json();
-            
-            // SORT: Newest First
             issues.reverse(); 
 
-            // FILTER LOCALLY
             const categoryVal = document.getElementById('category-filter').value;
             
             const filteredIssues = issues.filter(issue => {
@@ -300,16 +300,14 @@
                 return matchesCategory && matchesView;
             });
 
-            updateStats(issues); // Update numbers based on ALL data
+            updateStats(issues);
             renderTable(filteredIssues);
-
         } catch (error) {
             console.error(error);
-            tableBody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:red;'>Error connecting to server. Is backend running?</td></tr>";
+            tableBody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:red;'>Error connecting to server.</td></tr>";
         }
     }
 
-    // --- 2. RENDER TABLE ---
     function renderTable(data) {
         const tableBody = document.getElementById('table-body');
 
@@ -319,13 +317,11 @@
         }
 
         let htmlRows = '';
-        // REMOVED EXTRA REVERSE HERE TO AVOID FLIPPING BACK TO OLD
         data.forEach((issue) => {
             let btnHTML = '';
             if (issue.status === 'Resolved') {
                 btnHTML = `<button class="action-btn" disabled>Done</button>`;
             } else {
-                // Pass the specific database ID (_id)
                 btnHTML = `<button class="action-btn" onclick="markAsResolved('${issue._id}')">Mark Resolve</button>`;
             }
 
@@ -333,10 +329,7 @@
 
             htmlRows += `
                 <tr>
-                    <td>
-                        <span class="status-dot ${mainCategory}"></span> 
-                        ${issue.category}
-                    </td>
+                    <td><span class="status-dot ${mainCategory}"></span> ${issue.category}</td>
                     <td>${issue.location}</td>
                     <td>${issue.description}</td>
                     <td><span class="status ${issue.status.toLowerCase()}">${issue.status}</span></td>
@@ -348,7 +341,6 @@
         tableBody.innerHTML = htmlRows;
     }
 
-    // --- 3. MARK RESOLVED ON SERVER ---
     async function markAsResolved(id) {
         try {
             await fetch('http://localhost:3001/api/update-status', {
@@ -356,28 +348,19 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id: id, status: 'Resolved' })
             });
-            // Reload table to show changes
             loadComplaints(); 
-        } catch (error) {
-            alert("Failed to update status");
-        }
+        } catch (error) { alert("Failed to update status"); }
     }
 
-    // --- 4. CLEAR ALL ON SERVER ---
     async function confirmClear() {
         try {
-            const response = await fetch('http://localhost:3001/api/complaints', {
-                method: 'DELETE' // Call the DELETE route
-            });
-
+            const response = await fetch('http://localhost:3001/api/complaints', { method: 'DELETE' });
             if (response.ok) {
                 closeModal();
-                loadComplaints(); // Refresh table (it should be empty now)
+                loadComplaints(); 
                 alert("All complaints cleared from database!");
             }
-        } catch (error) {
-            alert("Failed to clear database.");
-        }
+        } catch (error) { alert("Failed to clear database."); }
     }
 
     function updateStats(issues) {
@@ -387,17 +370,17 @@
             if(i.status === 'Pending') pending++;
             if(i.status === 'Resolved') resolved++;
         });
-
         document.getElementById('total-count').innerText = total;
         document.getElementById('pending-count').innerText = pending;
         document.getElementById('resolved-count').innerText = resolved;
     }
 
-    // --- 5. LOAD STUDENTS ---
+    // --- 5. LOAD STUDENTS & DELETE LOGIC (UPDATED) ---
     async function loadStudentData() {
         const tableHead = document.getElementById('table-head');
         const tableBody = document.getElementById('table-body');
         
+        // 1. ADDED "Action" Column
         tableHead.innerHTML = `
             <tr>
                 <td>Student Name</td>
@@ -405,24 +388,24 @@
                 <td>Department</td>
                 <td>Email</td>
                 <td>Password</td>
+                <td>Action</td> 
             </tr>
         `;
-        tableBody.innerHTML = "<tr><td colspan='5' style='text-align:center;'>Loading users...</td></tr>";
+        tableBody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>Loading users...</td></tr>";
 
         try {
             const response = await fetch('http://localhost:3001/api/users');
             const students = await response.json();
-            
-            // SORT: Newest Student First
             students.reverse(); 
 
             if (students.length === 0) {
-                tableBody.innerHTML = "<tr><td colspan='5' style='text-align:center;'>No registered students yet.</td></tr>";
+                tableBody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>No registered students yet.</td></tr>";
                 return;
             }
 
             let htmlRows = '';
             students.forEach(std => {
+                // 2. ADDED Delete Button using std._id
                 htmlRows += `
                     <tr>
                         <td style="font-weight:bold;">${std.fullname}</td>
@@ -430,27 +413,48 @@
                         <td>${std.department}</td>
                         <td>${std.email}</td>
                         <td><span class="hash-code">${std.password}</span></td>
+                        <td>
+                            <button class="action-btn btn-delete" onclick="deleteUser('${std._id}')">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </td>
                     </tr>
                 `;
             });
             tableBody.innerHTML = htmlRows;
         } catch (error) {
-            tableBody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:red;'>Error connecting to server.</td></tr>";
+            tableBody.innerHTML = "<tr><td colspan='6' style='text-align:center; color:red;'>Error connecting to server.</td></tr>";
         }
     }
 
-    // Apply filters triggers reload
-    function applyFilters() {
-        loadComplaints();
+    // --- 6. DELETE USER FUNCTION (NEW) ---
+    async function deleteUser(userId) {
+        if(!confirm("Are you sure you want to delete this user? This cannot be undone.")) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:3001/api/users/${userId}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                alert("User deleted successfully");
+                loadStudentData(); // Refresh the list immediately
+            } else {
+                alert("Failed to delete user. Server Error.");
+            }
+        } catch (error) {
+            console.error(error);
+            alert("Error connecting to server.");
+        }
     }
 
+    function applyFilters() { loadComplaints(); }
     function openModal() { document.getElementById('confirm-modal').style.display = 'flex'; }
     function closeModal() { document.getElementById('confirm-modal').style.display = 'none'; }
 
-    // Initial Load
-    window.onload = function() {
-        loadComplaints();
-    };
+    window.onload = function() { loadComplaints(); };
     
     const menuBtn = document.querySelector('#menu-btn');
     const sidebar = document.querySelector('.sidebar');
