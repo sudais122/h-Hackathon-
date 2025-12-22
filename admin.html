@@ -57,7 +57,8 @@
     
     main { margin-top: 85px; padding: 2rem 1rem; background: #f1f5f9; min-height: calc(100vh - 90px); transition: background-color 0.3s; width: 100%; }
     
-    .cards { display: grid; grid-template-columns: repeat(3, 1fr); grid-gap: 2rem; cursor: pointer; }
+    .cards { display: grid; grid-template-columns: repeat(4, 1fr); grid-gap: 2rem; cursor: pointer; }
+    
     .card-single { display: flex; justify-content: space-between; background: #fff; padding: 2rem; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: transform 0.2s, background-color 0.3s; }
     .card-single div:last-child i { font-size: 2rem; color: var(--main-color); }
     
@@ -92,7 +93,6 @@
     .action-btn:hover { background: var(--main-color); color: white; }
     .action-btn:disabled { background: #ccc; color: #666; border-color: #ccc; cursor: not-allowed; }
     
-    /* Delete Button Specific */
     .btn-delete { color: #e74c3c; border-color: #e74c3c; }
     .btn-delete:hover { background: #e74c3c; color: white; }
 
@@ -159,7 +159,12 @@
                     <div><h1 id="resolved-count">0</h1><span>Resolved</span></div>
                     <div><i class="fas fa-check"></i></div>
                 </div>
+                <div class="card-single">
+                    <div><h1 id="user-count">0</h1><span>Total Students</span></div>
+                    <div><i class="fas fa-user-graduate"></i></div>
+                </div>
             </div>
+            
             <div class="recent-grid">
                 <div class="projects">
                     <div class="card">
@@ -210,6 +215,20 @@
         </div>
     </div>
 
+    <div id="delete-user-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header"><i class="fas fa-user-times"></i></div>
+            <div class="modal-body">
+                <h3>Remove Student?</h3>
+                <p>Are you sure you want to remove this student account? They will need to register again.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal btn-cancel" onclick="closeDeleteUserModal()">Cancel</button>
+                <button class="btn-modal btn-confirm" onclick="confirmDeleteUser()">Yes, Remove</button>
+            </div>
+        </div>
+    </div>
+
 <script>
     // --- THEME LOGIC ---
     const themeBtn = document.getElementById('theme-btn');
@@ -231,6 +250,9 @@
         }
     });
     
+    // --- GLOBAL VARIABLE FOR DELETING USER ---
+    let userToDeleteId = null;
+
     // --- VIEW SWITCHER ---
     function switchView(viewName, element) {
         if(element) {
@@ -249,6 +271,7 @@
             tableTitle.innerText = "All Campus Issues";
             actionBtnContainer.innerHTML = `<button onclick="openModal()" style="background: #e74c3c; border-color: #e74c3c; color: white;" class="action-btn">Clear All</button>`;
             loadComplaints('all'); 
+            fetchUserCount(); 
         } 
         else if (viewName === 'resolved') {
             statsCards.style.display = 'grid'; 
@@ -262,11 +285,11 @@
             filterBar.style.display = 'none'; 
             tableTitle.innerText = "Registered Students";
             actionBtnContainer.innerHTML = ``; 
-            loadStudentData(); // Calls the function below
+            loadStudentData();
         }
     }
 
-    // --- 1. LOAD COMPLAINTS FROM SERVER ---
+    // --- 1. LOAD COMPLAINTS ---
     async function loadComplaints(viewMode = 'all') {
         const tableHead = document.getElementById('table-head');
         const tableBody = document.getElementById('table-body');
@@ -305,6 +328,17 @@
         } catch (error) {
             console.error(error);
             tableBody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:red;'>Error connecting to server.</td></tr>";
+        }
+    }
+
+    // --- 2. FETCH USER COUNT ---
+    async function fetchUserCount() {
+        try {
+            const response = await fetch('http://localhost:3001/api/users');
+            const users = await response.json();
+            document.getElementById('user-count').innerText = users.length;
+        } catch (error) {
+            console.error("Error fetching user count:", error);
         }
     }
 
@@ -358,7 +392,7 @@
             if (response.ok) {
                 closeModal();
                 loadComplaints(); 
-                alert("All complaints cleared from database!");
+                alert("All complaints cleared!");
             }
         } catch (error) { alert("Failed to clear database."); }
     }
@@ -375,12 +409,11 @@
         document.getElementById('resolved-count').innerText = resolved;
     }
 
-    // --- 5. LOAD STUDENTS & DELETE LOGIC (UPDATED) ---
+    // --- LOAD STUDENTS TABLE ---
     async function loadStudentData() {
         const tableHead = document.getElementById('table-head');
         const tableBody = document.getElementById('table-body');
         
-        // 1. ADDED "Action" Column
         tableHead.innerHTML = `
             <tr>
                 <td>Student Name</td>
@@ -405,7 +438,6 @@
 
             let htmlRows = '';
             students.forEach(std => {
-                // 2. ADDED Delete Button using std._id
                 htmlRows += `
                     <tr>
                         <td style="font-weight:bold;">${std.fullname}</td>
@@ -414,7 +446,7 @@
                         <td>${std.email}</td>
                         <td><span class="hash-code">${std.password}</span></td>
                         <td>
-                            <button class="action-btn btn-delete" onclick="deleteUser('${std._id}')">
+                            <button class="action-btn btn-delete" onclick="openDeleteUserModal('${std._id}')">
                                 <i class="fas fa-trash"></i> Delete
                             </button>
                         </td>
@@ -427,20 +459,33 @@
         }
     }
 
-    // --- 6. DELETE USER FUNCTION (NEW) ---
-    async function deleteUser(userId) {
-        if(!confirm("Are you sure you want to delete this user? This cannot be undone.")) {
-            return;
-        }
+    // --- NEW: USER DELETE POPUP LOGIC ---
+
+    // 1. Open the Modal and store the ID
+    function openDeleteUserModal(id) {
+        userToDeleteId = id;
+        document.getElementById('delete-user-modal').style.display = 'flex';
+    }
+
+    // 2. Close the Modal and clear the ID
+    function closeDeleteUserModal() {
+        userToDeleteId = null;
+        document.getElementById('delete-user-modal').style.display = 'none';
+    }
+
+    // 3. Actually Delete (When "Yes" is clicked)
+    async function confirmDeleteUser() {
+        if (!userToDeleteId) return;
 
         try {
-            const response = await fetch(`http://localhost:3001/api/users/${userId}`, {
+            const response = await fetch(`http://localhost:3001/api/users/${userToDeleteId}`, {
                 method: 'DELETE'
             });
 
             if (response.ok) {
-                alert("User deleted successfully");
-                loadStudentData(); // Refresh the list immediately
+                closeDeleteUserModal();
+                loadStudentData(); // Refresh table
+                fetchUserCount();  // Refresh count
             } else {
                 alert("Failed to delete user. Server Error.");
             }
@@ -450,11 +495,16 @@
         }
     }
 
+    // --- GENERAL MODAL LOGIC (For Clear All) ---
     function applyFilters() { loadComplaints(); }
     function openModal() { document.getElementById('confirm-modal').style.display = 'flex'; }
     function closeModal() { document.getElementById('confirm-modal').style.display = 'none'; }
 
-    window.onload = function() { loadComplaints(); };
+    // On Load
+    window.onload = function() { 
+        loadComplaints(); 
+        fetchUserCount();
+    };
     
     const menuBtn = document.querySelector('#menu-btn');
     const sidebar = document.querySelector('.sidebar');

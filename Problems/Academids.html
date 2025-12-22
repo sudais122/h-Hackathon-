@@ -12,6 +12,7 @@
             --light: #f4f4f4;
             --white: #ffffff;
             --accent: #e74c3c;
+            --success: #27ae60; /* Green for success */
         }
         * {
             margin: 0;
@@ -23,6 +24,30 @@
         body {
             background-color: var(--light);
             color: #333;
+        }
+
+        /* --- NEW: SUCCESS POPUP STYLES --- */
+        #success-popup {
+            position: fixed;
+            top: -80px; /* Hidden above the screen */
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--success);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            font-weight: bold;
+            font-size: 1rem;
+            z-index: 2000; /* On top of everything */
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: top 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* Bouncy effect */
+        }
+        
+        #success-popup.show {
+            top: 30px; /* Slides down to this position */
         }
 
         /* --- HEADER --- */
@@ -94,7 +119,7 @@
             padding: 40px 10%;
             max-width: 1200px;
             margin: 0 auto;
-            align-items: flex-start; /* Aligns columns to top */
+            align-items: flex-start; 
         }
 
         /* --- FORM SECTION --- */
@@ -171,7 +196,7 @@
         .form-wrapper h2{ color: var(--dark); } 
 
         /* Tag Colors */
-        .tag.academic { background-color: #8e44ad; } /* Purple for Academic */
+        .tag.academic { background-color: #8e44ad; } 
         .tag.other { background-color: #95a5a6; }
 
         .issue-card h3 { font-size: 1.1rem; margin-bottom: 5px; }
@@ -223,7 +248,6 @@
         }
         body.dark-mode #theme-btn { color: #fbbf24; }
         
-        /* RESPONSIVE */
         @media (max-width: 768px) {
             header { flex-direction: column; padding: 15px !important; text-align: center; }
             .logo { margin-bottom: 15px; }
@@ -231,11 +255,17 @@
             .hero { height: 250px; }
             .hero h1 { font-size: 1.8rem; }
             .container { padding: 20px 5%; }
-            #feed-container { max-height: none !important; } /* Reset scroll on mobile */
+            #feed-container { max-height: none !important; }
         }
     </style>
 </head>
 <body>
+    
+    <div id="success-popup">
+        <i class="fas fa-check-circle"></i> 
+        <span>Complaint Submitted Successfully!</span>
+    </div>
+
     <header>
         <div class="logo">
             <i class="fas fa-university"></i> FixIt <span>AWKUM</span>
@@ -291,16 +321,14 @@
     <footer>
         <p>&copy; 2025 FixIt AWKUM | Built for the Students of Mardan</p>
     </footer>
+
     <script>
-        // --- 1. AUTHENTICATION CHECK ---
         const user = JSON.parse(localStorage.getItem('currentUser'));
         
-        // If not logged in, go back to Login page
         if (!user) {
             window.location.href = "UserLogin.html";
         }
 
-        // --- 2. DARK MODE LOGIC ---
         const themeBtn = document.getElementById('theme-btn');
         const body = document.body;
 
@@ -322,10 +350,20 @@
             });
         }
 
-        // --- 3. LOAD FEED FROM SERVER ---
         document.addEventListener('DOMContentLoaded', loadFeed);
 
-        // --- 4. SUBMIT TO SERVER (BACKEND) ---
+        // --- NEW: FUNCTION TO SHOW POPUP ---
+        function showSuccessPopup() {
+            const popup = document.getElementById('success-popup');
+            // 1. Slide Down
+            popup.classList.add('show');
+
+            // 2. Wait 2 seconds (2000ms), then Slide Up
+            setTimeout(() => {
+                popup.classList.remove('show');
+            }, 2000);
+        }
+
         document.getElementById('issueForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -333,34 +371,30 @@
             submitBtn.innerText = "Sending...";
             submitBtn.disabled = true;
 
-            // Get Form Data
             const subCategory = document.getElementById('category').value; 
             const location = document.getElementById('location').value;
             const rawDesc = document.getElementById('desc').value;
 
-            // CHANGE THIS PREFIX FOR OTHER PAGES (e.g., "Hostel: ", "Transport: ")
             const formattedCategory = `Academic: ${subCategory}`;
 
-            // Prepare Data for Server
             const formData = new FormData();
-            formData.append('email', user.email); // Link complaint to logged-in user
+            formData.append('email', user.email);
             formData.append('category', formattedCategory);
             formData.append('location', location);
             formData.append('description', rawDesc);
-            // If you add an image input later, append it here:
-            // formData.append('image', document.getElementById('image').files[0]);
 
             try {
-                // SEND TO PORT 3001
                 const response = await fetch('http://localhost:3001/api/submit', {
                     method: 'POST',
                     body: formData
                 });
 
                 if (response.ok) {
-                    alert("✅ Report Submitted Successfully!");
+                    // --- CHANGED: Call Popup instead of Alert ---
+                    showSuccessPopup();
+                    
                     document.getElementById('issueForm').reset();
-                    loadFeed(); // Refresh list from server
+                    loadFeed();
                 } else {
                     alert("❌ Failed to submit. Server error.");
                 }
@@ -373,20 +407,16 @@
             submitBtn.disabled = false;
         });
 
-        // --- 5. RENDER LIST FROM SERVER ---
         async function loadFeed() {
             const feedContainer = document.getElementById('feed-container');
             feedContainer.innerHTML = "<p style='text-align:center;'>Loading reports...</p>";
 
             try {
-                // Fetch ALL complaints from database
                 const response = await fetch(`http://localhost:3001/api/my-complaints?email=${user.email}`);;
                 const allComplaints = await response.json();
 
-                // CHANGE THIS FILTER FOR OTHER PAGES ('Hostel', 'Transport')
                 const pageCategory = 'Academic'; 
                 
-                // Filter: Show only Academic issues
                 const filteredIssues = allComplaints.filter(issue => issue.category.startsWith(pageCategory));
 
                 feedContainer.innerHTML = "";
@@ -396,9 +426,7 @@
                     return;
                 }
 
-                // Display Filtered Issues
                 filteredIssues.forEach(issue => {
-                    // Create formatted Date/Time
                     const dateObj = new Date(issue.date);
                     const dateStr = dateObj.toLocaleDateString();
                     const timeStr = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });

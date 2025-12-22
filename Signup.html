@@ -216,7 +216,7 @@
 
                     <div class="input-group">
                         <i class="fas fa-id-card"></i>
-                        <input type="text" id="regNo" placeholder="Reg. No (e.g., 19-AWKUM-CS...)" required>
+                        <input type="text" id="regNo" placeholder="Reg. No" required>
                     </div>
 
                     <div class="input-group full-width">
@@ -306,67 +306,82 @@
             </div>
         </div>
     </div>
-    <script>
-        async function handleSignup() {
-            const fullname = document.getElementById('fullname').value;
-            const regNo = document.getElementById('regNo').value;
-            const department = document.getElementById('department').value;
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            
-            const errorBox = document.getElementById('error-box');
-            const successBox = document.getElementById('success-box');
+<script>
+    async function handleSignup() {
+        const fullname = document.getElementById('fullname').value;
+        const regNo = document.getElementById('regNo').value;
+        const department = document.getElementById('department').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        
+        const errorBox = document.getElementById('error-box');
+        const successBox = document.getElementById('success-box');
 
-            errorBox.style.display = 'none';
-            successBox.style.display = 'none';
+        errorBox.style.display = 'none';
+        successBox.style.display = 'none';
 
-            // Basic Validation
-            if(!fullname || !regNo || !department || !email || !password || !confirmPassword) {
-                errorBox.innerText = "Please fill in all fields (including Department).";
-                errorBox.style.display = 'block';
-                return;
-            }
-
-            if(password !== confirmPassword) {
-                errorBox.innerText = "Passwords do not match.";
-                errorBox.style.display = 'block';
-                return;
-            }
-
-            // Send to Backend
-            try {
-                const response = await fetch('http://localhost:3001/api/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        fullname, regNo, department, email, password
-                    })
-                });
-
-                const result = await response.json();
-
-if (response.ok) {
-                    successBox.innerText = "Account created successfully! Redirecting...";
-                    successBox.style.display = 'block';
-                    document.getElementById('signupForm').reset();
-                    
-                    // 2000 = 2 seconds. Change to 1000 if you want 1 second.
-                    setTimeout(() => {
-                        window.location.href = "UserLogin.html"; 
-                    }, 3000); 
-                    
-                } else {
-                    errorBox.innerText = result.error || "Registration failed.";
-                    errorBox.style.display = 'block';
-                }
-
-            } catch (error) {
-                console.error(error);
-                errorBox.innerText = "Cannot connect to server. Is the backend running?";
-                errorBox.style.display = 'block';
-            }
+        // 1. Check for Empty Fields
+        if(!fullname || !regNo || !department || !email || !password || !confirmPassword) {
+            errorBox.innerText = "Please fill in all fields (including Department).";
+            errorBox.style.display = 'block';
+            return;
         }
-    </script>
+
+        // 2. NEW: Registration Number Check (Exactly 9 Digits/Characters)
+        if (regNo.length !== 9) {
+            errorBox.innerText = "Registration Number Invalid.";
+            errorBox.style.display = 'block';
+            return;
+        }
+
+        // 3. Email Format Validation
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(email)) {
+            errorBox.innerText = "Please enter a valid email address.";
+            errorBox.style.display = 'block';
+            return;
+        }
+
+        // 4. Password Match Check
+        if(password !== confirmPassword) {
+            errorBox.innerText = "Passwords do not match.";
+            errorBox.style.display = 'block';
+            return;
+        }
+
+        // 5. Send to Backend
+        try {
+            const response = await fetch('http://localhost:3001/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    fullname, regNo, department, email, password
+                })
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                successBox.innerText = "Account created successfully! Redirecting...";
+                successBox.style.display = 'block';
+                document.getElementById('signupForm').reset();
+                
+                setTimeout(() => {
+                    window.location.href = "UserLogin.html"; 
+                }, 3000); 
+                
+            } else {
+                errorBox.innerText = result.error || "Registration failed.";
+                errorBox.style.display = 'block';
+            }
+
+        } catch (error) {
+            console.error(error);
+            errorBox.innerText = "Cannot connect to server. Is the backend running?";
+            errorBox.style.display = 'block';
+        }
+    }
+</script>
 </body>
 </html>
