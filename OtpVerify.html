@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Email - FixIt AWKUM</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+        :root { --primary-color: #BD2426; --bg-color: #f0f2f5; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: var(--bg-color); height: 100vh; display: flex; justify-content: center; align-items: center; }
+        
+        .otp-container { background: #fff; width: 500px; padding: 40px; border-radius: 20px; box-shadow: 0 15px 30px rgba(0,0,0,0.1); text-align: center; }
+        .otp-icon { font-size: 3rem; color: var(--primary-color); margin-bottom: 20px; }
+        h2 { margin-bottom: 10px; color: #333; }
+        p { color: #666; font-size: 0.9rem; margin-bottom: 30px; }
+        
+        .otp-inputs { display: flex; justify-content: center; gap: 10px; margin-bottom: 30px; }
+        .otp-inputs input { width: 50px; height: 55px; text-align: center; font-size: 1.5rem; border: 2px solid #ddd; border-radius: 10px; outline: none; font-weight: bold; transition: 0.3s; }
+        .otp-inputs input:focus { border-color: var(--primary-color); background: #fff5f5; }
+        
+        .btn-verify { width: 100%; padding: 12px; background-color: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 1rem; }
+        .btn-verify:hover { opacity: 0.9; }
+        
+        .message-box { padding: 10px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 20px; display: none; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    </style>
+</head>
+<body>
+
+    <div class="otp-container">
+        <div class="otp-icon"><i class="fas fa-envelope-open-text"></i></div>
+        <h2>Verify Your Email</h2>
+        <p>We sent a 6-digit code to <br><strong id="user-email">...</strong></p>
+
+        <div id="otp-error" class="message-box error"></div>
+        <div id="otp-success" class="message-box success"></div>
+
+        <div class="otp-inputs">
+            <input type="text" maxlength="1" oninput="moveToNext(this, 1)" onkeydown="handleBackspace(event, 0)">
+            <input type="text" maxlength="1" oninput="moveToNext(this, 2)" onkeydown="handleBackspace(event, 1)">
+            <input type="text" maxlength="1" oninput="moveToNext(this, 3)" onkeydown="handleBackspace(event, 2)">
+            <input type="text" maxlength="1" oninput="moveToNext(this, 4)" onkeydown="handleBackspace(event, 3)">
+            <input type="text" maxlength="1" oninput="moveToNext(this, 5)" onkeydown="handleBackspace(event, 4)">
+            <input type="text" maxlength="1" oninput="moveToNext(this, 6)" onkeydown="handleBackspace(event, 5)">
+        </div>
+
+        <button class="btn-verify" onclick="verifyCode()">Verify & Create Account</button>
+        <div style="margin-top: 20px;">
+            <a href="Signup.html" style="color: #666; font-size: 0.9rem;">Wrong email? Go Back</a>
+        </div>
+    </div>
+
+    <script>
+        // 1. Load Data from Session Storage
+        const tempUser = JSON.parse(sessionStorage.getItem('tempUser'));
+
+        // If no data found (user tried to skip step 1), send them back
+        if (!tempUser || !tempUser.email) {
+            window.location.href = "Signup.html";
+        } else {
+            document.getElementById('user-email').innerText = tempUser.email;
+        }
+
+        async function verifyCode() {
+            // Collect code
+            const inputs = document.querySelectorAll('.otp-inputs input');
+            let otpCode = "";
+            inputs.forEach(input => otpCode += input.value);
+
+            const errorBox = document.getElementById('otp-error');
+            const successBox = document.getElementById('otp-success');
+            const btn = document.querySelector('.btn-verify');
+
+            errorBox.style.display = 'none';
+
+            // Log data for debugging (Check F12 -> Console)
+            console.log("OTP Entered:", otpCode);
+
+            if (otpCode.length !== 6) {
+                errorBox.innerText = "Please enter the full 6-digit code.";
+                errorBox.style.display = 'block';
+                return;
+            }
+
+            btn.innerText = "Verifying...";
+            btn.disabled = true;
+
+            // Combine User Data + OTP
+            const finalData = { 
+                fullname: tempUser.fullname,
+                regNo: tempUser.regNo,
+                department: tempUser.department,
+                email: tempUser.email,
+                password: tempUser.password,
+                otp: otpCode 
+            };
+
+            console.log("Sending Payload:", finalData); // Verify this matches what server expects
+
+            try {
+                const response = await fetch('http://localhost:3001/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(finalData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    successBox.innerText = "✅ Success! Redirecting to Login...";
+                    successBox.style.display = 'block';
+                    sessionStorage.removeItem('tempUser'); // Clear temp data
+                    
+                    setTimeout(() => {
+                        window.location.href = "UserLogin.html";
+                    }, 2000);
+                } else {
+                    errorBox.innerText = result.error || "Invalid Code.";
+                    errorBox.style.display = 'block';
+                    btn.innerText = "Verify & Create Account";
+                    btn.disabled = false;
+                }
+            } catch (error) {
+                console.error(error);
+                errorBox.innerText = "Connection Failed. Is backend running?";
+                errorBox.style.display = 'block';
+                btn.innerText = "Verify & Create Account";
+                btn.disabled = false;
+            }
+        }
+
+        // --- BETTER INPUT LOGIC (Auto-Focus + Backspace) ---
+        function moveToNext(field, index) {
+            if (field.value.length >= 1) {
+                const nextInput = document.querySelectorAll('.otp-inputs input')[index];
+                if (nextInput) nextInput.focus();
+            }
+        }
+
+        function handleBackspace(event, index) {
+            if (event.key === "Backspace") {
+                const inputs = document.querySelectorAll('.otp-inputs input');
+                if (inputs[index].value === "" && index > 0) {
+                    inputs[index - 1].focus();
+                }
+            }
+        }
+    </script>
+</body>
+</html>

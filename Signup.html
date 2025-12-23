@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Account - AWKUM Voice</title>
-    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
@@ -86,18 +85,6 @@
             display: none;
             text-align: center;
         }
-        
-        .success-message {
-            background-color: #d4edda;
-            color: #155724;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #c3e6cb;
-            font-size: 0.85rem;
-            margin-bottom: 20px;
-            display: none;
-            text-align: center;
-        }
 
         /* Inputs Grid */
         .form-grid {
@@ -133,7 +120,6 @@
             transition: border 0.3s;
             font-size: 0.9rem;
             background: white;
-            /* Fix for text overflow in select */
             text-overflow: ellipsis;
         }
 
@@ -141,7 +127,6 @@
             border-color: var(--primary-color);
         }
 
-        /* Group Heading Style inside Select */
         optgroup {
             font-weight: bold;
             color: var(--primary-color);
@@ -176,6 +161,7 @@
             height: 75px;
         }
         .btn-signup:hover { opacity: 0.9; }
+        .btn-signup:disabled { background-color: #ccc; cursor: not-allowed; }
 
         .footer-text { margin-top: 20px; font-size: 0.85rem; text-align: center; }
         .footer-text a { color: var(--primary-color); text-decoration: none; font-weight: bold; }
@@ -205,7 +191,6 @@
             <p class="text-muted">Fill in your details to get started</p>
             
             <div id="error-box" class="error-message"></div>
-            <div id="success-box" class="success-message"></div>
 
             <form id="signupForm">
                 <div class="form-grid">
@@ -297,8 +282,7 @@
                         <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
                     </div>
                 </div>
-
-                <button type="button" class="btn-signup" onclick="handleSignup()">Register</button>
+                <button type="button" class="btn-signup" onclick="handleNextStep()">Next Step <i class="fas fa-arrow-right"></i></button>
             </form>
 
             <div class="footer-text">
@@ -306,8 +290,10 @@
             </div>
         </div>
     </div>
+
 <script>
-    async function handleSignup() {
+    // --- UPDATED SCRIPT: SEND OTP ONLY ---
+    async function handleNextStep() {
         const fullname = document.getElementById('fullname').value;
         const regNo = document.getElementById('regNo').value;
         const department = document.getElementById('department').value;
@@ -316,26 +302,23 @@
         const confirmPassword = document.getElementById('confirmPassword').value;
         
         const errorBox = document.getElementById('error-box');
-        const successBox = document.getElementById('success-box');
+        const btn = document.querySelector('.btn-signup');
 
         errorBox.style.display = 'none';
-        successBox.style.display = 'none';
 
-        // 1. Check for Empty Fields
+        // 1. Validation
         if(!fullname || !regNo || !department || !email || !password || !confirmPassword) {
-            errorBox.innerText = "Please fill in all fields (including Department).";
+            errorBox.innerText = "Please fill in all fields.";
             errorBox.style.display = 'block';
             return;
         }
 
-        // 2. NEW: Registration Number Check (Exactly 9 Digits/Characters)
         if (regNo.length !== 9) {
             errorBox.innerText = "Registration Number Invalid.";
             errorBox.style.display = 'block';
             return;
         }
 
-        // 3. Email Format Validation
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailPattern.test(email)) {
             errorBox.innerText = "Please enter a valid email address.";
@@ -343,43 +326,47 @@
             return;
         }
 
-        // 4. Password Match Check
         if(password !== confirmPassword) {
             errorBox.innerText = "Passwords do not match.";
             errorBox.style.display = 'block';
             return;
         }
 
-        // 5. Send to Backend
+        // 2. SEND OTP REQUEST (This was missing in your code)
+        btn.innerText = "Sending Code...";
+        btn.disabled = true;
+
         try {
-            const response = await fetch('http://localhost:3001/api/register', {
+            // NOTE: Calling 'send-otp' NOT 'register'
+            const response = await fetch('http://localhost:3001/api/send-otp', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    fullname, regNo, department, email, password
-                })
+                body: JSON.stringify({ email, fullname })
             });
 
             const result = await response.json();
 
             if (response.ok) {
-                successBox.innerText = "Account created successfully! Redirecting...";
-                successBox.style.display = 'block';
-                document.getElementById('signupForm').reset();
+                // 3. Save User Data Temporarily in Browser Storage
+                const userData = { fullname, regNo, department, email, password };
+                sessionStorage.setItem('tempUser', JSON.stringify(userData));
                 
-                setTimeout(() => {
-                    window.location.href = "UserLogin.html"; 
-                }, 3000); 
+                // 4. Redirect to OTP Verification Page
+                window.location.href = "OtpVerify.html"; 
                 
             } else {
-                errorBox.innerText = result.error || "Registration failed.";
+                errorBox.innerText = result.error || "Failed to send code.";
                 errorBox.style.display = 'block';
+                btn.innerText = "Next Step";
+                btn.disabled = false;
             }
 
         } catch (error) {
             console.error(error);
             errorBox.innerText = "Cannot connect to server. Is the backend running?";
             errorBox.style.display = 'block';
+            btn.innerText = "Next Step";
+            btn.disabled = false;
         }
     }
 </script>
