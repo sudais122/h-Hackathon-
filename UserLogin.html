@@ -20,16 +20,15 @@
         .input-group input { width: 100%; padding: 12px 15px 12px 45px; border: 1px solid #ddd; border-radius: 8px; outline: none; transition: border 0.3s; }
         .input-group input:focus { border-color: var(--primary-color); }
         
-        /* --- NEW: Action Container for Button & Link --- */
         .form-actions {
             display: flex;
-            justify-content: space-between; /* Pushes items to opposite sides */
+            justify-content: space-between;
             align-items: center;
             margin-top: 20px;
         }
 
         .btn-student { 
-            width: 30%; /* Half width */
+            width: 30%; 
             padding: 10px; 
             background-color: var(--primary-color); 
             color: white; 
@@ -46,6 +45,7 @@
             text-decoration: none; 
             font-size: 0.95rem; 
             font-weight: 500;
+            cursor: pointer;
         }
 
         .btn-student:hover { opacity: 0.9; }
@@ -59,8 +59,8 @@
     <div class="login-container">  
         <div class="login-header">
             <div><img src="Imges/Logo.jpeg" alt=""></div>
-            <h2>FixIt AWKUM</h2>
-            <p>Empowering students to solve campus problems.</p>
+            <h2 style="color: white;">FixIt AWKUM</h2>
+            <p style="color: white;">Empowering students to solve campus problems.</p>
         </div>
 
         <div class="login-form">
@@ -81,7 +81,7 @@
 
                 <div class="form-actions">
                     <button type="button" class="btn-student" onclick="handleLogin()">Login</button>
-                    <a href="ResetPassword.html" class="forgot-link">Forgot Password?</a>
+                    <a href="javascript:void(0)" onclick="handleForgotPassword()" class="forgot-link">Forgot Password?</a>
                 </div>
             </form>
 
@@ -92,6 +92,63 @@
     </div>
 
     <script>
+        // --- 1. NEW LOGIC: CHECK DATABASE FOR EMAIL ---
+        async function handleForgotPassword() {
+            const email = document.getElementById('email').value.trim();
+            const errorBox = document.getElementById('error-box');
+            const link = document.querySelector('.forgot-link');
+
+            errorBox.style.display = 'none';
+
+            // 1. Check if empty
+            if (!email) {
+                errorBox.innerText = "Please enter your email address first to reset password.";
+                errorBox.style.display = 'block';
+                return;
+            }
+
+            // 2. UI Feedback (Let user know we are checking)
+            const originalText = link.innerText;
+            link.innerText = "Checking...";
+            link.style.pointerEvents = "none"; // Prevent double clicking
+
+            try {
+                // 3. Call Backend to Check User & Send OTP
+                const response = await fetch('http://localhost:3001/api/forgot-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    // Success! Email exists and OTP sent.
+                    // Save email for the next page and redirect.
+                    sessionStorage.setItem('resetEmail', email);
+                    window.location.href = "ResetPassword.html"; 
+                } else {
+                    // Fail! (e.g. "No account found with this email")
+                    errorBox.innerText = result.error || "This email is not registered.";
+                    errorBox.style.display = 'block';
+                    
+                    // Reset link text
+                    link.innerText = originalText;
+                    link.style.pointerEvents = "auto";
+                }
+
+            } catch (error) {
+                console.error(error);
+                errorBox.innerText = "Cannot connect to server.";
+                errorBox.style.display = 'block';
+                
+                // Reset link text
+                link.innerText = originalText;
+                link.style.pointerEvents = "auto";
+            }
+        }
+
+        // --- 2. EXISTING LOGIN LOGIC ---
         async function handleLogin() {
             const emailField = document.getElementById('email');
             const passField = document.getElementById('password');
@@ -114,7 +171,6 @@
             }
 
             try {
-                // SEND TO SERVER (Port 3001)
                 const response = await fetch('http://localhost:3001/api/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -126,11 +182,9 @@
                 if (response.ok) {
                     btn.innerText = "Success!";
                     btn.style.background = "#28a745";
-                    
-                    // SAVE USER INFO & REDIRECT
                     localStorage.setItem('currentUser', JSON.stringify(result.user));
                     setTimeout(() => {
-                        window.location.href = "Problems.html"; // Redirect to Dashboard
+                        window.location.href = "Problems.html"; 
                     }, 1000);
                 } else {
                     errorBox.innerText = result.error || "Invalid Credentials";
