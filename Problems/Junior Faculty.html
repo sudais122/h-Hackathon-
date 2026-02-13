@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cafeteria Issues</title>
+    <title>Junior Faculty</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -108,7 +108,7 @@
             height: fit-content; /* Critical for calculating height */
         }
 
-        .form-wrapper h2 { margin-bottom: 20px; color: var(--dark); }
+        .form-wrapper h2 { margin-bottom: 20px; color: var(--dark); display: flex; align-items: center; gap: 1rem;}
 
         .input-group { margin-bottom: 15px; }
         .input-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; }
@@ -250,49 +250,59 @@
     </header>
 
     <section class="hero">
-        <h1>Cafeteria & Food Issues</h1>
-        <p>Report issues regarding food quality, hygiene, pricing, staff behavior, or seating.</p>
+        <h1>Junior Faculty Complaint Portal</h1>
+        <p>Secure reporting for Lecturers and Visiting Staff. Your identity remains a secret.</p>
         <a href="#report" class="cta-button">File a Complaint Now</a>
     </section>
 
     <div class="container" id="report">
         
         <div class="form-wrapper">
-            <h2><i class="fas fa-bullhorn"></i> Report Cafeteria Issue</h2>
+            <h2><i class="fas fa-bullhorn"></i>Submit Official Complaint</h2>
             <form id="issueForm">
+            <div class="input-group">
+                <label>Junior Faculty Member</label>
+                <select id="category" required>
+                    <option value="">Select Lecturer / Visiting Staff</option>   
+                    <optgroup label="Permanent Lecturers">
+                        <option value="Aftab Ahmed Khan">Mr. Aftab Ahmed Khan (Lecturer)</option>
+                        <option value="Shahzad">Mr. Shahzad (Lecturer)</option>
+                        <option value="N. Azim">Mr. Nazia Azim (Lecturer)</option>
+                        <option value="Roohullah Syed">Mr. Roohullah Syed (Lecturer)</option>
+                        <option value="Amir Akbar">Mr. Amir Akbar (Lecturer)</option>
+                    </optgroup>
+                    <optgroup label="Visiting Faculty">
+                        <option value="Visiting Faculty Member">Visiting Faculty (Not listed above)</option>
+                    </optgroup>
+                    <option value="Other">Other / Not Listed</option>
+                </select>
+            </div>
                 <div class="input-group">
-                    <label>Category</label>
-                    <select id="category" required>
-                        <option value="">Select Category...</option>
-                        <option value="Food Quality">Food Quality / Taste</option>
-                        <option value="Hygiene Issue">Hygiene / Cleanliness</option>
-                        <option value="High Prices">High Prices / Overcharging</option>
-                        <option value="Staff Behavior">Staff Behavior</option>
-                        <option value="Seating Shortage">Seating Shortage</option>
-                        <option value="Water Availability">Water Availability</option>
-                        <option value="Other">Other</option>
+                    <label>Nature of problem</label>
+                    <select name="nature of problem" id="nature" required>
+                        <option value="">What is the main concern?</option>
+                        <option value="Course Coverage">Course Coverage (Syllabus not being finished)</option>
+                        <option value="Teaching Method">Teaching Methodology</option>
+                        <option value="Behavioral">Professional Behavior/Conduct</option>
+                        <option value="Grading/Assessment">Grading or Assignment Feedback</option>
+                        <option value="Availability">Teacher Availability/Punctuality</option>
+                        <option value="other">other</option>
                     </select>
-                </div>
-                <div class="input-group">
-                    <label>Location (e.g., Main Cafeteria, Kiosk A)</label>
-                    <input type="text" id="location" placeholder="Where is the problem?" required>
                 </div>
                 <div class="input-group">
                     <label>Description</label>
                     <textarea id="desc" rows="5" placeholder="Describe the issue in detail..." required></textarea>
                 </div>
-                <button type="submit" class="submit-btn">Submit Report</button>
+                <button type="submit" class="submit-btn">Submit Commplain</button>
             </form>
         </div>
-
         <div class="issues-list">
             <h2>Recent Cafeteria Reports</h2>
             <div id="feed-container"></div>
         </div>
     </div>
-
     <footer>
-        <p>&copy; 2025 FixIt AWKUM | Built for the Students of Mardan</p>
+        <p>&copy; 2026 FixIt AWKUM | Built for the Students of Department of Computer Science</p>
     </footer>
 <script>
         // --- 1. AUTHENTICATION CHECK ---

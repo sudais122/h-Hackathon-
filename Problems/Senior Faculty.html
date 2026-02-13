@@ -133,7 +133,7 @@
             height: fit-content;
         }
 
-        .form-wrapper h2 { margin-bottom: 20px; color: var(--dark); }
+        .form-wrapper h2 { margin-bottom: 20px; color: var(--dark);    gap: 1rem;display: flex;align-items: center; }
 
         .input-group { margin-bottom: 15px; }
         .input-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; }
@@ -278,37 +278,49 @@
     </header>
 
     <section class="hero">
-        <h1>Facing Academic Challenges?</h1>
-        <p>Facing problems with courses, grading, or teaching? Report your concern anonymously.</p>
+        <h1>Senior Faculty Complaint Portal</h1>
+        <p>Report professional misconduct, teaching negligence, or grading unfairness.</p>
         <a href="#report" class="cta-button">File a Complaint Now</a>
     </section>
 
     <div class="container" id="report">
         
         <div class="form-wrapper">
-            <h2><i class="fas fa-bullhorn"></i> Report Academic Issue</h2>
+            <h2><i class="fas fa-bullhorn"></i>Submit Official Complaint</h2>
             <form id="issueForm">
                 <div class="input-group">
                     <label>Category</label>
                     <select id="category" required>
-                        <option value="">Select Category...</option>
-                        <option value="Teaching Quality">Teaching Quality</option>
-                        <option value="Unfair Grading">Unfair Grading</option>
-                        <option value="Course Overload">Course Overload</option>
-                        <option value="Classroom Facilities">Classroom Facilities</option>
-                        <option value="Exam Scheduling">Exam Scheduling</option>
-                        <option value="Other">Other</option>
+                        <option value="">Select Senior Faculty Member</option>
+                        <optgroup label="Professors">
+                            <option value="Dr. Sher Afzal">Dr. Sher Afzal</option>
+                            <option value="Dr. Rahim Khan">Dr. Rahim Khan</option>
+                        </optgroup>
+                        <optgroup label="Assistant Professors">
+                            <option value="Dr. Izaz Ur Rahman">Dr. Izaz Ur Rahman </option>
+                            <option value="Dr. Hashim Ali">Dr. Hashim Ali </option>
+                            <option value="Dr. Muhammad Tahir">Dr. Muhammad Tahir</option>
+                        </optgroup>
+                        <option value="Other">Other / Not Listed</option>
                     </select>
                 </div>
                 <div class="input-group">
-                    <label>Location (e.g., Garden Campus, Dept of CS)</label>
-                    <input type="text" id="location" placeholder="Where is the problem?" required>
+                    <label>Nature of problem</label>
+                    <select name="nature of problem" id="nature" required>
+                        <option value="">What is the main concern?</option>
+                        <option value="Course Coverage">Course Coverage (Syllabus not being finished)</option>
+                        <option value="Teaching Method">Teaching Methodology</option>
+                        <option value="Behavioral">Professional Behavior/Conduct</option>
+                        <option value="Grading/Assessment">Grading or Assignment Feedback</option>
+                        <option value="Availability">Teacher Availability/Punctuality</option>
+                        <option value="other">other</option>
+                    </select>
                 </div>
                 <div class="input-group">
                     <label>Description</label>
-                    <textarea id="desc" rows="5" placeholder="Describe the issue in detail..." required></textarea>
+                    <textarea id="desc" rows="5" placeholder="Describe the issue in detail" required></textarea>
                 </div>
-                <button type="submit" class="submit-btn">Submit Report</button>
+                <button type="submit" class="submit-btn">Submit Complaint</button>
             </form>
         </div>
 

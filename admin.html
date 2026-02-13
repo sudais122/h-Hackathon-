@@ -178,11 +178,13 @@
                         <div class="filter-container" id="filter-bar">
                             <select id="category-filter" class="filter-input" onchange="applyFilters()">
                                 <option value="All">All Categories</option>
-                                <option value="Transport">Transport</option>
-                                <option value="Hostel">Hostel</option>
-                                <option value="Academic">Academic</option>
-                                <option value="Cafeteria">Cafeteria</option>
-                                <option value="IT">IT Support</option>
+                                <option value="Transport">Senior Faculty</option>
+                                <option value="Hostel">Junior Faculty</option>
+                                <option value="Academic">Technical Staff</option>
+                                <option value="Cafeteria">Lab Hardware</option>
+                                <option value="IT">Exam Section</option>
+                                <option value="Technical Issue">Technical Issue</option>
+                                <option value="Hygiene">Hygiene</option>
                                 <option value="Other">Other</option>
                             </select>
                         </div>
@@ -297,7 +299,7 @@
         tableHead.innerHTML = `
             <tr>
                 <td>Category</td>
-                <td>Location</td>
+                <td>Nature</td>
                 <td>Description</td>
                 <td>Status</td>
                 <td>Action</td>
