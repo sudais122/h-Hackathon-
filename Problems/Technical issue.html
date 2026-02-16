@@ -89,12 +89,12 @@
         }
         .container {
             display: flex;
-            flex-wrap: wrap;
+            flex-direction: row; 
+            flex-wrap: nowrap;   
             gap: 30px;
-            padding: 40px 10%;
-            max-width: 1200px;
+            padding: 40px 15%;
+            max-width: 1400px; 
             margin: 0 auto;
-            align-items: flex-start; /* Aligns columns to top */
         }
 
         /* --- FORM SECTION --- */
@@ -261,32 +261,31 @@
             <h2><i class="fas fa-bullhorn"></i>Submit Official Complaint</h2>
             <form id="issueForm">
 <div class="input-group">
-    <label>Select Clerk/Lab Assistant</label>
+    <label>Technical issue</label>
     <select id="category" required>
-        <option value="">-- Choose Person --</option>
-        <optgroup label="Lab Assistant">
-            <option value="Mr. Aftab Ahmed Khan">Mr.Sadam(CS lab 1)</option>
-            <option value="Mr. Aftab Ahmed Khan">Mr. Ahmad(CS lab 2)</option>
-            <option value="Mr. Aftab Ahmed Khan">Mr. Tanveer(CS lab 3)</option>
-            <option value="Mr. Aftab Ahmed Khan">Mr. Ali khan(CS lab 4)</option>
-            <option value="other">other</option>
+        <option value="">-- Choose Issue --</option>
+    <optgroup label="Network Issues">
+            <option value="Wifi issue">Wifi issue</option>
+            <option value="Slow internet">Slow internet</option>
+            <option value="WiFi not connecting">WiFi not connecting</option>
         </optgroup>
-        <optgroup label="Clerks">
-            <option value="Shaukat">Shaukat</option>
-            <option value="Shah Nawaz">Shah Nawaz</option>
-            <option value="Mir Wali">Mir Wali</option>
-            <option value="Rafi ullah">Rafi ullah</option>
-            <option value="other">other</option>
-        </optgroup>
+        <optgroup label="Computer System Issues">
+    <option value="Computer not turning on">Computer not turning on</option>
+    <option value="System very slow">System very slow</option>
+    <option value="System hanging or freezing">System hanging or freezing</option>
+    <option value="Software not installed">Required software not installed</option>
+    <option value="Projector not working">Projector not working</option>
+</optgroup>
+<option value="other">other</option>
     </select>
 </div>
                 <div class="input-group">
                     <label>Nature of Problem </label>
-                    <input type="text" name="" id="">
+                    <input type="text" name="" id="location" placeholder="Briefly describe the issue type">
                 </div>
                 <div class="input-group">
                     <label>Description</label>
-                    <textarea id="desc" rows="5" placeholder="Describe the issue in detail..." required></textarea>
+                    <textarea id="desc" rows="5" placeholder="Explain the problem in detail. Include error messages, screenshots, and steps you tried." required></textarea>
                 </div>
                 <button type="submit" class="submit-btn">Submit Report</button>
             </form>
@@ -302,155 +301,125 @@
         <p>&copy; 2025 FixIt AWKUM | Built for the Students of Mardan</p>
     </footer>
 
-    <script>
-        // --- 1. AUTHENTICATION CHECK ---
-        const user = JSON.parse(localStorage.getItem('currentUser'));
+<script>
+    // --- 1. AUTHENTICATION CHECK ---
+    const user = JSON.parse(localStorage.getItem('currentUser'));
+    if (!user) { window.location.href = "UserLogin.html"; }
+
+    // --- 2. DARK MODE LOGIC ---
+    const themeBtn = document.getElementById('theme-btn');
+    const body = document.body;
+    if(localStorage.getItem('theme') === 'dark') body.classList.add('dark-mode');
+
+    themeBtn.addEventListener('click', () => {
+        body.classList.toggle('dark-mode');
+        const isDark = body.classList.contains('dark-mode');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    });
+
+    // --- 3. INITIAL LOAD ---
+    document.addEventListener('DOMContentLoaded', loadFeed);
+
+    // --- 4. SUBMIT TO SERVER (FIXED FOR JSON & CATEGORY) ---
+    document.getElementById('issueForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
         
-        // If not logged in, go back to Login page
-        if (!user) {
-            window.location.href = "UserLogin.html";
-        }
+        const submitBtn = document.querySelector('.submit-btn');
+        submitBtn.innerText = "Sending...";
+        submitBtn.disabled = true;
 
-        // --- 2. DARK MODE LOGIC ---
-        const themeBtn = document.getElementById('theme-btn');
-        const body = document.body;
+        const subCategory = document.getElementById('category').value; 
+        const location = document.getElementById('location').value;
+        const rawDesc = document.getElementById('desc').value;
 
-        if(localStorage.getItem('theme') === 'dark') {
-            body.classList.add('dark-mode');
-            if(themeBtn) themeBtn.classList.replace('fa-moon', 'fa-sun');
-        }
+        // FIXED: Changed from "Hostel" to "Technical"
+        const formattedCategory = `Technical issue: ${subCategory}`;
 
-        if(themeBtn) {
-            themeBtn.addEventListener('click', () => {
-                body.classList.toggle('dark-mode');
-                if(body.classList.contains('dark-mode')) {
-                    themeBtn.classList.replace('fa-moon', 'fa-sun');
-                    localStorage.setItem('theme', 'dark');
-                } else {
-                    themeBtn.classList.replace('fa-sun', 'fa-moon');
-                    localStorage.setItem('theme', 'light');
-                }
+        const payload = {
+            email: user.email,
+            fullname: user.fullname,
+            category: formattedCategory,
+            location: location,
+            description: rawDesc,
+            date: new Date().toISOString()
+        };
+
+        try {
+            const response = await fetch('http://localhost:3001/api/submit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
             });
-        }
 
-        // --- 3. LOAD FEED FROM SERVER ---
-        document.addEventListener('DOMContentLoaded', loadFeed);
-
-        // --- 4. SUBMIT TO SERVER (BACKEND) ---
-        document.getElementById('issueForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const submitBtn = document.querySelector('.submit-btn');
-            submitBtn.innerText = "Sending...";
-            submitBtn.disabled = true;
-
-            // Get Form Data
-            const subCategory = document.getElementById('category').value; 
-            const location = document.getElementById('location').value;
-            const rawDesc = document.getElementById('desc').value;
-
-            // HOSTEL SPECIFIC PREFIX
-            const formattedCategory = `Hostel: ${subCategory}`;
-
-            // Prepare Data for Server
-            const formData = new FormData();
-            formData.append('email', user.email); // Link complaint to logged-in user
-            formData.append('category', formattedCategory);
-            formData.append('location', location);
-            formData.append('description', rawDesc);
-
-            try {
-                // SEND TO PORT 3001
-                const response = await fetch('http://localhost:3001/api/submit', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (response.ok) {
-                    alert("✅ Report Submitted Successfully!");
-                    document.getElementById('issueForm').reset();
-                    loadFeed(); // Refresh list from server
-                } else {
-                    alert("❌ Failed to submit. Server error.");
-                }
-            } catch (error) {
-                console.error(error);
-                alert("❌ Cannot connect to server. Is it running?");
+            if (response.ok) {
+                alert("Technical Issue Reported Successfully!");
+                document.getElementById('issueForm').reset();
+                loadFeed(); 
+            } else {
+                alert("❌ Server Error. Please check if your backend is running.");
             }
-
+        } catch (error) {
+            console.error(error);
+            alert("❌ Connection Error.");
+        } finally {
             submitBtn.innerText = "Submit Report";
             submitBtn.disabled = false;
-        });
-
-        // --- 5. RENDER LIST (ONLY MY COMPLAINTS) ---
-        async function loadFeed() {
-            const feedContainer = document.getElementById('feed-container');
-            feedContainer.innerHTML = "<p style='text-align:center;'>Loading your reports...</p>";
-
-            try {
-                // FETCH ONLY THIS USER'S COMPLAINTS
-                const response = await fetch(`http://localhost:3001/api/my-complaints?email=${user.email}`);
-                const myComplaints = await response.json();
-                
-                // Sort Newest First
-                myComplaints.reverse();
-
-                // FILTER: Show only Hostel issues
-                const filteredIssues = myComplaints.filter(issue => issue.category.startsWith('Hostel'));
-
-                feedContainer.innerHTML = "";
-
-                if (filteredIssues.length === 0) {
-                    feedContainer.innerHTML = "<p style='text-align:center; opacity:0.7;'>No hostel reports found.</p>";
-                    adjustFeedHeight();
-                    return;
-                }
-
-                // Display Filtered Issues
-                filteredIssues.forEach(issue => {
-                    // Create formatted Date/Time
-                    const dateObj = new Date(issue.date);
-                    const dateStr = dateObj.toLocaleDateString();
-                    const timeStr = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-                    const cardHTML = `
-                        <div class="issue-card">
-                            <div class="tag hostel">${issue.category}</div>
-                            <h3>${issue.location}</h3>
-                            <p>${issue.description}</p>
-                            <div class="meta">
-                                <span><i class="fas fa-clock"></i> ${dateStr} at ${timeStr}</span>
-                                <span class="status ${issue.status.toLowerCase()}">${issue.status}</span>
-                            </div>
-                        </div>
-                    `;
-                    feedContainer.innerHTML += cardHTML;
-                });
-                
-                adjustFeedHeight();
-
-            } catch (error) {
-                console.error(error);
-                feedContainer.innerHTML = "<p style='color:red; text-align:center;'>Error loading data. Is Server running?</p>";
-            }
         }
+    });
 
-        // --- 6. HEIGHT ADJUSTMENT LOGIC ---
-        function adjustFeedHeight() {
-            const formWrapper = document.querySelector('.form-wrapper');
-            const feedContainer = document.getElementById('feed-container');
-            const listHeaderHeight = 50; 
+    // --- 5. RENDER LIST (FIXED FILTER) ---
+    async function loadFeed() {
+        const feedContainer = document.getElementById('feed-container');
+        feedContainer.innerHTML = "<p style='text-align:center;'>Loading reports...</p>";
+
+        try {
+            const response = await fetch(`http://localhost:3001/api/my-complaints?email=${user.email}`);
+            const myComplaints = await response.json();
             
-            if (window.innerWidth > 768 && formWrapper && feedContainer) {
-                const formHeight = formWrapper.offsetHeight;
-                const maxListHeight = formHeight - listHeaderHeight;
-                feedContainer.style.maxHeight = maxListHeight + "px";
-            } else {
-                feedContainer.style.maxHeight = "none";
-            }
-        }
+            // Reverse to show latest first
+            const filteredIssues = myComplaints
+                .filter(issue => issue.category && issue.category.startsWith('Technical'))
+                .reverse();
 
-        window.addEventListener('resize', adjustFeedHeight);
-    </script>
+            feedContainer.innerHTML = "";
+
+            if (filteredIssues.length === 0) {
+                feedContainer.innerHTML = "<p style='text-align:center; opacity:0.7;'>No technical reports found.</p>";
+                return;
+            }
+
+            filteredIssues.forEach(issue => {
+                const dateObj = new Date(issue.date);
+                const dateStr = dateObj.toLocaleDateString();
+                const timeStr = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                feedContainer.innerHTML += `
+                    <div class="issue-card" style="animation: fadeIn 0.5s ease;">
+                        <div class="tag" style="background-color: #2980b9;">${issue.category}</div>
+                        <h3>${issue.location}</h3>
+                        <p>${issue.description}</p>
+                        <div class="meta">
+                            <span><i class="fas fa-clock"></i> ${dateStr} at ${timeStr}</span>
+                            <span class="status ${issue.status.toLowerCase()}">${issue.status}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            adjustFeedHeight();
+        } catch (error) {
+            feedContainer.innerHTML = "<p style='color:red; text-align:center;'>Error loading data.</p>";
+        }
+    }
+
+    function adjustFeedHeight() {
+        const formWrapper = document.querySelector('.form-wrapper');
+        const feedContainer = document.getElementById('feed-container');
+        if (window.innerWidth > 768 && formWrapper && feedContainer) {
+            feedContainer.style.maxHeight = (formWrapper.offsetHeight - 50) + "px";
+        }
+    }
+    window.addEventListener('resize', adjustFeedHeight);
+</script>
 </body>
 </html>

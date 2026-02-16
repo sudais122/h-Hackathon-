@@ -239,6 +239,7 @@ app.post('/api/submit', async (req, res) => {
         };
 
         const saved = await complaintsDb.insert(newComplaint);
+        console.log(newComplaint);
         res.json({ message: "Success", complaintId: saved.complaintId });
     } catch (error) {
         res.status(500).json({ error: "Internal Server Error" });
@@ -259,13 +260,13 @@ app.post('/api/forward-complaint', async (req, res) => {
     const { teacherEmail, adminNote, complaintData } = req.body;
 
     const mailOptions = {
-        from: '"FixIt AWKUM Administration" <your-email@gmail.com>',
+        from: '"FixIt CS-AWKUM" <your-email@gmail.com>',
         to: teacherEmail,
         subject: `URGENT: Faculty Complaint Forwarded [#${complaintData.complaintId}]`,
         html: `
             <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
                 <div style="background-color: #BD2426; color: white; padding: 20px; text-align: center;">
-                    <h1 style="margin: 0; font-size: 20px;">FixIt AWKUM Official Notice</h1>
+                    <h1 style="margin: 0; font-size: 20px;">FixIt CS-AWKUM Official Notice</h1>
                 </div>
                 <div style="padding: 25px; color: #334155;">
                     <p>Dear Faculty Member,</p>

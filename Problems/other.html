@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transport Issues</title>
+    <title>General complaint Portal</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -89,12 +89,12 @@
         }
         .container {
             display: flex;
-            flex-wrap: wrap;
+            flex-direction: row;
+            flex-wrap: nowrap;  
             gap: 30px;
-            padding: 40px 10%;
-            max-width: 1200px;
+            padding: 40px 13%;
+            max-width: 1300px;
             margin: 0 auto;
-            align-items: flex-start; /* Aligns columns to top */
         }
 
         /* --- FORM SECTION --- */
@@ -233,7 +233,8 @@
             .hero { height: 250px; }
             .hero h1 { font-size: 1.8rem; }
             .container { padding: 20px 5%; }
-            #feed-container { max-height: none !important; } /* Reset scroll on mobile */
+            #feed-container { max-height: none !important; } 
+            .container {flex-direction: column;}
         }
     </style>
 </head>
@@ -258,23 +259,10 @@
     <div class="container" id="report">
         
         <div class="form-wrapper">
-            <h2><i class="fas fa-bullhorn"></i> Report a Transport Issue</h2>
+            <h2><i class="fas fa-bullhorn"></i> Report a General Issue</h2>
             <form id="issueForm">
                 <div class="input-group">
-                    <label>Category</label>
-                    <select id="category" required>
-                        <option value="">Select Category...</option>
-                        <option value="Late Arrival">Late Arrival</option>
-                        <option value="Overcrowding">Overcrowding</option>
-                        <option value="Driver Behavior">Driver Behavior</option>
-                        <option value="Vehicle Condition">Vehicle Condition</option>
-                        <option value="Route Issue">Route Issue</option>
-                        <option value="Bus Pass">Bus Pass Issue</option>
-                        <option value="Other">Other</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <label>Route / Location (e.g., Mardan Route, Bus 5)</label>
+                    <label>Route</label>
                     <input type="text" id="location" placeholder="Which route or bus?" required>
                 </div>
                 <div class="input-group">
@@ -296,151 +284,110 @@
     </footer>
 
 <script>
-        // --- 1. AUTHENTICATION CHECK ---
-        const user = JSON.parse(localStorage.getItem('currentUser'));
+    // 1. CONFIGURATION: Set this for each page (e.g., 'Technical', 'Hygiene', 'Exam')
+    const pageCategory = "Other"; 
+
+    // 2. AUTHENTICATION
+    const user = JSON.parse(localStorage.getItem('currentUser'));
+    if (!user) { window.location.href = "UserLogin.html"; }
+
+    // 3. THEME TOGGLE
+    const themeBtn = document.getElementById('theme-btn');
+    if(localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
+    themeBtn.addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+        localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+    });
+
+    document.addEventListener('DOMContentLoaded', loadFeed);
+
+    // 4. SUBMIT LOGIC (Auto-assigns the category)
+    document.getElementById('issueForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
         
-        // If not logged in, go back to Login page
-        if (!user) {
-            window.location.href = "UserLogin.html";
-        }
+        const submitBtn = document.querySelector('.submit-btn');
+        submitBtn.innerText = "Sending...";
+        submitBtn.disabled = true;
 
-        // --- 2. DARK MODE LOGIC ---
-        const themeBtn = document.getElementById('theme-btn');
-        const body = document.body;
+        const payload = {
+            email: user.email,
+            fullname: user.fullname,
+            category: pageCategory, // Hidden category based on the page
+            location: document.getElementById('location').value,
+            description: document.getElementById('desc').value,
+            date: new Date().toISOString()
+        };
 
-        if(localStorage.getItem('theme') === 'dark') {
-            body.classList.add('dark-mode');
-            if(themeBtn) themeBtn.classList.replace('fa-moon', 'fa-sun');
-        }
-
-        if(themeBtn) {
-            themeBtn.addEventListener('click', () => {
-                body.classList.toggle('dark-mode');
-                if(body.classList.contains('dark-mode')) {
-                    themeBtn.classList.replace('fa-moon', 'fa-sun');
-                    localStorage.setItem('theme', 'dark');
-                } else {
-                    themeBtn.classList.replace('fa-sun', 'fa-moon');
-                    localStorage.setItem('theme', 'light');
-                }
+        try {
+            const response = await fetch('http://localhost:3001/api/submit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
             });
-        }
 
-        // --- 3. LOAD FEED FROM SERVER ---
-        document.addEventListener('DOMContentLoaded', loadFeed);
-
-        // --- 4. SUBMIT TO SERVER (BACKEND) ---
-        document.getElementById('issueForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const submitBtn = document.querySelector('.submit-btn');
-            submitBtn.innerText = "Sending...";
-            submitBtn.disabled = true;
-
-            // Get Form Data
-            const subCategory = document.getElementById('category').value; 
-            const location = document.getElementById('location').value;
-            const rawDesc = document.getElementById('desc').value;
-
-            // TRANSPORT SPECIFIC PREFIX
-            const formattedCategory = `Transport: ${subCategory}`;
-
-            // Prepare Data for Server
-            const formData = new FormData();
-            formData.append('email', user.email); // Link complaint to logged-in user
-            formData.append('category', formattedCategory);
-            formData.append('location', location);
-            formData.append('description', rawDesc);
-
-            try {
-                // SEND TO PORT 3001
-                const response = await fetch('http://localhost:3001/api/submit', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (response.ok) {
-                    alert("✅ Report Submitted Successfully!");
-                    document.getElementById('issueForm').reset();
-                    loadFeed(); // Refresh list from server
-                } else {
-                    alert("❌ Failed to submit. Server error.");
-                }
-            } catch (error) {
-                console.error(error);
-                alert("❌ Cannot connect to server. Is it running?");
+            if (response.ok) {
+                alert(`✅ ${pageCategory} Report Submitted!`);
+                document.getElementById('issueForm').reset();
+                loadFeed(); 
             }
-
+        } catch (error) {
+            alert("❌ Connection failed.");
+        } finally {
             submitBtn.innerText = "Submit Report";
             submitBtn.disabled = false;
-        });
-
-        // --- 5. RENDER LIST FROM SERVER ---
-        async function loadFeed() {
-            const feedContainer = document.getElementById('feed-container');
-            feedContainer.innerHTML = "<p style='text-align:center;'>Loading reports...</p>";
-
-            try {
-                // Fetch ALL complaints from database
-                const response = await fetch(`http://localhost:3001/api/my-complaints?email=${user.email}`);
-                const allComplaints = await response.json();
-
-                // FILTER: Show only Transport issues
-                const filteredIssues = allComplaints.filter(issue => issue.category.startsWith('Transport'));
-
-                feedContainer.innerHTML = "";
-
-                if (filteredIssues.length === 0) {
-                    feedContainer.innerHTML = "<p style='text-align:center; opacity:0.7;'>No transport reports found.</p>";
-                    adjustFeedHeight();
-                    return;
-                }
-
-                // Display Filtered Issues
-                filteredIssues.forEach(issue => {
-                    // Create formatted Date/Time
-                    const dateObj = new Date(issue.date);
-                    const dateStr = dateObj.toLocaleDateString();
-                    const timeStr = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-                    const cardHTML = `
-                        <div class="issue-card">
-                            <div class="tag transport">${issue.category}</div>
-                            <h3>${issue.location}</h3>
-                            <p>${issue.description}</p>
-                            <div class="meta">
-                                <span><i class="fas fa-clock"></i> ${dateStr} at ${timeStr}</span>
-                                <span class="status ${issue.status.toLowerCase()}">${issue.status}</span>
-                            </div>
-                        </div>
-                    `;
-                    feedContainer.innerHTML += cardHTML;
-                });
-                
-                adjustFeedHeight();
-
-            } catch (error) {
-                console.error(error);
-                feedContainer.innerHTML = "<p style='color:red; text-align:center;'>Error loading data. Is Server running?</p>";
-            }
         }
+    });
 
-        // --- 6. HEIGHT ADJUSTMENT LOGIC ---
-        function adjustFeedHeight() {
-            const formWrapper = document.querySelector('.form-wrapper');
-            const feedContainer = document.getElementById('feed-container');
-            const listHeaderHeight = 50; 
+    // 5. LOAD FEED (Filtered by pageCategory)
+    async function loadFeed() {
+        const feedContainer = document.getElementById('feed-container');
+        feedContainer.innerHTML = "<p style='text-align:center;'>Loading your reports...</p>";
+
+        try {
+            const response = await fetch(`http://localhost:3001/api/my-complaints?email=${user.email}`);
+            const allData = await response.json();
             
-            if (window.innerWidth > 768 && formWrapper && feedContainer) {
-                const formHeight = formWrapper.offsetHeight;
-                const maxListHeight = formHeight - listHeaderHeight;
-                feedContainer.style.maxHeight = maxListHeight + "px";
-            } else {
-                feedContainer.style.maxHeight = "none";
-            }
-        }
+            // FILTER: Only show complaints matching THIS page's category
+            const filteredIssues = allData
+                .filter(issue => issue.category === pageCategory)
+                .reverse();
 
-        window.addEventListener('resize', adjustFeedHeight);
-    </script>
+            feedContainer.innerHTML = "";
+
+            if (filteredIssues.length === 0) {
+                feedContainer.innerHTML = `<p style='text-align:center; opacity:0.7;'>No ${pageCategory} reports found.</p>`;
+                return;
+            }
+
+            filteredIssues.forEach(issue => {
+                const dateStr = new Date(issue.date).toLocaleDateString();
+                const timeStr = new Date(issue.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                feedContainer.innerHTML += `
+                    <div class="issue-card">
+                        <h3>${issue.location}</h3>
+                        <p>${issue.description}</p>
+                        <div class="meta">
+                            <span><i class="fas fa-clock"></i> ${dateStr} at ${timeStr}</span>
+                            <span class="status ${issue.status.toLowerCase()}">${issue.status}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            adjustFeedHeight();
+        } catch (e) {
+            feedContainer.innerHTML = "<p style='color:red;'>Error loading data.</p>";
+        }
+    }
+
+    function adjustFeedHeight() {
+        const formWrapper = document.querySelector('.form-wrapper');
+        const feedContainer = document.getElementById('feed-container');
+        if (window.innerWidth > 900 && formWrapper && feedContainer) {
+            feedContainer.style.maxHeight = (formWrapper.offsetHeight - 50) + "px";
+        }
+    }
+    window.addEventListener('resize', adjustFeedHeight);
+</script>
 </body>
 </html>

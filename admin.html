@@ -194,19 +194,52 @@
             applyFilters();
         } catch (e) { tableBody.innerHTML = "<tr><td colspan='4' style='color:red;'>Connection Error</td></tr>"; }
     }
-
     function applyFilters() {
-        if(document.getElementById('table-title').innerText === "Registered Students") return;
+    // 1. Safety Check: Don't filter if we are on the Student Management view
+    const tableTitle = document.getElementById('table-title').innerText;
+    if (tableTitle === "Registered Students") return;
 
-        const category = document.getElementById('category-filter').value;
-        const filtered = allIssues.filter(i => {
-            const matchesCat = category === 'All' || i.category.startsWith(category);
-            const matchesView = currentView === 'resolved' ? i.status === 'Resolved' : true;
-            return matchesCat && matchesView;
-        });
+    // 2. Get the current filter value from the dropdown
+    const selectedCategory = document.getElementById('category-filter').value;
+    
+    // 3. Filter the global allIssues array
+    const filteredData = allIssues.filter(issue => {
+        // Handle potential null/undefined categories from the database
+        const issueCategory = issue.category || "Other";
+        
+        // Category Logic: Match "All" or check if the string starts with the selection
+        // (e.g., "Hygiene" matches "Hygiene: Washroom")
+        const matchesCategory = (selectedCategory === 'All') || 
+                                (issueCategory.startsWith(selectedCategory));
 
-        renderTable(filtered);
+        // View Logic: If the user clicked "Resolved" in sidebar, only show Resolved.
+        // If they are on "Dashboard", show everything (Pending + Resolved)
+        let matchesStatusView = true;
+        if (currentView === 'resolved') {
+            matchesStatusView = (issue.status === 'Resolved');
+        } else if (currentView === 'dashboard') {
+            // Optional: You could hide resolved issues from 'Recent Problems' 
+            // by adding: matchesStatusView = (issue.status !== 'Resolved');
+            matchesStatusView = true; 
+        }
+
+        return matchesCategory && matchesStatusView;
+    });
+
+    // 4. Update the Table
+    if (filteredData.length === 0) {
+        document.getElementById('table-body').innerHTML = 
+            `<tr><td colspan="5" style="text-align:center; padding:2rem; opacity:0.6;">
+                <i class="fas fa-search" style="font-size:2rem; display:block; margin-bottom:10px;"></i>
+                No complaints found for "${selectedCategory}"
+            </td></tr>`;
+    } else {
+        renderTable(filteredData);
     }
+    
+    // 5. Update the Total Count display for the filtered results
+    document.getElementById('total-count').innerText = filteredData.length;
+}
 function renderTable(data) {
     const tbody = document.getElementById('table-body');
     tbody.innerHTML = data.map(i => `

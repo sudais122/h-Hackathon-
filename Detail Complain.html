@@ -6,121 +6,186 @@
     <title>Review & Forward | Admin Control</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --primary: #BD2426; --dark: #1e293b; --bg: #f8fafc; --white: #ffffff; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background-color: var(--bg); color: #334155; padding: 40px; }
+        :root { --primary: #BD2426; --dark: #0f172a; --bg: #f1f5f9; --white: #ffffff; --accent: #3b82f6; --success: #10b981; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        
+        body { background-color: var(--bg); color: #1e293b; padding: 20px; line-height: 1.6; }
 
-        .container { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: 1.5fr 1fr; gap: 30px; }
+        .container { max-width: 1100px; margin: 20px auto; display: grid; grid-template-columns: 1.4fr 1fr; gap: 25px; }
         
         /* Left Column: Complaint Details */
-        .card { background: var(--white); border-radius: 12px; padding: 30px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        .badge { background: #fee2e2; color: var(--primary); padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 0.8rem; }
+        .card { background: var(--white); border-radius: 16px; padding: 40px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+        .header { border-bottom: 2px solid #f1f5f9; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
+        .header h2 { font-size: 1.5rem; color: var(--dark); font-weight: 700; }
         
-        .section-title { font-size: 0.75rem; text-transform: uppercase; color: #94a3b8; letter-spacing: 1px; margin-bottom: 10px; display: block; }
-        .data-point { margin-bottom: 20px; font-size: 1.1rem; font-weight: 500; }
-        .description-box { background: #f1f5f9; padding: 15px; border-radius: 8px; line-height: 1.6; font-size: 0.95rem; }
+        .badge { background: #fee2e2; color: var(--primary); padding: 6px 14px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; letter-spacing: 0.5px; }
+        
+        .section-title { font-size: 0.7rem; text-transform: uppercase; color: #64748b; font-weight: 800; letter-spacing: 1.2px; margin-bottom: 8px; display: block; }
+        .data-point { margin-bottom: 25px; font-size: 1.2rem; font-weight: 600; color: #334155; }
+        
+        .description-box { background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; color: #475569; font-size: 1rem; min-height: 150px; white-space: pre-wrap; }
 
-        /* Right Column: Forwarding Panel */
-        .action-panel { background: var(--dark); color: white; border-radius: 12px; padding: 30px; height: fit-content; position: sticky; top: 40px; }
-        .action-panel h2 { font-size: 1.25rem; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        /* Right Column: Action Panel */
+        .action-panel { background: var(--dark); color: white; border-radius: 16px; padding: 35px; height: fit-content; position: sticky; top: 20px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); }
         
-        .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; font-size: 0.85rem; margin-bottom: 8px; color: #cbd5e1; }
-        .input-group input, .input-group textarea { width: 100%; padding: 12px; border: none; border-radius: 6px; background: #334155; color: white; margin-bottom: 10px; }
+        .forward-title { font-size: 1.3rem; margin-bottom: 15px; display: flex; align-items: center; gap: 12px; color: #f8fafc; }
+        .panel-desc { font-size: 0.9rem; color: #94a3b8; margin-bottom: 25px; }
         
-        .btn-forward { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px; }
-        .btn-forward:hover { background: #a01e20; }
-        .btn-forward:disabled { opacity: 0.5; cursor: not-allowed; }
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; font-size: 0.8rem; margin-bottom: 8px; color: #cbd5e1; font-weight: 600; }
+        .input-group input, .input-group textarea { 
+            width: 100%; padding: 14px; border: 1px solid #334155; border-radius: 8px; 
+            background: #1e293b; color: white; font-size: 0.95rem; transition: 0.3s;
+        }
+        
+        /* Buttons */
+        .btn-forward { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .btn-forward:hover { background: #d92d30; transform: translateY(-2px); }
 
-        .back-link { display: inline-block; margin-bottom: 20px; color: #64748b; text-decoration: none; font-size: 0.9rem; }
+        .btn-resolve { width: 100%; margin-top: 15px; padding: 14px; background: var(--success); color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.3s; }
+        .btn-resolve:hover { background: #059669; }
+
+        /* Success & Resolved States */
+        #success-state, #resolved-state { text-align: center; display: none; padding: 10px 0; }
+        .state-icon { font-size: 3.5rem; margin-bottom: 15px; }
+        
+        .forwarded-info { background: #1e293b; padding: 15px; border-radius: 10px; text-align: left; margin-top: 20px; border-left: 4px solid var(--success); margin-bottom: 20px;}
+        .forwarded-info small { color: #94a3b8; font-weight: 800; text-transform: uppercase; font-size: 0.65rem; }
+        .forwarded-info p { color: #f8fafc; font-size: 0.95rem; font-weight: 600; margin-top: 4px; }
+
+        .back-link { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 20px; color: #64748b; text-decoration: none; font-weight: 600; }
         .back-link:hover { color: var(--primary); }
+
+        @media (max-width: 850px) { .container { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
-    <a href="admin.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+    <div style="max-width: 1100px; margin: 0 auto;">
+        <a href="admin.html" class="back-link"><i class="fas fa-chevron-left"></i> Back to Dashboard</a>
+    </div>
 
     <div class="container">
         <div class="card">
             <div class="header">
-                <h2>Complaint Review</h2>
+                <h2>Complaint Details</h2>
                 <span class="badge" id="display-id">ID: #00000</span>
             </div>
 
-            <span class="section-title">Against Faculty/Category</span>
+            <span class="section-title">Department / Category</span>
             <p class="data-point" id="display-category">---</p>
 
-            <span class="section-title">Issue Nature</span>
+            <span class="section-title">Specific Nature / Location</span>
             <p class="data-point" id="display-nature">---</p>
 
             <span class="section-title">Detailed Description</span>
-            <div class="description-box" id="display-desc">
-                Loading description...
-            </div>
+            <div class="description-box" id="display-desc">Loading...</div>
         </div>
 
         <div class="action-panel">
-            <h2><i class="fas fa-paper-plane"></i> Forward Case</h2>
-            <p style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 20px;">
-                This will send an official email to the faculty member with all details attached.
-            </p>
+            
+            <div id="forward-form">
+                <h2 class="forward-title"><i class="fas fa-paper-plane" style="color: var(--primary);"></i> Forward Case</h2>
+                <p class="panel-desc">Assign this to a faculty member. You can also resolve it immediately if no forwarding is needed.</p>
 
-            <div class="input-group">
-                <label>Teacher/Staff Email</label>
-                <input type="email" id="teacher-email" placeholder="dr.name@awkum.edu.pk">
+                <div class="input-group">
+                    <label>Recipient Email</label>
+                    <input type="email" id="teacher-email" placeholder="teacher@awkum.edu.pk">
+                </div>
+
+                <div class="input-group">
+                    <label>Instruction Note (Optional)</label>
+                    <textarea id="admin-note" rows="3" placeholder="Add specific instructions..."></textarea>
+                </div>
+
+                <button class="btn-forward" id="forward-btn" onclick="processForwarding()">
+                    Forward to Department
+                </button>
+
+                <button class="btn-resolve" onclick="markAsResolved()">
+                    <i class="fas fa-check-circle"></i> Resolve Immediately
+                </button>
             </div>
 
-            <div class="input-group">
-                <label>Admin Note (Optional)</label>
-                <textarea id="admin-note" rows="3" placeholder="Add a direct instruction to the teacher..."></textarea>
+            <div id="success-state">
+                <i class="fas fa-paper-plane state-icon" style="color: var(--accent);"></i>
+                <h2 style="color: white; margin-bottom: 10px;">Status: Forwarded</h2>
+                <p style="color: #94a3b8; font-size: 0.9rem;">Email sent. Awaiting department action.</p>
+                
+                <div class="forwarded-info">
+                    <small>Sent To</small>
+                    <p id="info-email">---</p>
+                </div>
+
+                <button class="btn-resolve" onclick="markAsResolved()">
+                    <i class="fas fa-check-double"></i> Mark as Final Resolved
+                </button>
             </div>
 
-            <button class="btn-forward" id="forward-btn" onclick="processForwarding()">
-                <i class="fas fa-envelope"></i> Send Official Forward
-            </button>
+            <div id="resolved-state">
+                <i class="fas fa-check-double state-icon" style="color: var(--success);"></i>
+                <h2 style="color: var(--success); margin-bottom: 10px;">Case Resolved</h2>
+                <p style="color: #94a3b8; font-size: 0.9rem;">This complaint has been closed and archived.</p>
+                <div style="margin-top: 20px; border-top: 1px solid #334155; padding-top: 20px;">
+                    <a href="admin.html" style="color: white; text-decoration: none; font-size: 0.8rem;"><i class="fas fa-arrow-left"></i> Return to List</a>
+                </div>
+            </div>
+
         </div>
     </div>
 
     <script>
-        // 1. Get ID from URL
         const params = new URLSearchParams(window.location.search);
         const dbId = params.get('id');
         let complaintData = null;
 
-        // 2. Fetch complaint data
         async function fetchDetails() {
+            if (!dbId) return;
             try {
                 const response = await fetch(`http://localhost:3001/api/complaints/${dbId}`);
                 complaintData = await response.json();
 
                 document.getElementById('display-id').innerText = `ID: #${complaintData.complaintId}`;
-                document.getElementById('display-name').innerText = complaintData.fullname;
-                document.getElementById('display-reg').innerText = complaintData.regNo;
-                document.getElementById('display-category').innerText = complaintData.category;
-                document.getElementById('display-nature').innerText = complaintData.location;
-                document.getElementById('display-desc').innerText = complaintData.description;
+                document.getElementById('display-category').innerText = complaintData.category || "General";
+                document.getElementById('display-nature').innerText = complaintData.location || "N/A";
+                document.getElementById('display-desc').innerText = complaintData.description || "No description provided.";
+
+                // UI STATE TOGGLE
+                const formView = document.getElementById('forward-form');
+                const successView = document.getElementById('success-state');
+                const resolvedView = document.getElementById('resolved-state');
+
+                if (complaintData.status === "Resolved") {
+                    formView.style.display = 'none';
+                    successView.style.display = 'none';
+                    resolvedView.style.display = 'block';
+                } else if (complaintData.status === "Forwarded") {
+                    formView.style.display = 'none';
+                    successView.style.display = 'block';
+                    document.getElementById('info-email').innerText = complaintData.forwardedTo || "Department Email";
+                }
+
             } catch (err) {
-                alert("Error loading complaint data.");
+                document.getElementById('display-desc').innerText = "Error loading complaint details.";
             }
         }
 
-        // 3. Forward Logic
         async function processForwarding() {
             const email = document.getElementById('teacher-email').value;
             const note = document.getElementById('admin-note').value;
             const btn = document.getElementById('forward-btn');
 
-            if(!email) return alert("Please enter the teacher's email address.");
+            if(!email) return alert("Please enter the teacher's email.");
 
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
 
             try {
                 const res = await fetch('http://localhost:3001/api/forward-complaint', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
+                        id: dbId,
                         teacherEmail: email,
                         adminNote: note,
                         complaintData: complaintData
@@ -128,17 +193,33 @@
                 });
 
                 if(res.ok) {
-                    alert("✅ Forwarded Successfully! A record has been sent to the teacher.");
-                    window.location.href = "admin.html";
+                    alert("✅ Forwarded successfully!");
+                    window.location.reload();
                 } else {
-                    alert("❌ Failed to forward. Check server connection.");
+                    alert("❌ Server Error.");
                     btn.disabled = false;
-                    btn.innerText = "Send Official Forward";
+                    btn.innerText = "Forward to Department";
                 }
             } catch (error) {
-                console.error(error);
                 btn.disabled = false;
             }
+        }
+
+        async function markAsResolved() {
+            if(!confirm("Mark this case as resolved? This will close the complaint.")) return;
+
+            try {
+                const res = await fetch(`http://localhost:3001/api/complaints/${dbId}/status`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'Resolved' })
+                });
+
+                if(res.ok) {
+                    alert("✅ Complaint Resolved!");
+                    window.location.reload();
+                }
+            } catch (e) { alert("Error connecting to server."); }
         }
 
         window.onload = fetchDetails;

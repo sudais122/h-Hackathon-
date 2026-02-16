@@ -265,34 +265,15 @@
     <label>Hardware Category</label>
     <select id="category" required>
         <option value="">Select Hardware...</option>
-
-        <optgroup label="Computer System">
             <option value="PC not turning on">PC not turning on</option>
             <option value="Monitor no display">Monitor no display</option>
             <option value="Keyboard not working">Keyboard not working</option>
             <option value="Mouse not working">Mouse not working</option>
             <option value="System very slow">System very slow</option>
             <option value="System restarting automatically">System restarting automatically</option>
-        </optgroup>
-
-        <optgroup label="Network Issues">
-            <option value="No internet connection">No internet connection</option>
-            <option value="Slow internet">Slow internet</option>
-            <option value="LAN port not working">LAN port not working</option>
-            <option value="WiFi not connecting">WiFi not connecting</option>
-        </optgroup>
-
-        <optgroup label="Power Issues">
-            <option value="No electricity">No electricity</option>
-            <option value="UPS not working">UPS not working</option>
-            <option value="Damaged socket">Damaged socket</option>
-            <option value="Frequent shutdown">Frequent shutdown</option>
-        </optgroup>
-
         <option value="Other">Other Issue</option>
     </select>
 </div>
-
                 <div class="input-group">
                     <label>Lab Location </label>
                     <input type="text" id="location" placeholder="Where is the problem?" required>
@@ -323,7 +304,6 @@
             window.location.href = "UserLogin.html";
         }
 
-        // --- 2. DARK MODE LOGIC ---
         const themeBtn = document.getElementById('theme-btn');
         const body = document.body;
 
@@ -349,51 +329,57 @@
         document.addEventListener('DOMContentLoaded', loadFeed);
 
         // --- 4. SUBMIT TO SERVER (BACKEND) ---
-        document.getElementById('issueForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const submitBtn = document.querySelector('.submit-btn');
-            submitBtn.innerText = "Sending...";
-            submitBtn.disabled = true;
+        // --- 4. SUBMIT TO SERVER (FIXED FOR JSON) ---
+document.getElementById('issueForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const submitBtn = document.querySelector('.submit-btn');
+    submitBtn.innerText = "Sending...";
+    submitBtn.disabled = true;
 
-            // Get Form Data
-            const subCategory = document.getElementById('category').value; 
-            const location = document.getElementById('location').value;
-            const rawDesc = document.getElementById('desc').value;
+    // Get Form Values
+    const subCategory = document.getElementById('category').value; 
+    const location = document.getElementById('location').value;
+    const rawDesc = document.getElementById('desc').value;
 
-            // GENERAL SPECIFIC PREFIX
-            const formattedCategory = `General: ${subCategory}`;
+    // Use the specific prefix for this page
+    const formattedCategory = `Lab Hardware: ${subCategory}`;
 
-            // Prepare Data for Server
-            const formData = new FormData();
-            formData.append('email', user.email); // Link complaint to logged-in user
-            formData.append('category', formattedCategory);
-            formData.append('location', location);
-            formData.append('description', rawDesc);
+    // Prepare Data as a standard JSON Object
+    const payload = {
+        email: user.email,
+        fullname: user.fullname,
+        category: formattedCategory,
+        location: location,
+        description: rawDesc,
+        date: new Date().toISOString()
+    };
 
-            try {
-                // SEND TO PORT 3001
-                const response = await fetch('http://localhost:3001/api/submit', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (response.ok) {
-                    alert("✅ Report Submitted Successfully!");
-                    document.getElementById('issueForm').reset();
-                    loadFeed(); // Refresh list from server
-                } else {
-                    alert("❌ Failed to submit. Server error.");
-                }
-            } catch (error) {
-                console.error(error);
-                alert("❌ Cannot connect to server. Is it running?");
-            }
-
-            submitBtn.innerText = "Submit Report";
-            submitBtn.disabled = false;
+    try {
+        const response = await fetch('http://localhost:3001/api/submit', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json' // Tells the server to parse as JSON
+            },
+            body: JSON.stringify(payload) // Converts Object to String
         });
 
+        if (response.ok) {
+            alert("✅ Report Submitted Successfully!");
+            document.getElementById('issueForm').reset();
+            loadFeed(); 
+        } else {
+            const errData = await response.json();
+            alert("❌ Server Error: " + (errData.error || "Something went wrong"));
+        }
+    } catch (error) {
+        console.error("Connection Error:", error);
+        alert("❌ Cannot connect to server. Check if your Node.js terminal is running.");
+    } finally {
+        submitBtn.innerText = "Submit Report";
+        submitBtn.disabled = false;
+    }
+});
         // --- 5. RENDER LIST FROM SERVER ---
         async function loadFeed() {
             const feedContainer = document.getElementById('feed-container');
@@ -404,9 +390,7 @@
                 const response = await fetch(`http://localhost:3001/api/my-complaints?email=${user.email}`);;
                 const allComplaints = await response.json();
 
-                // FILTER: Show only General issues
-                const filteredIssues = allComplaints.filter(issue => issue.category.startsWith('General'));
-
+                const filteredIssues = allComplaints.filter(issue => issue.category.startsWith('Lab Hardware'));
                 feedContainer.innerHTML = "";
 
                 if (filteredIssues.length === 0) {

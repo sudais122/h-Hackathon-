@@ -265,24 +265,24 @@
     <select id="category" required>
         <option value="">-- Choose Person --</option>
         <optgroup label="Lab Assistant">
-            <option value="Mr. Aftab Ahmed Khan">Mr.Sadam(CS lab 1)</option>
-            <option value="Mr. Aftab Ahmed Khan">Mr. Ahmad(CS lab 2)</option>
-            <option value="Mr. Aftab Ahmed Khan">Mr. Tanveer(CS lab 3)</option>
-            <option value="Mr. Aftab Ahmed Khan">Mr. Ali khan(CS lab 4)</option>
+            <option value="Mr. Ahmad(CS lab 1)">Mr. Ahmad(CS lab 1)</option>
+            <option value="Mr. Tanveer(Cs lab 2)">Mr. Tanveer(CS lab 3)</option>
+            <option value="Mr. Ali khan(Cs lab 3)">Mr. Ali khan(CS lab 4)</option>
+            <option value="Mr. umar(Cs lab 4)">Mr. Umar(CS lab 4)</option>
             <option value="other">other</option>
         </optgroup>
         <optgroup label="Clerks">
-            <option value="Shaukat">Shaukat</option>
-            <option value="Shah Nawaz">Shah Nawaz</option>
-            <option value="Mir Wali">Mir Wali</option>
-            <option value="Rafi ullah">Rafi ullah</option>
+            <option value="Mr. Shaukat">Mr. Shaukat</option>
+            <option value="MR. Shah Nawaz">MR. Shah Nawaz</option>
+            <option value="Mr. Mir Wali">Mr. Mir Wali</option>
+            <option value="Mr. Rafi ullah">Mr. Rafi ullah</option>
             <option value="other">other</option>
         </optgroup>
     </select>
 </div>
                 <div class="input-group">
                     <label>Nature of Problem </label>
-                    <input type="text" name="" id="">
+                    <input type="text" name="" id="location">
                 </div>
                 <div class="input-group">
                     <label>Description</label>
@@ -344,97 +344,99 @@
             submitBtn.innerText = "Sending...";
             submitBtn.disabled = true;
 
-            // Get Form Data
+            // 1. Get Values
             const subCategory = document.getElementById('category').value; 
             const location = document.getElementById('location').value;
             const rawDesc = document.getElementById('desc').value;
 
-            // HOSTEL SPECIFIC PREFIX
-            const formattedCategory = `Hostel: ${subCategory}`;
-
-            // Prepare Data for Server
-            const formData = new FormData();
-            formData.append('email', user.email); // Link complaint to logged-in user
-            formData.append('category', formattedCategory);
-            formData.append('location', location);
-            formData.append('description', rawDesc);
+            // 2. Prepare JSON Payload
+            const payload = {
+                email: user.email,
+                fullname: user.fullname, // Optional: add if your server needs it
+                category: `Technical Staff: ${subCategory}`,
+                location: location,
+                description: rawDesc,
+                date: new Date().toISOString() // Ensure date is sent
+            };
 
             try {
-                // SEND TO PORT 3001
+                // 3. Send as JSON
                 const response = await fetch('http://localhost:3001/api/submit', {
                     method: 'POST',
-                    body: formData
+                    headers: {
+                        'Content-Type': 'application/json' // Crucial: tells server to parse JSON
+                    },
+                    body: JSON.stringify(payload)
                 });
 
                 if (response.ok) {
-                    alert("✅ Report Submitted Successfully!");
+                    const result = await response.json();
+                    alert(`✅ Submitted! ID: #${result.complaintId || ''}`);
                     document.getElementById('issueForm').reset();
-                    loadFeed(); // Refresh list from server
+                    loadFeed(); 
                 } else {
-                    alert("❌ Failed to submit. Server error.");
+                    const errorData = await response.json();
+                    alert("❌ Server Error: " + (errorData.error || "Unknown error"));
                 }
             } catch (error) {
-                console.error(error);
-                alert("❌ Cannot connect to server. Is it running?");
+                console.error("Connection Error:", error);
+                alert("❌ Cannot connect to server. Check your terminal/console.");
+            } finally {
+                submitBtn.innerText = "Submit Report";
+                submitBtn.disabled = false;
             }
-
-            submitBtn.innerText = "Submit Report";
-            submitBtn.disabled = false;
         });
-
         // --- 5. RENDER LIST (ONLY MY COMPLAINTS) ---
-        async function loadFeed() {
-            const feedContainer = document.getElementById('feed-container');
-            feedContainer.innerHTML = "<p style='text-align:center;'>Loading your reports...</p>";
+// --- 5. RENDER LIST (ONLY MY COMPLAINTS) ---
+async function loadFeed() {
+    const feedContainer = document.getElementById('feed-container');
+    feedContainer.innerHTML = "<p style='text-align:center;'>Loading your reports...</p>";
 
-            try {
-                // FETCH ONLY THIS USER'S COMPLAINTS
-                const response = await fetch(`http://localhost:3001/api/my-complaints?email=${user.email}`);
-                const myComplaints = await response.json();
-                
-                // Sort Newest First
-                myComplaints.reverse();
+    try {
+        const response = await fetch(`http://localhost:3001/api/my-complaints?email=${user.email}`);
+        const myComplaints = await response.json();
+        
+        // Sort Newest First
+        myComplaints.reverse();
 
-                // FILTER: Show only Hostel issues
-                const filteredIssues = myComplaints.filter(issue => issue.category.startsWith('Hostel'));
+        const filteredIssues = myComplaints.filter(issue => 
+            issue.category && issue.category.startsWith('Technical Staff')
+        );
 
-                feedContainer.innerHTML = "";
+        feedContainer.innerHTML = "";
 
-                if (filteredIssues.length === 0) {
-                    feedContainer.innerHTML = "<p style='text-align:center; opacity:0.7;'>No hostel reports found.</p>";
-                    adjustFeedHeight();
-                    return;
-                }
-
-                // Display Filtered Issues
-                filteredIssues.forEach(issue => {
-                    // Create formatted Date/Time
-                    const dateObj = new Date(issue.date);
-                    const dateStr = dateObj.toLocaleDateString();
-                    const timeStr = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-                    const cardHTML = `
-                        <div class="issue-card">
-                            <div class="tag hostel">${issue.category}</div>
-                            <h3>${issue.location}</h3>
-                            <p>${issue.description}</p>
-                            <div class="meta">
-                                <span><i class="fas fa-clock"></i> ${dateStr} at ${timeStr}</span>
-                                <span class="status ${issue.status.toLowerCase()}">${issue.status}</span>
-                            </div>
-                        </div>
-                    `;
-                    feedContainer.innerHTML += cardHTML;
-                });
-                
-                adjustFeedHeight();
-
-            } catch (error) {
-                console.error(error);
-                feedContainer.innerHTML = "<p style='color:red; text-align:center;'>Error loading data. Is Server running?</p>";
-            }
+        if (filteredIssues.length === 0) {
+            feedContainer.innerHTML = "<p style='text-align:center; opacity:0.7;'>No reports found yet.</p>";
+            adjustFeedHeight();
+            return;
         }
 
+        filteredIssues.forEach(issue => {
+            const dateObj = new Date(issue.date);
+            const dateStr = dateObj.toLocaleDateString();
+            const timeStr = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            const cardHTML = `
+                <div class="issue-card">
+                    <div class="tag" style="background-color: #8e44ad;">${issue.category}</div>
+                    <h3>${issue.location}</h3>
+                    <p>${issue.description}</p>
+                    <div class="meta">
+                        <span><i class="fas fa-clock"></i> ${dateStr} at ${timeStr}</span>
+                        <span class="status ${issue.status ? issue.status.toLowerCase() : 'pending'}">${issue.status || 'Pending'}</span>
+                    </div>
+                </div>
+            `;
+            feedContainer.innerHTML += cardHTML;
+        });
+        
+        adjustFeedHeight();
+
+    } catch (error) {
+        console.error(error);
+        feedContainer.innerHTML = "<p style='color:red; text-align:center;'>Error loading data.</p>";
+    }
+}
         // --- 6. HEIGHT ADJUSTMENT LOGIC ---
         function adjustFeedHeight() {
             const formWrapper = document.querySelector('.form-wrapper');

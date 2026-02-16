@@ -257,7 +257,7 @@
     <div class="container" id="report">
         
         <div class="form-wrapper">
-            <h2><i class="fas fa-bullhorn"></i> Report IT Issue</h2>
+            <h2><i class="fas fa-bullhorn"></i> Report offical Complaint</h2>
             <form id="issueForm">
 <!-- Exam Issue Category -->
 <div class="input-group">
@@ -308,7 +308,6 @@
         <p>&copy; 2025 FixIt CS-AWKUM | Built for the Students of Mardan</p>
     </footer>
 <script>
-        // --- 1. AUTHENTICATION CHECK ---
         const user = JSON.parse(localStorage.getItem('currentUser'));
         
         // If not logged in, go back to Login page
@@ -349,44 +348,51 @@
             submitBtn.innerText = "Sending...";
             submitBtn.disabled = true;
 
-            // Get Form Data
+            // 1. Get Values from the form
             const subCategory = document.getElementById('category').value; 
             const location = document.getElementById('location').value;
             const rawDesc = document.getElementById('desc').value;
 
-            // IT SPECIFIC PREFIX
-            const formattedCategory = `IT: ${subCategory}`;
+            // 2. Format the Category for the Exam Section
+            const formattedCategory = `Exam Section: ${subCategory}`;
 
-            // Prepare Data for Server
-            const formData = new FormData();
-            formData.append('email', user.email); // Link complaint to logged-in user
-            formData.append('category', formattedCategory);
-            formData.append('location', location);
-            formData.append('description', rawDesc);
+            // 3. Prepare standard JSON Payload
+            const payload = {
+                email: user.email,
+                fullname: user.fullname,
+                category: formattedCategory,
+                location: location,
+                description: rawDesc,
+                date: new Date().toISOString()
+            };
 
             try {
-                // SEND TO PORT 3001
+                // 4. Send as JSON to the server
                 const response = await fetch('http://localhost:3001/api/submit', {
                     method: 'POST',
-                    body: formData
+                    headers: {
+                        'Content-Type': 'application/json' // Crucial for backend parsing
+                    },
+                    body: JSON.stringify(payload)
                 });
 
                 if (response.ok) {
-                    alert("✅ Report Submitted Successfully!");
+                    const result = await response.json();
+                    alert(`✅ Exam Complain Submitted! ID: #${result.complaintId || ''}`);
                     document.getElementById('issueForm').reset();
-                    loadFeed(); // Refresh list from server
+                    loadFeed(); // Refresh the list
                 } else {
-                    alert("❌ Failed to submit. Server error.");
+                    const errorData = await response.json();
+                    alert("❌ Server Error: " + (errorData.error || "Submission failed"));
                 }
             } catch (error) {
-                console.error(error);
-                alert("❌ Cannot connect to server. Is it running?");
+                console.error("Connection Error:", error);
+                alert("❌ Cannot connect to server. Ensure Node.js is running.");
+            } finally {
+                submitBtn.innerText = "Submit Report";
+                submitBtn.disabled = false;
             }
-
-            submitBtn.innerText = "Submit Report";
-            submitBtn.disabled = false;
         });
-
         // --- 5. RENDER LIST FROM SERVER ---
         async function loadFeed() {
             const feedContainer = document.getElementById('feed-container');
@@ -397,9 +403,7 @@
                 const response = await fetch(`http://localhost:3001/api/my-complaints?email=${user.email}`);
                 const allComplaints = await response.json();
 
-                // FILTER: Show only IT issues
-                const filteredIssues = allComplaints.filter(issue => issue.category.startsWith('IT'));
-
+                const filteredIssues = allComplaints.filter(issue => issue.category.startsWith('Exam Section'));
                 feedContainer.innerHTML = "";
 
                 if (filteredIssues.length === 0) {
