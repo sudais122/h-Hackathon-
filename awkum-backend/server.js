@@ -40,8 +40,6 @@ function normalizeEmail(email) {
     return String(email).toLowerCase().trim();
 }
 
-// --- ROUTES ---
-
 // 1. SEND REGISTRATION OTP
 app.post('/api/send-otp', async (req, res) => {
     try {
@@ -232,7 +230,6 @@ app.post('/api/submit', async (req, res) => {
         const saved = await complaintsDb.insert(newComplaint);
         console.log(newComplaint);
 
-        // ✅ NEW: Notify admin email immediately after complaint is saved
         transporter.sendMail({
             from: '"FixIt CS-AWKUM" <khansb17798@gmail.com>',
             to:   'sudaismuhammad752@gmail.com',
@@ -263,7 +260,6 @@ app.post('/api/submit', async (req, res) => {
     }
 });
 
-// GET ALL COMPLAINTS
 app.get('/api/complaints', async (req, res) => {
     try {
         const complaints = await complaintsDb.find({}).sort({ createdAt: -1 });
@@ -278,7 +274,6 @@ app.get('/api/complaints/:id', async (req, res) => {
         const id = req.params.id.trim();
         console.log(`🔍 Fetching complaint with _id: "${id}"`);
 
-        // nedb findOne with _id as a string
         const complaint = await complaintsDb.findOne({ _id: id });
         console.log(`📦 Result:`, complaint ? `Found #${complaint.complaintId}` : 'NOT FOUND');
 
@@ -329,7 +324,6 @@ app.post('/api/forward-complaint', async (req, res) => {
     }
 });
 
-// UPDATE COMPLAINT STATUS (Forwarded -> Resolved)
 app.put('/api/complaints/:id/status', async (req, res) => {
     try {
         const { id } = req.params;
@@ -350,7 +344,6 @@ app.put('/api/complaints/:id/status', async (req, res) => {
     }
 });
 
-// ADMIN API - GET USERS
 app.get('/api/users', async (req, res) => {
     const users = await usersDb.find({ role: "Student" });
     res.json(users);
