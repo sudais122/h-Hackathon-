@@ -371,7 +371,6 @@
 
                 if (response.ok) {
                     const result = await response.json();
-                    alert(`✅ Submitted! ID: #${result.complaintId || ''}`);
                     document.getElementById('issueForm').reset();
                     loadFeed(); 
                 } else {

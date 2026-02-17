@@ -365,7 +365,6 @@ document.getElementById('issueForm').addEventListener('submit', async function(e
         });
 
         if (response.ok) {
-            alert("✅ Report Submitted Successfully!");
             document.getElementById('issueForm').reset();
             loadFeed(); 
         } else {

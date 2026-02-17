@@ -374,7 +374,6 @@
 
             if (response.ok) {
                 const result = await response.json();
-                alert(`✅ Report Submitted! ID: #${result.complaintId}`);
                 document.getElementById('issueForm').reset();
                 await loadFeed(); // REFRESH THE SIDE BOX
             } else {

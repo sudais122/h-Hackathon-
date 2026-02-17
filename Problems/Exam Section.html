@@ -378,7 +378,6 @@
 
                 if (response.ok) {
                     const result = await response.json();
-                    alert(`✅ Exam Complain Submitted! ID: #${result.complaintId || ''}`);
                     document.getElementById('issueForm').reset();
                     loadFeed(); // Refresh the list
                 } else {

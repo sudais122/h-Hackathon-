@@ -56,10 +56,86 @@
         .back-link { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 20px; color: #64748b; text-decoration: none; font-weight: 600; }
         .back-link:hover { color: var(--primary); }
 
+
+        /* =====================================================
+           TOAST NOTIFICATIONS
+        ====================================================== */
+        #toast-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toast {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-width: 300px;
+            max-width: 380px;
+            padding: 16px 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.18);
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 500;
+            animation: toastIn 0.35s cubic-bezier(0.34,1.56,0.64,1) forwards;
+            position: relative;
+            overflow: hidden;
+        }
+        .toast.success { background: linear-gradient(135deg,#10b981,#059669); }
+        .toast.error   { background: linear-gradient(135deg,#ef4444,#dc2626); }
+        .toast.info    { background: linear-gradient(135deg,#3b82f6,#2563eb); }
+        .toast-icon  { font-size: 1.4rem; flex-shrink: 0; }
+        .toast-body  { flex: 1; }
+        .toast-title { font-weight: 700; font-size: 0.92rem; margin-bottom: 2px; }
+        .toast-msg   { font-size: 0.8rem; opacity: 0.9; }
+        .toast-bar   { position: absolute; bottom: 0; left: 0; height: 3px; background: rgba(255,255,255,0.45); animation: toastBar 3.5s linear forwards; }
+        .toast.hide  { animation: toastOut 0.3s ease forwards; }
+        @keyframes toastIn  { from{opacity:0;transform:translateX(50px) scale(0.95)} to{opacity:1;transform:translateX(0) scale(1)} }
+        @keyframes toastOut { from{opacity:1;transform:translateX(0) scale(1)} to{opacity:0;transform:translateX(50px) scale(0.95)} }
+        @keyframes toastBar { from{width:100%} to{width:0%} }
+
+        /* Inline field error */
+        .field-error {
+            display: none;
+            margin-top: 6px;
+            color: #f87171;
+            font-size: 0.78rem;
+            font-weight: 600;
+            align-items: center;
+            gap: 5px;
+        }
+        .field-error.show { display: flex; animation: toastIn 0.2s ease; }
+        .input-group input.invalid,
+        .input-group textarea.invalid {
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 0 3px rgba(239,68,68,0.2) !important;
+        }
+
+        /* Error banner inside action panel */
+        .panel-error {
+            display: none;
+            background: rgba(239,68,68,0.15);
+            border: 1px solid rgba(239,68,68,0.4);
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            color: #fca5a5;
+            font-size: 0.83rem;
+            font-weight: 600;
+            align-items: center;
+            gap: 8px;
+        }
+        .panel-error.show { display: flex; animation: toastIn 0.25s ease; }
         @media (max-width: 850px) { .container { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
+
+    <div id="toast-container"></div>
 
     <div style="max-width: 1100px; margin: 0 auto;">
         <a href="admin.html" class="back-link"><i class="fas fa-chevron-left"></i> Back to Dashboard</a>
@@ -84,13 +160,21 @@
 
         <div class="action-panel">
             
+            <!-- FIX: id changed from "forward-form" — kept as-is, but JS now correctly targets it -->
             <div id="forward-form">
                 <h2 class="forward-title"><i class="fas fa-paper-plane" style="color: var(--primary);"></i> Forward Case</h2>
                 <p class="panel-desc">Assign this to a faculty member. You can also resolve it immediately if no forwarding is needed.</p>
 
+                <div class="panel-error" id="panel-error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span id="panel-error-msg">Something went wrong.</span>
+                </div>
                 <div class="input-group">
                     <label>Recipient Email</label>
                     <input type="email" id="teacher-email" placeholder="teacher@awkum.edu.pk">
+                    <div class="field-error" id="email-error">
+                        <i class="fas fa-exclamation-circle"></i> Please enter a valid recipient email address.
+                    </div>
                 </div>
 
                 <div class="input-group">
@@ -98,6 +182,7 @@
                     <textarea id="admin-note" rows="3" placeholder="Add specific instructions..."></textarea>
                 </div>
 
+                <!-- FIX: onclick now calls the correctly defined processForwarding() -->
                 <button class="btn-forward" id="forward-btn" onclick="processForwarding()">
                     Forward to Department
                 </button>
@@ -135,94 +220,168 @@
     </div>
 
     <script>
-        const params = new URLSearchParams(window.location.search);
-        const dbId = params.get('id');
+        const urlParams = new URLSearchParams(window.location.search);
+        const complaintDbId = urlParams.get('id');
         let complaintData = null;
 
-        async function fetchDetails() {
-            if (!dbId) return;
+        // =====================================================
+        // TOAST SYSTEM
+        // =====================================================
+        function showToast(type, title, message) {
+            const icons = { success: 'fas fa-check-circle', error: 'fas fa-times-circle', info: 'fas fa-info-circle' };
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <i class="${icons[type]} toast-icon"></i>
+                <div class="toast-body">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-msg">${message}</div>
+                </div>
+                <div class="toast-bar"></div>`;
+            document.getElementById('toast-container').appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('hide');
+                setTimeout(() => toast.remove(), 350);
+            }, 3500);
+        }
+
+        // =====================================================
+        // INLINE FIELD ERROR HELPERS
+        // =====================================================
+        function showFieldError(inputId, errorId) {
+            const input = document.getElementById(inputId);
+            const error = document.getElementById(errorId);
+            input.classList.add('invalid');
+            error.classList.add('show');
+            input.focus();
+        }
+        function clearFieldError(inputId, errorId) {
+            document.getElementById(inputId).classList.remove('invalid');
+            document.getElementById(errorId).classList.remove('show');
+        }
+
+        // Panel error banner inside the dark action panel
+        function showPanelError(msg) {
+            const el = document.getElementById('panel-error');
+            document.getElementById('panel-error-msg').innerText = msg;
+            el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), 5000);
+        }
+
+        // --- Load complaint on page open ---
+        async function loadComplaintDetail() {
+            if (!complaintDbId) {
+                document.getElementById('display-desc').innerText = 'No complaint ID in URL.';
+                return;
+            }
             try {
-                const response = await fetch(`http://localhost:3001/api/complaints/${dbId}`);
-                complaintData = await response.json();
+                const res = await fetch(`http://localhost:3001/api/complaints/${complaintDbId}`);
+                if (!res.ok) throw new Error('Not found');
+                complaintData = await res.json();
 
-                document.getElementById('display-id').innerText = `ID: #${complaintData.complaintId}`;
-                document.getElementById('display-category').innerText = complaintData.category || "General";
-                document.getElementById('display-nature').innerText = complaintData.location || "N/A";
-                document.getElementById('display-desc').innerText = complaintData.description || "No description provided.";
+                document.getElementById('display-id').innerText      = '#' + (complaintData.complaintId || complaintDbId);
+                document.getElementById('display-category').innerText = complaintData.category    || 'N/A';
+                document.getElementById('display-nature').innerText   = complaintData.location    || 'N/A';
+                document.getElementById('display-desc').innerText     = complaintData.description || 'No description provided.';
 
-                // UI STATE TOGGLE
-                const formView = document.getElementById('forward-form');
-                const successView = document.getElementById('success-state');
-                const resolvedView = document.getElementById('resolved-state');
+                if      (complaintData.status === 'Forwarded') showForwardedState(complaintData.forwardedTo || 'Faculty');
+                else if (complaintData.status === 'Resolved')  showResolvedState();
 
-                if (complaintData.status === "Resolved") {
-                    formView.style.display = 'none';
-                    successView.style.display = 'none';
-                    resolvedView.style.display = 'block';
-                } else if (complaintData.status === "Forwarded") {
-                    formView.style.display = 'none';
-                    successView.style.display = 'block';
-                    document.getElementById('info-email').innerText = complaintData.forwardedTo || "Department Email";
-                }
-
-            } catch (err) {
-                document.getElementById('display-desc').innerText = "Error loading complaint details.";
+            } catch (e) {
+                // Inline error on the description box — no alert
+                document.getElementById('display-desc').innerText = '⚠️  Could not load complaint details. Please check your server connection and try again.';
+                document.getElementById('display-desc').style.color = '#ef4444';
+                showToast('error', 'Load Failed', 'Could not connect to server.');
             }
         }
 
+        // --- Forward ---
         async function processForwarding() {
-            const email = document.getElementById('teacher-email').value;
-            const note = document.getElementById('admin-note').value;
+            const teacherEmail = document.getElementById('teacher-email').value.trim();
+            const adminNote    = document.getElementById('admin-note').value.trim();
+
+            // Clear previous errors
+            clearFieldError('teacher-email', 'email-error');
+
+            // Inline validation — no alert
+            if (!teacherEmail) {
+                showFieldError('teacher-email', 'email-error');
+                return;
+            }
+
             const btn = document.getElementById('forward-btn');
-
-            if(!email) return alert("Please enter the teacher's email.");
-
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
 
             try {
                 const res = await fetch('http://localhost:3001/api/forward-complaint', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        id: dbId,
-                        teacherEmail: email,
-                        adminNote: note,
-                        complaintData: complaintData
-                    })
+                    body: JSON.stringify({ id: complaintDbId, teacherEmail, adminNote, complaintData })
                 });
 
-                if(res.ok) {
-                    alert("✅ Forwarded successfully!");
-                    window.location.reload();
-                } else {
-                    alert("❌ Server Error.");
-                    btn.disabled = false;
-                    btn.innerText = "Forward to Department";
-                }
-            } catch (error) {
+                if (!res.ok) throw new Error('Forward failed');
+                showForwardedState(teacherEmail);
+
+            } catch (e) {
+                // Panel error banner — no alert
+                showPanelError('Could not forward complaint. Check server connection.');
+                showToast('error', 'Forward Failed', 'Server connection error. Please retry.');
                 btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Forward to Department';
             }
         }
 
+        // Clear inline email error as user types
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('teacher-email').addEventListener('input', () => {
+                clearFieldError('teacher-email', 'email-error');
+            });
+        });
+
+        // --- Resolve ---
         async function markAsResolved() {
-            if(!confirm("Mark this case as resolved? This will close the complaint.")) return;
+            const resolveBtn = event && event.target;
+            if (resolveBtn) {
+                resolveBtn.disabled = true;
+                resolveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Resolving...';
+            }
 
             try {
-                const res = await fetch(`http://localhost:3001/api/complaints/${dbId}/status`, {
+                const res = await fetch(`http://localhost:3001/api/complaints/${complaintDbId}/status`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ status: 'Resolved' })
                 });
 
-                if(res.ok) {
-                    alert("✅ Complaint Resolved!");
-                    window.location.reload();
+                if (!res.ok) throw new Error('Resolve failed');
+                showResolvedState();
+
+            } catch (e) {
+                // Toast error — no alert
+                showToast('error', 'Resolve Failed', 'Could not update status. Check server connection.');
+                if (resolveBtn) {
+                    resolveBtn.disabled = false;
+                    resolveBtn.innerHTML = '<i class="fas fa-check-double"></i> Mark as Final Resolved';
                 }
-            } catch (e) { alert("Error connecting to server."); }
+            }
         }
 
-        window.onload = fetchDetails;
+        // --- UI State Switchers ---
+        function showForwardedState(email) {
+            document.getElementById('forward-form').style.display   = 'none';
+            document.getElementById('resolved-state').style.display = 'none';
+            document.getElementById('success-state').style.display  = 'block';
+            document.getElementById('info-email').innerText = email;
+        }
+
+        function showResolvedState() {
+            document.getElementById('forward-form').style.display   = 'none';
+            document.getElementById('success-state').style.display  = 'none';
+            document.getElementById('resolved-state').style.display = 'block';
+        }
+
+        window.onload = loadComplaintDetail;
     </script>
 </body>
 </html>

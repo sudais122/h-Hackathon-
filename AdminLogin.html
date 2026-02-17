@@ -9,19 +9,14 @@
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
         :root {
-            --primary-color: #BD2426; /* AWKUM Maroon */
+            --primary-color: #BD2426;
             --primary-dark: #8a1a1c;
-            --admin-color: #2c3e50;   /* Dark Blue for Admin */
+            --admin-color: #2c3e50;
             --text-dark: #333;
             --bg-color: #f0f2f5;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
 
         body {
             background: var(--bg-color);
@@ -34,17 +29,17 @@
         .login-container {
             background: #fff;
             width: 850px;
-            height: 500px;
+            height: 520px;
             display: flex;
             border-radius: 20px;
             box-shadow: 0 15px 30px rgba(0,0,0,0.1);
             overflow: hidden;
         }
 
-        /* Left Side (Branding) */
+        /* Left Side */
         .login-header {
             flex: 1;
-            background: linear-gradient(135deg, var(--admin-color), #1a252f); /* Changed to Admin Colors */
+            background: linear-gradient(135deg, var(--admin-color), #1a252f);
             color: white;
             display: flex;
             flex-direction: column;
@@ -53,16 +48,20 @@
             padding: 40px;
             text-align: center;
         }
-
-        .logo-icon {
-            font-size: 4rem;
-            margin-bottom: 20px;
+        .login-header div {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 110px;
+            height: 110px;
+            background-color: white;
+            border-radius: 50%;
         }
-
-        .login-header h2 { font-size: 2rem; margin-bottom: 10px; }
+        .login-header div img { border-radius: 20%; width: 80px; height: 80px; }
+        .login-header h2 { font-size: 2rem; margin-bottom: 10px; margin-top: 15px; }
         .login-header p { font-size: 0.9rem; opacity: 0.8; }
 
-        /* Right Side (Form) */
+        /* Right Side */
         .login-form {
             flex: 1.2;
             padding: 50px;
@@ -70,7 +69,6 @@
             flex-direction: column;
             justify-content: center;
         }
-
         .login-form h3 { color: var(--text-dark); margin-bottom: 5px; font-size: 1.8rem; }
         .text-muted { color: #888; margin-bottom: 30px; font-size: 0.9rem; }
 
@@ -79,39 +77,57 @@
             position: relative;
             margin-bottom: 20px;
         }
-
-        .input-group i {
+        .input-group .icon-left {
             position: absolute;
             left: 15px;
             top: 50%;
             transform: translateY(-50%);
             color: #888;
         }
+        /* Show/hide eye icon on the right */
+        .input-group .icon-right {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+        .input-group .icon-right:hover { color: var(--admin-color); }
 
         .input-group input {
             width: 100%;
-            padding: 12px 15px 12px 45px; 
+            padding: 12px 40px 12px 45px;
             border: 1px solid #ddd;
             border-radius: 8px;
             outline: none;
             transition: border 0.3s;
+            font-size: 0.95rem;
         }
+        .input-group input:focus { border-color: var(--admin-color); }
 
-        .input-group input:focus {
-            border-color: var(--admin-color);
-        }
         .options {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             font-size: 0.8rem;
             color: #555;
             margin-bottom: 25px;
         }
-        .button-group {
-            display: flex;
-            gap: 10px;
+        /* Change password link */
+        .change-pass-link {
+            color: var(--admin-color);
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 0.8rem;
+            transition: color 0.2s;
         }
+        .change-pass-link:hover { color: var(--primary-color); text-decoration: underline; }
 
+        .button-group { display: flex; gap: 10px; }
         .btn {
             padding: 12px 1rem;
             width: 100%;
@@ -126,74 +142,354 @@
             align-items: center;
             font-size: 1rem;
         }
-        .login-header div{
-            display: flex;
+        .btn:hover { opacity: 0.9; transform: translateY(-2px); }
+        .btn-admin { background-color: var(--admin-color); }
+
+        /* Error message */
+        .error-msg {
+            background: #fff1f2;
+            color: #be123c;
+            border: 1px solid #fecdd3;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 0.82rem;
+            margin-bottom: 16px;
+            display: none;
+        }
+
+        /* =====================================================
+           CHANGE PASSWORD MODAL
+        ====================================================== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.45);
+            display: none;
             justify-content: center;
             align-items: center;
-            width: 110px;
-            height: 110px;
-            background-color: white;
-            border-radius: 50%;
+            z-index: 999;
+            backdrop-filter: blur(3px);
         }
-        .login-header div img{
-            border-radius: 20%;
-            width: 80px;
-            height: 80px;
-        }
-        .btn:hover { opacity: 0.9; transform: translateY(-2px); }
+        .modal-overlay.open { display: flex; }
 
-        .btn-admin { background-color: var(--admin-color); }
+        .modal {
+            background: #fff;
+            border-radius: 16px;
+            padding: 40px;
+            width: 420px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+            position: relative;
+            animation: slideUp 0.25s ease;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to   { transform: translateY(0);    opacity: 1; }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 18px;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: #94a3b8;
+            cursor: pointer;
+        }
+        .modal-close:hover { color: var(--primary-color); }
+
+        .modal h3 {
+            font-size: 1.3rem;
+            color: var(--admin-color);
+            margin-bottom: 6px;
+        }
+        .modal p.sub { font-size: 0.85rem; color: #888; margin-bottom: 24px; }
+
+        /* Modal inputs reuse .input-group */
+        .modal .input-group input { padding: 11px 40px 11px 14px; }
+        .modal .input-group .icon-right { right: 12px; }
+
+        .modal-label {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .btn-save {
+            width: 100%;
+            padding: 13px;
+            background: var(--admin-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s, transform 0.2s;
+        }
+        .btn-save:hover { background: #1a252f; transform: translateY(-1px); }
+
+        .modal .error-msg { margin-bottom: 12px; }
+
+        /* Success tick */
+        .success-state { text-align: center; display: none; padding: 10px 0; }
+        .success-state i { font-size: 3rem; color: #10b981; margin-bottom: 12px; }
+        .success-state h4 { color: #065f46; font-size: 1.1rem; margin-bottom: 6px; }
+        .success-state p  { color: #6b7280; font-size: 0.85rem; }
+
+        /* Password strength bar */
+        .strength-bar-wrap { height: 5px; background: #e2e8f0; border-radius: 5px; margin-top: 6px; margin-bottom: 4px; }
+        .strength-bar { height: 100%; border-radius: 5px; width: 0; transition: width 0.3s, background 0.3s; }
+        .strength-label { font-size: 0.72rem; color: #94a3b8; }
+
         @media (max-width: 768px) {
             .login-container { flex-direction: column; width: 90%; height: auto; }
             .login-header { padding: 30px; }
             .login-form { padding: 30px; }
+            .modal { width: 92%; padding: 28px; }
         }
     </style>
 </head>
 <body>
+
     <div class="login-container">
+        <!-- Left branding -->
         <div class="login-header">
-            <div><img src="Imges/Logo.jpeg"></div>
+            <div><img src="Imges/Logo.jpeg" alt="Logo"></div>
             <h2>Admin Portal</h2>
             <p>Secure login for AWKUM Administrators.</p>
         </div>
 
+        <!-- Right form -->
         <div class="login-form">
             <h3>Welcome Back</h3>
             <p class="text-muted">Please enter your admin credentials</p>
-            
-            <form id="authForm">
+
+            <div class="error-msg" id="login-error">
+                <i class="fas fa-exclamation-circle"></i> Invalid username or password.
+            </div>
+
+            <form id="authForm" onsubmit="return false;">
                 <div class="input-group">
-                    <i class="fas fa-user"></i>
+                    <i class="fas fa-user icon-left"></i>
                     <input type="text" id="username" placeholder="Admin Username" required>
                 </div>
+
                 <div class="input-group">
-                    <i class="fas fa-lock"></i>
+                    <i class="fas fa-lock icon-left"></i>
                     <input type="password" id="password" placeholder="Password" required>
+                    <!-- Show / hide password toggle -->
+                    <i class="fas fa-eye icon-right" id="toggle-login-pass" onclick="togglePassword('password', 'toggle-login-pass')" title="Show password"></i>
                 </div>
+
                 <div class="options">
                     <label><input type="checkbox"> Remember me</label>
-                    </div>
+                    <span class="change-pass-link" onclick="openChangeModal()">
+                        <i class="fas fa-key"></i> Change Password
+                    </span>
+                </div>
+
                 <div class="button-group">
                     <button type="button" class="btn btn-admin" onclick="handleAdminLogin()">
-                          Admin Login
+                        <i class="fas fa-sign-in-alt" style="margin-right:8px;"></i> Admin Login
                     </button>
                 </div>
             </form>
-            </div>
+        </div>
     </div>
-    <script>
-        function handleAdminLogin() {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            if(username === "" || password === "") {
-                alert("Please enter both Username and Password.");
-                return;
-            }
-            if (username === 'admin' && password === 'awkum123') {
-                window.location.href = "admin.html"; 
-            }
+
+    <!-- ===================== CHANGE PASSWORD MODAL ===================== -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal">
+            <button class="modal-close" onclick="closeChangeModal()"><i class="fas fa-times"></i></button>
+
+            <!-- Form state -->
+            <div id="modal-form-state">
+                <h3><i class="fas fa-key" style="margin-right:8px;"></i>Change Admin Password</h3>
+                <p class="sub">Enter your current password then choose a new one.</p>
+
+                <div class="error-msg" id="modal-error"></div>
+
+                <!-- Current password -->
+                <div class="input-group" style="margin-bottom:16px;">
+                    <span class="modal-label">Current Password</span>
+                    <input type="password" id="current-pass" placeholder="Enter current password">
+                    <i class="fas fa-eye icon-right" id="toggle-current" onclick="togglePassword('current-pass','toggle-current')"></i>
+                </div>
+
+                <!-- New password -->
+                <div class="input-group" style="margin-bottom:6px;">
+                    <span class="modal-label">New Password</span>
+                    <input type="password" id="new-pass" placeholder="Enter new password" oninput="checkStrength(this.value)">
+                    <i class="fas fa-eye icon-right" id="toggle-new" onclick="togglePassword('new-pass','toggle-new')"></i>
+                </div>
+                <div class="strength-bar-wrap"><div class="strength-bar" id="strength-bar"></div></div>
+                <div class="strength-label" id="strength-label">Password strength</div>
+
+                <!-- Confirm password -->
+                <div class="input-group" style="margin-top:14px;">
+                    <span class="modal-label">Confirm New Password</span>
+                    <input type="password" id="confirm-pass" placeholder="Repeat new password">
+                    <i class="fas fa-eye icon-right" id="toggle-confirm" onclick="togglePassword('confirm-pass','toggle-confirm')"></i>
+                </div>
+
+                <button class="btn-save" onclick="handleChangePassword()">
+                    <i class="fas fa-save" style="margin-right:8px;"></i>Save New Password
+                </button>
+            </div>
+
+            <!-- Success state -->
+            <div class="success-state" id="modal-success-state">
+                <i class="fas fa-check-circle"></i>
+                <h4>Password Updated!</h4>
+                <p>Your admin password has been changed successfully.<br>Use your new password next time you log in.</p>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // ── Stored credentials (persisted in localStorage so changes survive refresh) ──
+    const DEFAULT_USER = 'admin';
+    const DEFAULT_PASS = 'awkum123';
+
+    function getStoredPassword() {
+        return localStorage.getItem('adminPassword') || DEFAULT_PASS;
+    }
+
+    // ── 1. SHOW / HIDE PASSWORD 
+    function togglePassword(inputId, iconId) {
+        const input = document.getElementById(inputId);
+        const icon  = document.getElementById(iconId);
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.replace('fa-eye-slash', 'fa-eye');
         }
-    </script>
+    }
+
+    // ── 2. LOGIN 
+    function handleAdminLogin() {
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value;
+        const errorEl  = document.getElementById('login-error');
+
+        if (!username || !password) {
+            errorEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> Please enter both username and password.';
+            errorEl.style.display = 'block';
+            return;
+        }
+
+        if (username === DEFAULT_USER && password === getStoredPassword()) {
+            errorEl.style.display = 'none';
+            window.location.href = 'admin.html';
+        } else {
+            errorEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> Invalid username or password.';
+            errorEl.style.display = 'block';
+            document.getElementById('authForm').style.animation = 'none';
+            setTimeout(() => document.getElementById('authForm').style.animation = '', 10);
+        }
+    }
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') handleAdminLogin();
+    });
+
+    // ── 3. CHANGE PASSWORD MODAL 
+    function openChangeModal() {
+        document.getElementById('modal-overlay').classList.add('open');
+        // Reset to form state
+        document.getElementById('modal-form-state').style.display   = 'block';
+        document.getElementById('modal-success-state').style.display = 'none';
+        document.getElementById('modal-error').style.display         = 'none';
+        document.getElementById('current-pass').value  = '';
+        document.getElementById('new-pass').value      = '';
+        document.getElementById('confirm-pass').value  = '';
+        document.getElementById('strength-bar').style.width = '0';
+        document.getElementById('strength-label').innerText = 'Password strength';
+    }
+
+    function closeChangeModal() {
+        document.getElementById('modal-overlay').classList.remove('open');
+    }
+
+    // Close modal on overlay click
+    document.getElementById('modal-overlay').addEventListener('click', function(e) {
+        if (e.target === this) closeChangeModal();
+    });
+
+    // ── 4. PASSWORD STRENGTH BAR 
+    function checkStrength(val) {
+        const bar   = document.getElementById('strength-bar');
+        const label = document.getElementById('strength-label');
+        let score = 0;
+        if (val.length >= 6)              score++;
+        if (val.length >= 10)             score++;
+        if (/[A-Z]/.test(val))            score++;
+        if (/[0-9]/.test(val))            score++;
+        if (/[^A-Za-z0-9]/.test(val))     score++;
+
+        const levels = [
+            { width: '0%',   color: '#e2e8f0', text: 'Password strength' },
+            { width: '25%',  color: '#f87171', text: 'Weak' },
+            { width: '50%',  color: '#fb923c', text: 'Fair' },
+            { width: '75%',  color: '#facc15', text: 'Good' },
+            { width: '100%', color: '#4ade80', text: 'Strong' },
+        ];
+        const level = val.length === 0 ? levels[0] : levels[Math.min(score, 4)];
+        bar.style.width      = level.width;
+        bar.style.background = level.color;
+        label.innerText      = level.text;
+        label.style.color    = level.color === '#e2e8f0' ? '#94a3b8' : level.color;
+    }
+
+    // ── 5. SAVE NEW PASSWORD 
+    function handleChangePassword() {
+        const currentPass = document.getElementById('current-pass').value;
+        const newPass     = document.getElementById('new-pass').value;
+        const confirmPass = document.getElementById('confirm-pass').value;
+        const errorEl     = document.getElementById('modal-error');
+
+        function showError(msg) {
+            errorEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + msg;
+            errorEl.style.display = 'block';
+        }
+
+        errorEl.style.display = 'none';
+
+        // Validate current password
+        if (currentPass !== getStoredPassword()) {
+            showError('Current password is incorrect.');
+            return;
+        }
+        // New password not empty
+        if (newPass.length < 6) {
+            showError('New password must be at least 6 characters.');
+            return;
+        }
+        // Can't reuse same password
+        if (newPass === currentPass) {
+            showError('New password must be different from current password.');
+            return;
+        }
+        // Confirm match
+        if (newPass !== confirmPass) {
+            showError('Passwords do not match.');
+            return;
+        }
+
+        localStorage.setItem('adminPassword', newPass);
+        console.log('🔑 Admin password changed successfully!');
+        console.log('📋 New Password:', newPass);
+        
+        document.getElementById('modal-form-state').style.display    = 'none';
+        document.getElementById('modal-success-state').style.display = 'block';
+
+        setTimeout(closeChangeModal, 2500);
+    }
+</script>
 </body>
 </html>

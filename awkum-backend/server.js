@@ -91,18 +91,13 @@ app.post('/api/login', async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // 1. Basic Validation
         if (!email || !password) {
             return res.status(400).json({ error: "Email and password are required" });
         }
 
-        // 2. Consistent Normalization
         const normalizedEmail = email.toLowerCase().trim();
-        
-        // DEBUG LOG: See what's happening in your terminal
         console.log(`Login attempt for: ${normalizedEmail}`);
 
-        // 3. Find User
         const user = await usersDb.findOne({ email: normalizedEmail });
 
         if (!user) {
@@ -110,7 +105,6 @@ app.post('/api/login', async (req, res) => {
             return res.status(401).json({ error: "Invalid email or password" });
         }
 
-        // 4. Compare Password
         const isMatch = await bcrypt.compare(password, user.password);
         
         if (!isMatch) {
@@ -118,7 +112,6 @@ app.post('/api/login', async (req, res) => {
             return res.status(401).json({ error: "Invalid email or password" });
         }
 
-        // 5. Success
         console.log(`Result: Success! Logging in ${user.fullname}`);
         res.json({ 
             message: "Login Successful", 
@@ -134,6 +127,7 @@ app.post('/api/login', async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
+
 // 4. FORGOT PASSWORD 
 app.post('/api/forgot-password', async (req, res) => {
     try {
@@ -181,7 +175,6 @@ app.get('/api/my-complaints', async (req, res) => {
         const userEmail = normalizeEmail(req.query.email);
         if (!userEmail) return res.status(400).json({ error: "Email is required" });
 
-        // Find complaints only for this specific user
         const myIssues = await complaintsDb.find({ email: userEmail }).sort({ date: -1 });
         res.json(myIssues);
     } catch (error) { 
@@ -189,7 +182,6 @@ app.get('/api/my-complaints', async (req, res) => {
     }
 });
 
-// --- UPDATE YOUR COMPLAINT POST ROUTE ---
 app.post('/api/report-issue', async (req, res) => {
     try {
         const { fullname, email, category, location, description } = req.body;
@@ -211,12 +203,11 @@ app.post('/api/report-issue', async (req, res) => {
         res.status(500).json({ error: "Database error" });
     }
 });
-// --- NEW SUBMIT ROUTE ---
+
 app.post('/api/submit', async (req, res) => {
     try {
         const { fullname, email, regNo, category, location, description } = req.body;
 
-        // Generate Unique 5-Digit ID
         let isUnique = false;
         let complaintId;
         while (!isUnique) {
@@ -240,14 +231,41 @@ app.post('/api/submit', async (req, res) => {
 
         const saved = await complaintsDb.insert(newComplaint);
         console.log(newComplaint);
+
+        // ✅ NEW: Notify admin email immediately after complaint is saved
+        transporter.sendMail({
+            from: '"FixIt CS-AWKUM" <khansb17798@gmail.com>',
+            to:   'sudaismuhammad752@gmail.com',
+            subject: 'New Complaint Received [#' + saved.complaintId + '] - ' + newComplaint.category,
+            html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; border: 1px solid #eee; padding: 24px; border-radius: 8px;">
+                    <h2 style="color: #BD2426; margin-bottom: 4px;">FixIt CS-AWKUM</h2>
+                    <p style="color: #666; margin-bottom: 20px;">A new complaint has been submitted.</p>
+                    <hr style="border: none; border-top: 1px solid #eee; margin-bottom: 20px;">
+                    <p><strong>Complaint ID:</strong> #${saved.complaintId}</p>
+                    <p><strong>Category:</strong> ${newComplaint.category}</p>
+                    <p><strong>Nature / Location:</strong> ${newComplaint.location || 'N/A'}</p>
+                    <p><strong>Description:</strong></p>
+                    <div style="background: #f8fafc; padding: 12px; border-radius: 6px; border-left: 4px solid #BD2426; color: #444;">
+                        ${newComplaint.description}
+                    </div>
+                    <p style="margin-top: 20px; color: #999; font-size: 0.85rem;">Submitted at: ${newComplaint.date}</p>
+                </div>
+            `
+        }, (err) => {
+            if (err) console.error('Admin notification email failed:', err.message);
+            else     console.log('Admin notified for complaint #' + saved.complaintId);
+        });
+
         res.json({ message: "Success", complaintId: saved.complaintId });
     } catch (error) {
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
+
+// GET ALL COMPLAINTS
 app.get('/api/complaints', async (req, res) => {
     try {
-        // Fetch all complaints, sorted by newest first
         const complaints = await complaintsDb.find({}).sort({ createdAt: -1 });
         res.json(complaints);
     } catch (error) {
@@ -255,66 +273,87 @@ app.get('/api/complaints', async (req, res) => {
     }
 });
 
-// view and forward route
-app.post('/api/forward-complaint', async (req, res) => {
-    const { teacherEmail, adminNote, complaintData } = req.body;
-
-    const mailOptions = {
-        from: '"FixIt CS-AWKUM" <your-email@gmail.com>',
-        to: teacherEmail,
-        subject: `URGENT: Faculty Complaint Forwarded [#${complaintData.complaintId}]`,
-        html: `
-            <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
-                <div style="background-color: #BD2426; color: white; padding: 20px; text-align: center;">
-                    <h1 style="margin: 0; font-size: 20px;">FixIt CS-AWKUM Official Notice</h1>
-                </div>
-                <div style="padding: 25px; color: #334155;">
-                    <p>Dear Faculty Member,</p>
-                    <p>The following student complaint has been officially forwarded to you by the Department Administration for review and resolution.</p>
-                    
-                    <div style="background-color: #f8fafc; padding: 15px; border-radius: 6px; margin: 20px 0;">
-                        <p><strong>Complaint ID:</strong> #${complaintData.complaintId}</p>
-                        <p><strong>Issue:</strong> ${complaintData.location}</p>
-                        <p><strong>Description:</strong> ${complaintData.description}</p>
-                    </div>
-
-                    ${adminNote ? `
-                    <div style="border-left: 4px solid #BD2426; padding-left: 15px; margin: 20px 0;">
-                        <p><strong>Administrative Note:</strong><br>${adminNote}</p>
-                    </div>` : ''}
-
-                    <p style="font-size: 13px; color: #64748b; margin-top: 30px;">
-                        Please acknowledge receipt of this complaint and provide an update to the Chairman's office once addressed.
-                    </p>
-                </div>
-            </div>
-        `
-    };
-
-    transporter.sendMail(mailOptions, (err) => {
-        if (err) return res.status(500).json({ error: "Mail delivery failed" });
-        complaintsDb.update({ _id: complaintData._id }, { $set: { status: "Forwarded" } });
-        res.json({ success: true });
-    });
-});
-// Fetch a single complaint by its Database ID
 app.get('/api/complaints/:id', async (req, res) => {
     try {
-        const id = req.params.id;
+        const id = req.params.id.trim();
+        console.log(`🔍 Fetching complaint with _id: "${id}"`);
+
+        // nedb findOne with _id as a string
         const complaint = await complaintsDb.findOne({ _id: id });
-        if (complaint) {
-            res.json(complaint);
-        } else {
-            res.status(404).json({ error: "Complaint not found" });
+        console.log(`📦 Result:`, complaint ? `Found #${complaint.complaintId}` : 'NOT FOUND');
+
+        if (!complaint) {
+            return res.status(404).json({ error: `Complaint with id "${id}" not found` });
         }
+        res.json(complaint);
     } catch (error) {
+        console.error('❌ Error fetching complaint:', error);
+        res.status(500).json({ error: "Failed to fetch complaint" });
+    }
+});
+
+// FORWARD COMPLAINT
+app.post('/api/forward-complaint', async (req, res) => {
+    const { id, teacherEmail, adminNote, complaintData } = req.body;
+
+    try {
+        await complaintsDb.update(
+            { _id: id },
+            { $set: { status: "Forwarded", forwardedTo: teacherEmail } }
+        );
+        console.log('Status updated to Forwarded for complaint: ' + id);
+
+        res.json({ success: true });
+        const mailOptions = {
+            from: '"FixIt CS-AWKUM" <khansb17798@gmail.com>',
+            to: teacherEmail,
+            subject: 'URGENT: Faculty Complaint Forwarded [#' + complaintData.complaintId + ']',
+            html: '<div style="font-family: Arial, sans-serif; max-width: 600px; border: 1px solid #eee; padding: 20px;">'
+                + '<h2 style="color: #BD2426;">FixIt CS-AWKUM Official Notice</h2>'
+                + '<p>A student complaint has been forwarded to you for resolution.</p><hr>'
+                + '<p><strong>Complaint ID:</strong> #' + complaintData.complaintId + '</p>'
+                + '<p><strong>Location/Nature:</strong> ' + complaintData.location + '</p>'
+                + '<p><strong>Details:</strong> ' + complaintData.description + '</p>'
+                + (adminNote ? '<p style="background:#fdf2f2;padding:10px;border-left:4px solid #BD2426;"><strong>Admin Note:</strong> ' + adminNote + '</p>' : '')
+                + '</div>'
+        };
+
+        transporter.sendMail(mailOptions, (err) => {
+            if (err) console.error('Email send failed (DB already updated):', err.message);
+            else console.log('Email sent to ' + teacherEmail);
+        });
+
+    } catch (dbErr) {
+        console.error('DB update failed:', dbErr);
+        res.status(500).json({ error: "Database update failed" });
+    }
+});
+
+// UPDATE COMPLAINT STATUS (Forwarded -> Resolved)
+app.put('/api/complaints/:id/status', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+
+        console.log('Updating complaint ' + id + ' to status: ' + status);
+
+        await complaintsDb.update(
+            { _id: id },
+            { $set: { status: status } }
+        );
+        console.log('Status successfully updated to: ' + status);
+        res.json({ message: "Status updated successfully" });
+
+    } catch (error) {
+        console.error('Status update error:', error);
         res.status(500).json({ error: "Server error" });
     }
 });
-// --- ADMIN API ---
+
+// ADMIN API - GET USERS
 app.get('/api/users', async (req, res) => {
     const users = await usersDb.find({ role: "Student" });
     res.json(users);
 });
 
-app.listen(3001, () => console.log("🚀 Server at http://localhost:3001"));
+app.listen(3001, () => console.log("Server at http://localhost:3001"));
