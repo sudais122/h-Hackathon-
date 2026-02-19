@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Technical Issue Complaint</title>
+    <title>Faculty</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -12,12 +12,29 @@
             --light: #f4f4f4;
             --white: #ffffff;
             --accent: #e74c3c;
+            --success: #27ae60;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
         body { background-color: var(--light); color: #333; }
 
         /* --- HEADER --- */
-        header { background-color: var(--white); display: flex; justify-content: space-between; align-items: center; padding: 1rem 5%; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+        header {
+            background-color: var(--white);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
         .logo { font-size: 1.5rem; font-weight: bold; color: var(--dark); }
         .logo span { color: var(--primary); }
         nav a { text-decoration: none; color: var(--dark); margin-left: 20px; font-weight: 500; }
@@ -26,19 +43,34 @@
 
         /* --- HERO --- */
         .hero {
-            background: linear-gradient(rgba(189, 36, 38, 0.9), rgba(64, 64, 64, 0.8)), url('https://timergara.awkum.edu.pk/wp-content/uploads/2020/06/01.jpg');
-            background-size: cover; background-position: center;
-            height: 250px; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; text-align: center; color: white; padding: 20px;
+            background: linear-gradient(rgba(189, 36, 38, 0.9), rgba(64, 64, 64, 0.8)), url('Imges/Dep lands.jpeg');
+            background-size: cover;
+            background-position: center;
+            height: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            padding: 20px;
         }
         .hero h1 { font-size: 2.5rem; margin-bottom: 10px; }
         .cta-button { margin-top: 15px; background: white; color: var(--primary); padding: 10px 20px; text-decoration: none; font-weight: bold; border-radius: 25px; }
 
-        .container { display: flex; flex-direction: row; flex-wrap: nowrap; gap: 30px; padding: 40px 15%; max-width: 1400px; margin: 0 auto; }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            padding: 40px 10%;
+            max-width: 1200px;
+            margin: 0 auto;
+            align-items: flex-start;
+        }
 
         /* --- FORM --- */
         .form-wrapper { flex: 1; min-width: 300px; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); height: fit-content; }
-        .form-wrapper h2 { margin-bottom: 20px; color: var(--dark); display: flex; gap: 10px; align-items: center; }
+        .form-wrapper h2 { margin-bottom: 20px; color: var(--dark); gap: 1rem; display: flex; align-items: center; }
         .input-group { margin-bottom: 15px; }
         .input-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; }
         .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
@@ -47,9 +79,9 @@
         .submit-btn:disabled { opacity: 0.7; cursor: not-allowed; }
 
         /* --- FEED --- */
-        .issues-list { flex: 1; min-width: 300px; }
+        .issues-list { flex: 1; min-width: 300px; display: flex; flex-direction: column; }
         .issues-list h2 { padding-bottom: 10px; }
-        #feed-container { overflow-y: auto; padding-right: 10px; }
+        #feed-container { max-height: 410px; overflow-y: auto; padding-right: 10px; }
         #feed-container::-webkit-scrollbar { width: 8px; }
         #feed-container::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
         #feed-container::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
@@ -57,6 +89,8 @@
 
         .issue-card { background: white; padding: 20px; margin-bottom: 15px; border-radius: 8px; border-left: 5px solid var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
         .tag { display: inline-block; font-size: 0.75rem; padding: 3px 8px; border-radius: 4px; color: white; margin-bottom: 10px; text-transform: uppercase; }
+        .tag.academic { background-color: #8e44ad; }
+        .tag.other { background-color: #95a5a6; }
         .issue-card h3 { font-size: 1.1rem; margin-bottom: 5px; }
         .issue-card p { font-size: 0.9rem; color: #666; margin-bottom: 10px; }
         .meta { display: flex; justify-content: space-between; font-size: 0.8rem; color: #999; align-items: center; }
@@ -82,7 +116,7 @@
         body.dark-mode .issue-card p { color: #aaa; }
 
         /* =====================================================
-           TOAST NOTIFICATIONS
+           TOAST NOTIFICATION STYLES
         ====================================================== */
         #toast-container {
             position: fixed;
@@ -121,21 +155,69 @@
         .toast-body  { flex: 1; }
         .toast-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 2px; }
         .toast-msg   { font-size: 0.82rem; opacity: 0.9; }
-        .toast-bar { position: absolute; bottom: 0; left: 0; height: 4px; width: 100%; background: rgba(255,255,255,0.35); }
+        .toast-bar { position: absolute; bottom: 0; left: 0; height: 4px; width: 100%; background: rgba(255,255,255,0.5); }
         .toast-bar-inner { height: 100%; width: 100%; background: rgba(255,255,255,0.9); transform-origin: left; animation: drainBar 5s linear forwards; }
         @keyframes drainBar { from { transform: scaleX(1); } to { transform: scaleX(0); } }
 
-        /* RESPONSIVE */
         @media (max-width: 768px) {
             header { flex-direction: column; padding: 15px !important; text-align: center; }
             .logo { margin-bottom: 15px; }
             nav { width: 100%; display: flex; justify-content: center; gap: 15px; align-items: center; }
             .hero h1 { font-size: 1.8rem; }
-            .container { padding: 20px 5%; flex-wrap: wrap; }
+            .container { padding: 20px 5%; }
             #feed-container { max-height: none !important; }
             #toast-container { bottom: 15px; right: 15px; left: 15px; }
             .toast { min-width: unset; width: 100%; }
         }
+        /* --- ADMIN REPLY SECTION --- */
+.admin-reply {
+    margin-top: 15px;
+    padding: 15px;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    border-left: 4px solid #3b82f6;
+    border-radius: 8px;
+    animation: slideIn 0.4s ease;
+}
+body.dark-mode .admin-reply {
+    background: linear-gradient(135deg, #1e3a5f 0%, #1e293b 100%);
+    border-left-color: #60a5fa;
+}
+.admin-reply-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: #1e40af;
+}
+body.dark-mode .admin-reply-header {
+    color: #93c5fd;
+}
+.admin-reply-header i {
+    font-size: 1rem;
+}
+.admin-reply-text {
+    font-size: 0.88rem;
+    color: #334155;
+    line-height: 1.5;
+    margin-bottom: 8px;
+}
+body.dark-mode .admin-reply-text {
+    color: #cbd5e1;
+}
+.admin-reply-time {
+    font-size: 0.75rem;
+    color: #64748b;
+    font-style: italic;
+}
+body.dark-mode .admin-reply-time {
+    color: #94a3b8;
+}
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
     </style>
 </head>
 <body>
@@ -152,63 +234,99 @@
     </header>
 
     <section class="hero">
-        <h1>Technical Issue Complaint Portal</h1>
-        <p>Enhancing service efficiency through organized complaint tracking and responsive technical support.</p>
+        <h1>Faculty Complaint Portal</h1>
+        <p>Report professional misconduct, teaching negligence, or grading unfairness.</p>
         <a href="#report" class="cta-button">File a Complaint Now</a>
     </section>
 
     <div class="container" id="report">
         <div class="form-wrapper">
-            <h2><i class="fas fa-screwdriver-wrench"></i> Submit Technical Complaint</h2>
+            <h2><i class="fas fa-bullhorn"></i> Submit Official Complaint</h2>
             <form id="issueForm">
+<div class="input-group">
+    <label>Faculty Member</label>
+    <select id="category" required>
+        <option value="">Select Faculty Member</option>
+        
+        <optgroup label="Chairman">
+            <option value="Dr. Nadeem Iqbal">Dr. Nadeem Iqbal</option>
+        </optgroup>
+
+        <optgroup label="Professors">
+            <option value="Dr. Sher Afzal">Dr. Sher Afzal</option>
+            <option value="Dr. Rahim Khan">Dr. Rahim Khan</option>
+            <option value="Dr. Maqsood Hayat">Dr. Maqsood </option>
+        </optgroup>
+
+        <optgroup label="Assistant Professors">
+            <option value="Dr. Izaz Ur Rahman">Dr. Izaz Ur Rahman</option>
+            <option value="Dr. Hashim Ali">Dr. Hashim Ali</option>
+            <option value="Dr. Muhammad Tahir">Dr. Muhammad Tahir</option>
+        </optgroup>
+
+        <optgroup label="Permanent Lecturers">
+            <option value="Aftab Ahmed Khan">Mr. Aftab Ahmed Khan (FYP Coordinator)</option>
+            <option value="Mr. Shahzad">Mr. Shahzad</option>
+            <option value="Dr. Nazia Azim">Dr. Nazia Azim</option>
+            <option value="Dr. Ashraf Zia">Dr. Ashraf Zia</option>
+            <option value="Mr. Shahzad Alam">Mr. Shahzad Alam (Exam Section)</option>
+        </optgroup>
+
+        <optgroup label="Visiting Faculty">
+            <option value="Mr. Nadeem Ullah">Mr. Nadeem Ullah</option>
+            <option value="Mr. Umar Tanveer">Mr. Umar Tanveer</option>
+            <option value="Ms. Kiran">Ms. Kiran</option>
+            <option value="Mr. Zia Ur Rahman">Mr. Zia Ur Rahman</option>
+            <option value="Mr. Asif Rahim">Mr. Asif Rahim</option>
+            <option value="Ms. Sawera">Ms. Sawera</option>
+            <option value="Ms. Nimra Baig">Ms. Nimra Baig</option>
+            <option value="Mr. Farhan">Mr. Farhan</option>
+            <option value="Mr. Sheraz">Mr. Sheraz</option>
+            <option value="Mr. Asif">Mr. Asif</option>
+            <option value="Mr. Jamil">Mr. Jamil</option>
+            <option value="Mr. Atta Ur Rahman">Mr. Atta Ur Rahman</option>
+        </optgroup>
+
+        <option value="Other">Other / Not Listed</option>
+    </select>
+</div>
                 <div class="input-group">
-                    <label>Technical Issue</label>
-                    <select id="category" required>
-                        <option value="">-- Choose Issue --</option>
-                        <optgroup label="Network Issues">
-                            <option value="Wifi issue">Wifi Issue</option>
-                            <option value="Slow internet">Slow Internet</option>
-                            <option value="WiFi not connecting">WiFi Not Connecting</option>
-                        </optgroup>
-                        <optgroup label="Computer System Issues">
-                            <option value="Computer not turning on">Computer Not Turning On</option>
-                            <option value="System very slow">System Very Slow</option>
-                            <option value="System hanging or freezing">System Hanging or Freezing</option>
-                            <option value="Software not installed">Required Software Not Installed</option>
-                            <option value="Projector not working">Projector Not Working</option>
-                        </optgroup>
+                    <label>Nature of Problem</label>
+                    <select id="nature" required>
+                        <option value="">What is the main concern?</option>
+                        <option value="Course Coverage">Course Coverage (Syllabus not being finished)</option>
+                        <option value="Teaching Method">Teaching Methodology</option>
+                        <option value="Behavioral">Professional Behavior/Conduct</option>
+                        <option value="Grading/Assessment">Grading or Assignment Feedback</option>
+                        <option value="Availability">Teacher Availability/Punctuality</option>
                         <option value="Other">Other</option>
                     </select>
                 </div>
                 <div class="input-group">
-                    <label>Nature of Problem</label>
-                    <input type="text" id="location" placeholder="Briefly describe the issue type">
-                </div>
-                <div class="input-group">
                     <label>Description</label>
-                    <textarea id="desc" rows="5" placeholder="Explain the problem in detail. Include error messages and steps you already tried." required></textarea>
+                    <textarea id="desc" rows="5" placeholder="Describe the issue in detail" required></textarea>
                 </div>
                 <button type="submit" class="submit-btn">
-                    <i class="fas fa-paper-plane"></i> Submit Report
+                    <i class="fas fa-paper-plane"></i> Submit Complaint
                 </button>
             </form>
         </div>
 
         <div class="issues-list">
-            <h2>Recent Technical Issue Reports</h2>
+            <h2>Recent Faculty Reports</h2>
             <div id="feed-container"></div>
         </div>
     </div>
     <footer>
         <div style="padding: 10px;"><p>Developed By <span style="font-weight: 800;">Muhammad Sudais</span></p></div>
-        <p> FixIt CS-AWKUM | Built for the Students of Computer Science</p>
+        <p>2025 FixIt CS-AWKUM | Built for the Students of Computer Science</p>
     </footer>
+
 <script>
-    // --- 1. AUTH CHECK ---
     const user = JSON.parse(localStorage.getItem('currentUser'));
     if (!user) { window.location.href = "UserLogin.html"; }
 
-    // --- 2. DARK MODE ---
+    // --- DARK MODE ---
     const themeBtn = document.getElementById('theme-btn');
     const body = document.body;
     if (localStorage.getItem('theme') === 'dark') {
@@ -224,7 +342,7 @@
         });
     }
 
-    // --- 3. TOAST SYSTEM ---
+    // --- TOAST SYSTEM ---
     function showToast(type, title, message) {
         const icons = { success: 'fas fa-check-circle', error: 'fas fa-times-circle', info: 'fas fa-info-circle' };
         const toast = document.createElement('div');
@@ -248,10 +366,10 @@
         }, 5000);
     }
 
-    // --- 4. LOAD FEED ON READY ---
+    // --- LOAD FEED ---
     document.addEventListener('DOMContentLoaded', loadFeed);
 
-    // --- 5. SUBMIT ---
+    // --- SUBMIT ---
     document.getElementById('issueForm').addEventListener('submit', async function(e) {
         e.preventDefault();
 
@@ -259,18 +377,18 @@
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
         submitBtn.disabled = true;
 
-        const subCategory = document.getElementById('category').value;
-        const location    = document.getElementById('location').value;
-        const rawDesc     = document.getElementById('desc').value;
+        const profName  = document.getElementById('category').value;
+        const nature    = document.getElementById('nature').value;
+        const rawDesc   = document.getElementById('desc').value;
 
-        // ✅ "Technical Issue: Wifi issue" — consistent label everywhere
-        const formattedCategory = `Technical Issue: ${subCategory}`;
+        const formattedCategory = `Faculty: ${profName}`;
 
         const payload = {
-            email:       user.email,
             fullname:    user.fullname,
+            email:       user.email,
+            regNo:       user.regNo || 'N/A',
             category:    formattedCategory,
-            location:    location,
+            location:    nature,
             description: rawDesc,
             date:        new Date().toISOString()
         };
@@ -283,76 +401,85 @@
             });
 
             if (response.ok) {
-                showToast('success', 'Complaint Submitted!', 'Your technical issue report has been sent successfully.');
+                showToast('success', 'Complaint Submitted!', 'Your complaint has been sent successfully.');
                 document.getElementById('issueForm').reset();
                 loadFeed();
             } else {
-                showToast('error', 'Server Error', 'Please check if your backend is running.');
+                const errorData = await response.json();
+                showToast('error', 'Submission Failed', errorData.error || 'Please try again.');
             }
         } catch (error) {
             console.error(error);
             showToast('error', 'Connection Failed', 'Cannot connect to server. Is it running?');
         } finally {
-            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Report';
+            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Complaint';
             submitBtn.disabled = false;
         }
     });
 
-    // --- 6. LOAD FEED ---
-    async function loadFeed() {
-        const feedContainer = document.getElementById('feed-container');
-        feedContainer.innerHTML = "<p style='text-align:center; opacity:0.6;'><i class='fas fa-spinner fa-spin'></i> Loading...</p>";
+    // --- LOAD FEED ---
+   async function loadFeed() {
+    const feedContainer = document.getElementById('feed-container');
+    feedContainer.innerHTML = "<p style='text-align:center; opacity:0.6;'><i class='fas fa-spinner fa-spin'></i> Loading...</p>";
 
-        try {
-            const response = await fetch(`http://localhost:3001/api/my-complaints?email=${user.email}`);
-            const myComplaints = await response.json();
+    try {
+        const response = await fetch(`http://localhost:3001/api/my-complaints?email=${user.email}`);
+        const allComplaints = await response.json();
 
-            // ✅ Filter matches new prefix "Technical Issue" — newest first (no .reverse())
-            const filteredIssues = myComplaints.filter(issue =>
-                issue.category && issue.category.startsWith('Technical Issue')
-            );
+        const filteredIssues = allComplaints.filter(issue => issue.category.startsWith('Faculty'));
 
-            feedContainer.innerHTML = '';
+        feedContainer.innerHTML = '';
 
-            if (filteredIssues.length === 0) {
-                feedContainer.innerHTML = "<p style='text-align:center; opacity:0.7;'>No technical issue reports found.</p>";
-                return;
-            }
+        if (filteredIssues.length === 0) {
+            feedContainer.innerHTML = "<p style='text-align:center; opacity:0.7;'>No reports found.</p>";
+            return;
+        }
 
-            filteredIssues.forEach(issue => {
-                const dateObj = new Date(issue.date);
-                const dateStr = dateObj.toLocaleDateString();
-                const timeStr = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-                feedContainer.innerHTML += `
-                    <div class="issue-card" style="animation: fadeIn 0.5s ease;">
-                        <div class="tag" style="background-color: #2980b9;">${issue.category}</div>
-                        <h3>${issue.location || 'No location specified'}</h3>
-                        <p>${issue.description}</p>
-                        <div class="meta">
-                            <span><i class="fas fa-clock"></i> ${dateStr} at ${timeStr}</span>
-                            <span class="status ${issue.status.toLowerCase()}">${issue.status}</span>
+        filteredIssues.forEach(issue => {
+            const dateObj = new Date(issue.date);
+            const dateStr = dateObj.toLocaleDateString();
+            const timeStr = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            // Build admin reply section if it exists
+            let adminReplyHTML = '';
+            if (issue.adminReply && issue.adminReply.trim() !== '') {
+                const replyTime = issue.replyTimestamp 
+                    ? new Date(issue.replyTimestamp).toLocaleString()
+                    : 'Recently';
+                
+                adminReplyHTML = `
+                    <div class="admin-reply">
+                        <div class="admin-reply-header">
+                            <i class="fas fa-user-shield"></i>
+                            <span>Admin Response</span>
+                        </div>
+                        <div class="admin-reply-text">${issue.adminReply}</div>
+                        <div class="admin-reply-time">
+                            <i class="fas fa-clock"></i> ${replyTime}
                         </div>
                     </div>
                 `;
-            });
+            }
+            
+            feedContainer.innerHTML += `
+                <div class="issue-card" style="animation: fadeIn 0.5s ease;">
+                    <div class="tag academic">${issue.category}</div>
+                    <h3>${issue.location}</h3>
+                    <p>${issue.description}</p>
+                    <div class="meta">
+                        <span><i class="fas fa-clock"></i> ${dateStr} at ${timeStr}</span>
+                        <span class="status ${issue.status.toLowerCase()}">${issue.status}</span>
+                    </div>
+                    ${adminReplyHTML}
+                </div>
+            `;
+        });
 
-            adjustFeedHeight();
-
-        } catch (error) {
-            console.error(error);
-            feedContainer.innerHTML = "<p style='color:red; text-align:center;'>Error loading data. Is server running?</p>";
-        }
+    } catch (error) {
+        console.error(error);
+        feedContainer.innerHTML = "<p style='color:red; text-align:center;'>Error loading data. Is server running?</p>";
     }
-
-    function adjustFeedHeight() {
-        const formWrapper   = document.querySelector('.form-wrapper');
-        const feedContainer = document.getElementById('feed-container');
-        if (window.innerWidth > 768 && formWrapper && feedContainer) {
-            feedContainer.style.maxHeight = (formWrapper.offsetHeight - 50) + 'px';
-        }
-    }
-    window.addEventListener('resize', adjustFeedHeight);
+}
 </script>
 </body>
 </html>

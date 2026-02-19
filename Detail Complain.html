@@ -56,10 +56,6 @@
         .back-link { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 20px; color: #64748b; text-decoration: none; font-weight: 600; }
         .back-link:hover { color: var(--primary); }
 
-
-        /* =====================================================
-           TOAST NOTIFICATIONS
-        ====================================================== */
         #toast-container {
             position: fixed;
             top: 24px;
@@ -129,6 +125,198 @@
             align-items: center;
             gap: 8px;
         }
+        .faculty-master-hub {
+    display: flex; /* This puts them side-by-side */
+    gap: 0;
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+    box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+    margin: 2rem 9rem 1rem 9rem;
+}
+
+/* Left Section */
+.faculty-side-panel {
+    display: flex;
+    flex: 1;
+    gap: 2rem;
+    flex-direction: column;
+    padding: 25px;
+    border-right: 1px solid #f1f5f9;
+    background: #ffffff;
+}
+
+/* Right Section */
+.faculty-response-panel {
+    flex: 1.2; /* Makes the reply side slightly wider */
+    padding: 25px;
+    background: #f8fafc;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Styling for the email text area */
+.email-content-view {
+    flex-grow: 1;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 15px;
+    margin-top: 10px;
+    min-height: 120px;
+}
+
+/* Mobile Responsive: Stack them on top of each other if the screen is small */
+@media (max-width: 768px) {
+    .faculty-master-hub {
+        flex-direction: column;
+        margin: 2rem 0rem 1rem 0rem;
+    }
+    .faculty-side-panel {
+        border-right: none;
+        border-bottom: 1px solid #f1f5f9;
+    }
+}
+.has-reply .status-indicator {
+    background: #10b981;
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+}
+.contact-methods{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+/* ADMIN REPLY SECTION */
+* {
+    box-sizing: border-box;
+}
+
+.admin-reply-box {
+    width: 100%;
+    max-width: 550px;
+    margin: 30px auto;
+    padding: 22px;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: 0.3s ease;
+}
+.admin-reply-header {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#complaint-id-input {
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    font-size: 14px;
+    color: #334155;
+}
+
+/* Textarea */
+.admin-reply-textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    font-size: 14px;
+    resize: vertical;
+    transition: 0.2s;
+}
+
+.admin-reply-textarea:focus {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79,70,229,0.1);
+    outline: none;
+}
+
+#send-reply-btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    background: var(--primary);
+    color: white;
+    transition: 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+#send-reply-btn:hover {
+    background: #b22224;
+}
+
+#send-reply-btn:active {
+    transform: scale(0.97);
+}
+.complaint-id-display{
+    display: flex;
+    justify-content: space-between;
+    font-weight: bolder;
+}
+#id{
+    background: #fee2e2;
+    color: var(--primary);
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+/* Responsive */
+@media (max-width: 480px) {
+    .admin-reply-box {
+        padding: 16px;
+    }
+
+    .admin-reply-header {
+        font-size: 14px;
+    }
+
+    #send-reply-btn {
+        padding: 12px;
+        font-size: 13px;
+    }
+}
+
+
+/* 🔹 Mobile Optimization */
+@media (max-width: 480px) {
+    .admin-reply-box {
+        padding: 14px;
+        border-radius: 10px;
+    }
+    .admin-reply-header {
+        font-size: 13px;
+    }
+
+    .complaint-id-field,
+    .admin-reply-textarea {
+        font-size: 13px;
+    }
+
+    #send-reply-btn {
+        font-size: 13px;
+        padding: 10px;
+    }
+}
+
         .panel-error.show { display: flex; animation: toastIn 0.25s ease; }
         @media (max-width: 850px) { .container { grid-template-columns: 1fr; } }
     </style>
@@ -140,7 +328,6 @@
     <div style="max-width: 1100px; margin: 0 auto;">
         <a href="admin.html" class="back-link"><i class="fas fa-chevron-left"></i> Back to Dashboard</a>
     </div>
-
     <div class="container">
         <div class="card">
             <div class="header">
@@ -159,8 +346,6 @@
         </div>
 
         <div class="action-panel">
-            
-            <!-- FIX: id changed from "forward-form" — kept as-is, but JS now correctly targets it -->
             <div id="forward-form">
                 <h2 class="forward-title"><i class="fas fa-paper-plane" style="color: var(--primary);"></i> Forward Case</h2>
                 <p class="panel-desc">Assign this to a faculty member. You can also resolve it immediately if no forwarding is needed.</p>
@@ -181,8 +366,6 @@
                     <label>Instruction Note (Optional)</label>
                     <textarea id="admin-note" rows="3" placeholder="Add specific instructions..."></textarea>
                 </div>
-
-                <!-- FIX: onclick now calls the correctly defined processForwarding() -->
                 <button class="btn-forward" id="forward-btn" onclick="processForwarding()">
                     Forward to Department
                 </button>
@@ -218,170 +401,397 @@
 
         </div>
     </div>
-
-    <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const complaintDbId = urlParams.get('id');
-        let complaintData = null;
-
-        // =====================================================
-        // TOAST SYSTEM
-        // =====================================================
-        function showToast(type, title, message) {
-            const icons = { success: 'fas fa-check-circle', error: 'fas fa-times-circle', info: 'fas fa-info-circle' };
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.innerHTML = `
-                <i class="${icons[type]} toast-icon"></i>
-                <div class="toast-body">
-                    <div class="toast-title">${title}</div>
-                    <div class="toast-msg">${message}</div>
+<div class="faculty-master-hub">
+    <div class="faculty-side-panel">
+        <h3 id="faculty-name-display">Faculty Member Contact Details</h3>
+        
+        <div class="contact-methods">
+            <div class="contact-row" onclick="copyText('fc-email')">
+                <div class="icon-box email-bg" style="display: flex; align-items: center;">
+                    <i class="fas fa-envelope"></i>
+                    <div class="contact-details" style="padding-left: 1rem;">
+                        <span>Official Email:</span>
+                        <strong id="fc-email">faculty@awkum.edu.pk</strong>
+                        <i class="fas fa-copy copy-icon" style="padding-left: 7rem; cursor: pointer;"></i>
+                    </div>
                 </div>
-                <div class="toast-bar"></div>`;
-            document.getElementById('toast-container').appendChild(toast);
-            setTimeout(() => {
-                toast.classList.add('hide');
-                setTimeout(() => toast.remove(), 350);
-            }, 3500);
-        }
+            </div>
 
-        // =====================================================
-        // INLINE FIELD ERROR HELPERS
-        // =====================================================
-        function showFieldError(inputId, errorId) {
-            const input = document.getElementById(inputId);
-            const error = document.getElementById(errorId);
-            input.classList.add('invalid');
-            error.classList.add('show');
-            input.focus();
-        }
-        function clearFieldError(inputId, errorId) {
-            document.getElementById(inputId).classList.remove('invalid');
-            document.getElementById(errorId).classList.remove('show');
-        }
+            <div class="contact-row" onclick="copyText('fc-whatsapp')" style="display: flex; align-items: center;">
+                <div class="icon-box whatsapp-bg" style="display: flex; justify-content: center;">
+                    <i class="fab fa-whatsapp"></i>
+                    <div class="contact-details" style="padding-left: 1rem;">
+                        <span>WhatsApp Number:</span>
+                        <strong id="fc-whatsapp">+92 300 1234567</strong>
+                        <i class="fas fa-copy copy-icon" style="padding-left: 8rem; cursor: pointer;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        // Panel error banner inside the dark action panel
-        function showPanelError(msg) {
-            const el = document.getElementById('panel-error');
-            document.getElementById('panel-error-msg').innerText = msg;
-            el.classList.add('show');
-            setTimeout(() => el.classList.remove('show'), 5000);
-        }
+    <div class="faculty-response-panel" id="faculty-reply-div">
+        <div class="reply-header">
+            <span class="section-title">Faculty Resolution Email</span>
+        </div>
+        
+        <div class="email-content-view">
+            <div id="no-reply-placeholder" class="placeholder-text">
+                <i class="fas fa-clock"></i> Awaiting response...
+            </div>
+            <div id="faculty-email-body" class="actual-email-text" style="display: none;">
+                </div>
+        </div>
+    </div>
+</div>
+<!-- Admin Reply Section -->
+<div class="admin-reply-box">
+    <div class="admin-reply-header">
+        <i class="fas fa-reply"></i>
+        <span>Send Reply to Complaint</span>
+    </div>
+    <!-- Auto Filled Complaint ID -->
+    <div class="complaint-id-display">
+        <p>Complaint ID</p>
+        <div id="id"></div>
+    </div>
+    <!-- Admin Only Writes Message -->
+    <textarea id="admin-reply-message" 
+              placeholder="Write your resolution message here..."
+              class="admin-reply-textarea"></textarea>
 
-        // --- Load complaint on page open ---
-        async function loadComplaintDetail() {
-            if (!complaintDbId) {
-                document.getElementById('display-desc').innerText = 'No complaint ID in URL.';
-                return;
+    <button id="send-reply-btn" onclick="sendReply()">
+        <i class="fas fa-paper-plane"></i> Send Reply
+    </button>
+
+</div>
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const complaintDbId = urlParams.get('id');
+    let complaintData = null;
+
+    // --- UTILITY: UPDATE FACULTY UI ---
+    // This helper updates the side-by-side cards and the email input field
+    function updateFacultyUI(email, whatsapp) {
+        document.getElementById('fc-email').innerText = email;
+        document.getElementById('fc-whatsapp').innerText = whatsapp;
+        // Auto-fill the forward email input for the admin
+        document.getElementById('teacher-email').value = (email === "Not Assigned") ? "" : email;
+    }
+
+    // =====================================================
+    // TOAST SYSTEM
+    // =====================================================
+    function showToast(type, title, message) {
+        const icons = { success: 'fas fa-check-circle', error: 'fas fa-times-circle', info: 'fas fa-info-circle' };
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.innerHTML = `
+            <i class="${icons[type]} toast-icon"></i>
+            <div class="toast-body">
+                <div class="toast-title">${title}</div>
+                <div class="toast-msg">${message}</div>
+            </div>
+            <div class="toast-bar"></div>`;
+        document.getElementById('toast-container').appendChild(toast);
+        setTimeout(() => {
+            toast.classList.add('hide');
+            setTimeout(() => toast.remove(), 350);
+        }, 3500);
+    }
+
+    // =====================================================
+    // INLINE FIELD ERROR HELPERS
+    // =====================================================
+    function showFieldError(inputId, errorId) {
+        const input = document.getElementById(inputId);
+        const error = document.getElementById(errorId);
+        input.classList.add('invalid');
+        error.classList.add('show');
+        input.focus();
+    }
+    function clearFieldError(inputId, errorId) {
+        document.getElementById(inputId).classList.remove('invalid');
+        document.getElementById(errorId).classList.remove('show');
+    }
+
+    function showPanelError(msg) {
+        const el = document.getElementById('panel-error');
+        document.getElementById('panel-error-msg').innerText = msg;
+        el.classList.add('show');
+        setTimeout(() => el.classList.remove('show'), 5000);
+    }
+
+    // --- Load complaint on page open ---
+    async function loadComplaintDetail() {
+        if (!complaintDbId) {
+            document.getElementById('display-desc').innerText = 'No complaint ID in URL.';
+            return;
+        }
+        try {
+            const res = await fetch(`http://localhost:3001/api/complaints/${complaintDbId}`);
+            if (!res.ok) throw new Error('Not found');
+            complaintData = await res.json();
+
+            // 1. Synchronize IDs (Top badge and Reply box)
+            const formattedId = '#' + (complaintData.complaintId || complaintDbId);
+            document.getElementById('display-id').innerText = formattedId;
+            document.getElementById('id').innerText = formattedId;
+
+            // 2. Fill standard fields
+            document.getElementById('display-category').innerText = complaintData.category || 'N/A';
+            document.getElementById('display-nature').innerText = complaintData.location || 'N/A';
+            document.getElementById('display-desc').innerText = complaintData.description || 'No description provided.';
+
+            // 3. FULL 24-BLOCK FACULTY LOGIC
+            const facultyName = complaintData.category;
+            if (facultyName === "Faculty: Dr. Sher Afzal") {
+                updateFacultyUI("sher.afzal@awkum.edu.pk", "0333-5128228");
+            } 
+            else if (facultyName === "Faculty: Dr. Maqsood Hayat" ||facultyName === "Faculty: Dr. Maqsood" ) {
+                updateFacultyUI("m.hayat@awkum.edu.pk", "0308-5598123");
             }
-            try {
-                const res = await fetch(`http://localhost:3001/api/complaints/${complaintDbId}`);
-                if (!res.ok) throw new Error('Not found');
-                complaintData = await res.json();
-
-                document.getElementById('display-id').innerText      = '#' + (complaintData.complaintId || complaintDbId);
-                document.getElementById('display-category').innerText = complaintData.category    || 'N/A';
-                document.getElementById('display-nature').innerText   = complaintData.location    || 'N/A';
-                document.getElementById('display-desc').innerText     = complaintData.description || 'No description provided.';
-
-                if      (complaintData.status === 'Forwarded') showForwardedState(complaintData.forwardedTo || 'Faculty');
-                else if (complaintData.status === 'Resolved')  showResolvedState();
-
-            } catch (e) {
-                // Inline error on the description box — no alert
-                document.getElementById('display-desc').innerText = '⚠️  Could not load complaint details. Please check your server connection and try again.';
-                document.getElementById('display-desc').style.color = '#ef4444';
-                showToast('error', 'Load Failed', 'Could not connect to server.');
+            else if (facultyName === "Faculty: Dr. Nadeem Iqbal") {
+                updateFacultyUI("nikhan@awkum.edu.pk", "0345-5288227");
             }
+            else if (facultyName === "Faculty: Dr. Mian Ahmad jan") {
+                updateFacultyUI("mianjan@awkum.edu.pk", "0333-3633049");
+            }
+            else if (facultyName === "Faculty: Dr. Izaz Ur Rahman") {
+                updateFacultyUI("izaz@awkum.edu.pk", "0301-8303313");
+            }
+            else if (facultyName === "Faculty: Dr. Rahim Khan") {
+                updateFacultyUI("rahimswabian@gmail.com", "0313-9996096");
+            }
+            else if (facultyName === "Faculty: Dr. Mushtaq Raza") {
+                updateFacultyUI("mushtaq.raza@awkum.edu.pk", "0345-0216026");
+            }
+            else if (facultyName === "Faculty: Dr. Hashim Ali") {
+                updateFacultyUI("hashimali@awkum.edu.pk", "0321-9813216");
+            }
+            else if (facultyName === "Faculty: Dr. Fazlullah") {
+                updateFacultyUI("fazlullah@awkum.edu.pk", "0313-4334334");
+            }
+            else if (facultyName === "Faculty: Dr. Mehwish Kundi") {
+                updateFacultyUI("kundikhan84@gmail.com", "0345-9774168");
+            }
+            else if (facultyName === "Faculty: Dr. Fahim Khan") {
+                updateFacultyUI("fahim.khan@awkum.edu.pk", "0333-9866334");
+            }
+            else if (facultyName === "Faculty: Dr. Muhammad Tahir") {
+                updateFacultyUI("muhammadtahir@awkum.edu.pk", "0300-5637033");
+            }
+            else if (facultyName === "Faculty: Dr. Muhammad Zakarya") {
+                updateFacultyUI("mohd.zakarya@awkum.edu.pk", "0345-9331217");
+            }
+            else if (facultyName === "Faculty: Aftab Ahmed Khan") {
+                updateFacultyUI("aftab.ahmed.khan@awkum.edu.pk", "0345-9331217");
+            }
+            else if (facultyName === "Faculty: Dr. Palwasha Afsar") {
+                updateFacultyUI("palwasha@awkum.edu.pk", "No Number Provided");
+            }
+            else if (facultyName === "Faculty: Dr. Syed Rooh Ullah Jan") {
+                updateFacultyUI("roohullahsyed@awkum.edu.pk", "0315-9847102");
+            }
+            else if (facultyName === "Faculty: Dr. Ashraf Zia") {
+                updateFacultyUI("ashrafzia@gmail.com", "0301-3028777");
+            }
+            else if (facultyName === "Faculty: Dr. Amir Akbar") {
+                updateFacultyUI("amirakbar@awkum.edu.pk", "0345-9601199");
+            }else if("Faculty: Mr. Farhan"){
+                updateFacultyUI('N/A',"0332-9199397")
+            }
+            else if (facultyName === "Faculty: Mr. Umar Tanveer") {
+                updateFacultyUI("umertanveer@awkum.edu.pk", "No Number Provided");
+            }
+            else if (facultyName === "Faculty: Dr. Nazia Azim") {
+                updateFacultyUI("n.azim@awkum.edu.pk", "0345-3015318");
+            }
+            else if (facultyName === "Faculty: Mr. Shahzad") {
+                updateFacultyUI("shahzad@awkum.edu.pk", "0345-9140895");
+            }
+            else if (facultyName === "Faculty: Dr. Salman") {
+                updateFacultyUI("salman@awkum.edu.pk", "0345-9373343");
+            }
+            else if (facultyName === "Faculty: Mr. Shahzad Alam") {
+                updateFacultyUI("shahzadalam@awkum.edu.pk", "0312-9092999");
+            }
+            else if (facultyName === "Faculty: Mr. Asif") {
+                updateFacultyUI("m.aasif193@gmail.com", "0321 5551098");
+            }else if(facultyName === "Technical Staff: Meer Wali Khan"){
+                updateFacultyUI('N/A',"0307-7100550")
+            }else if(facultyName === "Technical Staff: Shawkat Ali"){
+                updateFacultyUI('shaukatali@gmail.com,',"0346-9365216")
+            }else if(facultyName === "Technical Staff: Shah Nawaz Khan"){
+                updateFacultyUI('hotisports@gmail.com',"0313-9175858")
+            }else if(facultyName === "Technical Staff: Rafi Ullah"){
+                updateFacultyUI("N/A","0334-9237027")
+            }else if(facultyName === "Technical Staff: Saddam Hussain"){
+                updateFacultyUI("N/A","0315-3394794")
+            }else if(facultyName === "Technical Staff: Farman Ullah"){
+                updateFacultyUI("farmanullah75@yahoo.com","0345-936688")
+            }else if(facultyName === "Technical Staff: Shams ul Haq"){
+                updateFacultyUI("N/A", "0346-9326370")
+            }
+            else {
+                updateFacultyUI("Not Assigned", "Not Assigned");
+            }
+
+            // 4. Update status visibility
+            if (complaintData.status === 'Forwarded') showForwardedState(complaintData.forwardedTo || 'Faculty');
+            else if (complaintData.status === 'Resolved') showResolvedState();
+
+        } catch (e) {
+            document.getElementById('display-desc').innerText = '⚠️ Could not load complaint details.';
+            showToast('error', 'Load Failed', 'Could not connect to server.');
+        }
+    }
+
+    // --- Forwarding Action ---
+    async function processForwarding() {
+        const teacherEmail = document.getElementById('teacher-email').value.trim();
+        const adminNote = document.getElementById('admin-note').value.trim();
+
+        clearFieldError('teacher-email', 'email-error');
+
+        if (!teacherEmail) {
+            showFieldError('teacher-email', 'email-error');
+            return;
         }
 
-        // --- Forward ---
-        async function processForwarding() {
-            const teacherEmail = document.getElementById('teacher-email').value.trim();
-            const adminNote    = document.getElementById('admin-note').value.trim();
+        const btn = document.getElementById('forward-btn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
 
-            // Clear previous errors
-            clearFieldError('teacher-email', 'email-error');
-
-            // Inline validation — no alert
-            if (!teacherEmail) {
-                showFieldError('teacher-email', 'email-error');
-                return;
-            }
-
-            const btn = document.getElementById('forward-btn');
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
-
-            try {
-                const res = await fetch('http://localhost:3001/api/forward-complaint', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id: complaintDbId, teacherEmail, adminNote, complaintData })
-                });
-
-                if (!res.ok) throw new Error('Forward failed');
-                showForwardedState(teacherEmail);
-
-            } catch (e) {
-                // Panel error banner — no alert
-                showPanelError('Could not forward complaint. Check server connection.');
-                showToast('error', 'Forward Failed', 'Server connection error. Please retry.');
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Forward to Department';
-            }
-        }
-
-        // Clear inline email error as user types
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('teacher-email').addEventListener('input', () => {
-                clearFieldError('teacher-email', 'email-error');
+        try {
+            const res = await fetch('http://localhost:3001/api/forward-complaint', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: complaintDbId, teacherEmail, adminNote, complaintData })
             });
+
+            if (!res.ok) throw new Error('Forward failed');
+            showForwardedState(teacherEmail);
+            showToast('success', 'Forwarded', 'Case successfully assigned to faculty.');
+
+        } catch (e) {
+            showPanelError('Could not forward complaint. Check server connection.');
+            showToast('error', 'Forward Failed', 'Server connection error.');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-paper-plane"></i> Forward to Department';
+        }
+    }
+
+    // --- Resolving Action ---
+    async function markAsResolved() {
+        const resolveBtn = event && event.currentTarget;
+        const originalContent = resolveBtn ? resolveBtn.innerHTML : '';
+        
+        if (resolveBtn) {
+            resolveBtn.disabled = true;
+            resolveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Resolving...';
+        }
+
+        try {
+            const res = await fetch(`http://localhost:3001/api/complaints/${complaintDbId}/status`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: 'Resolved' })
+            });
+
+            if (!res.ok) throw new Error('Resolve failed');
+            showResolvedState();
+            showToast('success', 'Resolved', 'The case has been closed.');
+
+        } catch (e) {
+            showToast('error', 'Resolve Failed', 'Could not update status.');
+            if (resolveBtn) {
+                resolveBtn.disabled = false;
+                resolveBtn.innerHTML = originalContent;
+            }
+        }
+    }
+
+    // --- UI State Switchers ---
+    function showForwardedState(email) {
+        document.getElementById('forward-form').style.display = 'none';
+        document.getElementById('resolved-state').style.display = 'none';
+        document.getElementById('success-state').style.display = 'block';
+        document.getElementById('info-email').innerText = email;
+    }
+
+    function showResolvedState() {
+        document.getElementById('forward-form').style.display = 'none';
+        document.getElementById('success-state').style.display = 'none';
+        document.getElementById('resolved-state').style.display = 'block';
+    }
+
+    // --- Utilities ---
+    function copyText(elementId) {
+        const text = document.getElementById(elementId).innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            showToast('info', 'Copied!', 'Content copied to clipboard.');
+        }).catch(err => {
+            console.error('Failed to copy: ', err);
+        });
+    }
+
+    // Setup listeners
+    document.addEventListener('DOMContentLoaded', () => {
+        const emailInput = document.getElementById('teacher-email');
+        if (emailInput) {
+            emailInput.addEventListener('input', () => clearFieldError('teacher-email', 'email-error'));
+        }
+    });
+
+    window.onload = loadComplaintDetail;
+
+    // --- SEND ADMIN REPLY ---
+async function sendReply() {
+    const replyMessage = document.getElementById('admin-reply-message').value.trim();
+    const btn = document.getElementById('send-reply-btn');
+
+    if (!replyMessage) {
+        showToast('error', 'Empty Message', 'Please write a reply before sending.');
+        return;
+    }
+
+    if (!complaintDbId) {
+        showToast('error', 'No Complaint ID', 'Cannot send reply without a valid complaint ID.');
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
+    try {
+        const response = await fetch(`http://localhost:3001/api/complaints/${complaintDbId}/reply`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                adminReply: replyMessage,
+                replyTimestamp: new Date().toISOString()
+            })
         });
 
-        // --- Resolve ---
-        async function markAsResolved() {
-            const resolveBtn = event && event.target;
-            if (resolveBtn) {
-                resolveBtn.disabled = true;
-                resolveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Resolving...';
-            }
-
-            try {
-                const res = await fetch(`http://localhost:3001/api/complaints/${complaintDbId}/status`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ status: 'Resolved' })
-                });
-
-                if (!res.ok) throw new Error('Resolve failed');
-                showResolvedState();
-
-            } catch (e) {
-                // Toast error — no alert
-                showToast('error', 'Resolve Failed', 'Could not update status. Check server connection.');
-                if (resolveBtn) {
-                    resolveBtn.disabled = false;
-                    resolveBtn.innerHTML = '<i class="fas fa-check-double"></i> Mark as Final Resolved';
-                }
-            }
+        if (!response.ok) {
+            throw new Error('Failed to send reply');
         }
 
-        // --- UI State Switchers ---
-        function showForwardedState(email) {
-            document.getElementById('forward-form').style.display   = 'none';
-            document.getElementById('resolved-state').style.display = 'none';
-            document.getElementById('success-state').style.display  = 'block';
-            document.getElementById('info-email').innerText = email;
-        }
+        const result = await response.json();
+        
+        showToast('success', 'Reply Sent!', 'Your message has been delivered to the student.');
+        
+        document.getElementById('admin-reply-message').value = '';
 
-        function showResolvedState() {
-            document.getElementById('forward-form').style.display   = 'none';
-            document.getElementById('success-state').style.display  = 'none';
-            document.getElementById('resolved-state').style.display = 'block';
-        }
-
-        window.onload = loadComplaintDetail;
-    </script>
+    } catch (error) {
+        console.error('Reply error:', error);
+        showToast('error', 'Send Failed', 'Could not send reply. Check server connection.');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Reply';
+    }
+}
+</script>
 </body>
 </html>

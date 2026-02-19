@@ -55,7 +55,8 @@ app.post('/api/send-otp', async (req, res) => {
             from: '"FixIt Security" <khansb17798@gmail.com>',
             to: normalizedEmail,
             subject: 'Verify Your Email',
-            html: `<h2>Your code is: ${code}</h2>`
+            html: `<h2>Your code is: ${code}</h2>`,
+            html : 'This code will be expire in 5 Minutes'
         }, (err) => {
             if (err) return res.status(500).json({ error: "Email failed" });
             res.json({ message: "OTP Sent" });
@@ -142,7 +143,8 @@ app.post('/api/forgot-password', async (req, res) => {
             from: '"FixIt Security"',
             to: normalizedEmail,
             subject: 'Password Reset Code',
-            html: `<h1>${code}</h1>`
+            html: `<h1>${code}</h1>`,
+            html :'<h3>This code will be expire in 5 minutes</h3>'
         }, (err) => {
             if (err) return res.status(500).json({ error: "Email failed" });
             res.json({ message: "Reset code sent" });
@@ -339,7 +341,46 @@ app.put('/api/complaints/:id/status', async (req, res) => {
         res.status(500).json({ error: "Server error" });
     }
 });
+// POST - Admin sends reply to a complaint
+app.post('/api/complaints/:id/reply', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { adminReply, replyTimestamp } = req.body;
 
+        if (!adminReply || !adminReply.trim()) {
+            return res.status(400).json({ error: 'Reply message cannot be empty' });
+        }
+
+        const numUpdated = await complaintsDb.update(
+            { _id: id }, 
+            { 
+                $set: { 
+                    adminReply: adminReply.trim(),
+                    replyTimestamp: replyTimestamp || new Date().toISOString(),
+                    status: "Replied" 
+                } 
+            },
+            { returnUpdatedDocs: true }
+        );
+
+        if (numUpdated === 0) {
+            return res.status(404).json({ error: 'Complaint not found in database' });
+        }
+
+        // Fetch the updated document to send back to the frontend
+        const updatedComplaint = await complaintsDb.findOne({ _id: id });
+
+        res.status(200).json({
+            success: true,
+            message: 'Reply saved successfully',
+            complaint: updatedComplaint
+        });
+
+    } catch (error) {
+        console.error('Database Error:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
 app.get('/api/users', async (req, res) => {
     const users = await usersDb.find({ role: "Student" });
     res.json(users);
