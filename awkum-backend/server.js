@@ -9,6 +9,7 @@ const bcrypt = require('bcrypt');
 const app = express();
 const saltRounds = 10;
 
+app.use(express.static(__dirname));
 app.use(cors());
 app.use(express.json());
 
@@ -56,7 +57,7 @@ app.post('/api/send-otp', async (req, res) => {
             to: normalizedEmail,
             subject: 'Verify Your Email',
             html: `<h2>Your code is: ${code}</h2>`,
-            html : 'This code will be expire in 5 Minutes'
+            html: `<h2>Your code is: ${code}</h2><p>This code will expire in 5 minutes.</p>`
         }, (err) => {
             if (err) return res.status(500).json({ error: "Email failed" });
             res.json({ message: "OTP Sent" });
@@ -295,9 +296,7 @@ app.post('/api/forward-complaint', async (req, res) => {
             { $set: { status: "Forwarded", forwardedTo: teacherEmail } }
         );
         console.log('Status updated to Forwarded for complaint: ' + id);
-        const replyLink = `http://localhost:3001/faculty-reply.html?id=${id}&email=${encodeURIComponent(teacherEmail)}`;
-
-        res.json({ success: true });
+        const replyLink = `http://localhost:3001/faculty-reply.html?id=${id}&email=${encodeURIComponent(teacherEmail)}`;        res.json({ success: true });
 
         const mailOptions = {
             from: '"FixIt CS-AWKUM" <khansb17798@gmail.com>',
@@ -338,7 +337,23 @@ app.post('/api/forward-complaint', async (req, res) => {
         res.status(500).json({ error: "Database update failed" });
     }
 });
+// Add this new route to your server.js
+app.put('/api/complaints/:id/faculty-reply', async (req, res) => {
+    const { id } = req.params;
+    const { facultyReply } = req.body;
 
+    try {
+        await complaintsDb.update(
+            { _id: id }, 
+            { $set: { facultyReply: facultyReply, status: "Faculty Replied" } }
+        );
+        console.log('Faculty reply saved for ID: ' + id);
+        res.json({ success: true });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Failed to save reply" });
+    }
+});
 app.put('/api/complaints/:id/status', async (req, res) => {
     try {
         const { id } = req.params;

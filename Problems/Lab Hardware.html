@@ -94,7 +94,7 @@
             padding: 40px 10%;
             max-width: 1200px;
             margin: 0 auto;
-            align-items: flex-start; /* Aligns columns to top */
+            align-items: flex-start;
         }
 
         /* --- FORM SECTION --- */
@@ -105,7 +105,7 @@
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            height: fit-content; /* Critical for calculating height */
+            height: fit-content; 
         }
 
         .form-wrapper h2 { margin-bottom: 20px; color: var(--dark); }
@@ -138,19 +138,15 @@
         }
         .issues-list h2{ padding-bottom: 10px; }
         
-        /* NEW SCROLLBAR CSS START */
         #feed-container {
             overflow-y: auto; 
             padding-right: 10px; 
-            /* Height is set dynamically via JS */
         }
 
-        /* Custom Scrollbar Styling */
         #feed-container::-webkit-scrollbar { width: 8px; }
         #feed-container::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
         #feed-container::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
         #feed-container::-webkit-scrollbar-thumb:hover { background: #a01e20; }
-        /* NEW SCROLLBAR CSS END */
 
         .issue-card {
             background: white;
@@ -173,7 +169,7 @@
         .action-btn{ color: white; }
         .form-wrapper h2{ color: var(--dark); } 
 
-        .tag.general { background-color: #57606f; } /* Dark Gray for General */
+        .tag.general { background-color: #57606f; } 
         .tag.other { background-color: #95a5a6; }
 
         .issue-card h3 { font-size: 1.1rem; margin-bottom: 5px; }
@@ -225,6 +221,29 @@
         }
         body.dark-mode #theme-btn { color: #fbbf24; }
         
+        /* --- ADMIN REPLY STYLING --- */
+        .admin-reply {
+            margin-top: 15px;
+            padding: 12px;
+            background-color: #f8f9fa;
+            border-left: 4px solid #27ae60;
+            border-radius: 5px;
+        }
+        .admin-reply-header {
+            font-weight: bold;
+            color: #27ae60;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .admin-reply-text { font-size: 0.9rem; color: #444; line-height: 1.4; }
+        .admin-reply-time { font-size: 0.7rem; color: #999; margin-top: 5px;}
+
+        body.dark-mode .admin-reply { background-color: #252525; border-left-color: #2ecc71; }
+        body.dark-mode .admin-reply-text { color: #ddd; }
+
         /* RESPONSIVE */
         @media (max-width: 768px) {
             header { flex-direction: column; padding: 15px !important; text-align: center; }
@@ -233,7 +252,7 @@
             .hero { height: 250px; }
             .hero h1 { font-size: 1.8rem; }
             .container { padding: 20px 5%; }
-            #feed-container { max-height: none !important; } /* Reset scroll on mobile */
+            #feed-container { max-height: none !important; } 
         }
     </style>
 </head>
@@ -260,20 +279,19 @@
         <div class="form-wrapper">
             <h2><i class="fas fa-bullhorn"></i> Submit Official Complaint</h2>
             <form id="issueForm">
-<!-- Hardware Category -->
-<div class="input-group">
-    <label>Hardware Category</label>
-    <select id="category" required>
-        <option value="">Select Hardware...</option>
-            <option value="PC not turning on">PC not turning on</option>
-            <option value="Monitor no display">Monitor no display</option>
-            <option value="Keyboard not working">Keyboard not working</option>
-            <option value="Mouse not working">Mouse not working</option>
-            <option value="System very slow">System very slow</option>
-            <option value="System restarting automatically">System restarting automatically</option>
-        <option value="Other">Other Issue</option>
-    </select>
-</div>
+                <div class="input-group">
+                    <label>Hardware Category</label>
+                    <select id="category" required>
+                        <option value="">Select Hardware...</option>
+                            <option value="PC not turning on">PC not turning on</option>
+                            <option value="Monitor no display">Monitor no display</option>
+                            <option value="Keyboard not working">Keyboard not working</option>
+                            <option value="Mouse not working">Mouse not working</option>
+                            <option value="System very slow">System very slow</option>
+                            <option value="System restarting automatically">System restarting automatically</option>
+                        <option value="Other">Other Issue</option>
+                    </select>
+                </div>
                 <div class="input-group">
                     <label>Lab Location </label>
                     <input type="text" id="location" placeholder="Where is the problem?" required>
@@ -295,15 +313,15 @@
         <div style="padding: 10px;"><p>Developed By <span style="font-weight: 800;">Muhammad Sudais</span></p></div>
         <p>FixIt CS-AWKUM | Built for the Students of Computer Science</p>
     </footer>
-<script>
+    <script>
         // --- 1. AUTHENTICATION CHECK ---
         const user = JSON.parse(localStorage.getItem('currentUser'));
         
-        // If not logged in, go back to Login page
         if (!user) {
             window.location.href = "UserLogin.html";
         }
 
+        // --- 2. DARK MODE LOGIC ---
         const themeBtn = document.getElementById('theme-btn');
         const body = document.body;
 
@@ -325,95 +343,107 @@
             });
         }
 
-        // --- 3. LOAD FEED FROM SERVER ---
-        document.addEventListener('DOMContentLoaded', loadFeed);
+        // --- 3. SUBMIT TO SERVER ---
+        document.getElementById('issueForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.querySelector('.submit-btn');
+            submitBtn.innerText = "Sending...";
+            submitBtn.disabled = true;
 
-        // --- 4. SUBMIT TO SERVER (BACKEND) ---
-        // --- 4. SUBMIT TO SERVER (FIXED FOR JSON) ---
-document.getElementById('issueForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    const submitBtn = document.querySelector('.submit-btn');
-    submitBtn.innerText = "Sending...";
-    submitBtn.disabled = true;
+            const subCategory = document.getElementById('category').value; 
+            const location = document.getElementById('location').value;
+            const rawDesc = document.getElementById('desc').value;
 
-    // Get Form Values
-    const subCategory = document.getElementById('category').value; 
-    const location = document.getElementById('location').value;
-    const rawDesc = document.getElementById('desc').value;
+            const formattedCategory = `Lab Hardware: ${subCategory}`;
 
-    // Use the specific prefix for this page
-    const formattedCategory = `Lab Hardware: ${subCategory}`;
+            const payload = {
+                email: user.email,
+                fullname: user.fullname,
+                category: formattedCategory,
+                location: location,
+                description: rawDesc,
+                date: new Date().toISOString()
+            };
 
-    // Prepare Data as a standard JSON Object
-    const payload = {
-        email: user.email,
-        fullname: user.fullname,
-        category: formattedCategory,
-        location: location,
-        description: rawDesc,
-        date: new Date().toISOString()
-    };
+            try {
+                const response = await fetch('http://localhost:3001/api/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
 
-    try {
-        const response = await fetch('http://localhost:3001/api/submit', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json' // Tells the server to parse as JSON
-            },
-            body: JSON.stringify(payload) // Converts Object to String
+                if (response.ok) {
+                    document.getElementById('issueForm').reset();
+                    loadFeed(); 
+                } else {
+                    const errData = await response.json();
+                    alert("❌ Server Error: " + (errData.error || "Something went wrong"));
+                }
+            } catch (error) {
+                console.error("Connection Error:", error);
+                alert("❌ Cannot connect to server. Check if your Node.js terminal is running.");
+            } finally {
+                submitBtn.innerText = "Submit Report";
+                submitBtn.disabled = false;
+            }
         });
 
-        if (response.ok) {
-            document.getElementById('issueForm').reset();
-            loadFeed(); 
-        } else {
-            const errData = await response.json();
-            alert("❌ Server Error: " + (errData.error || "Something went wrong"));
-        }
-    } catch (error) {
-        console.error("Connection Error:", error);
-        alert("❌ Cannot connect to server. Check if your Node.js terminal is running.");
-    } finally {
-        submitBtn.innerText = "Submit Report";
-        submitBtn.disabled = false;
-    }
-});
-        // --- 5. RENDER LIST FROM SERVER ---
+        // --- 4. RENDER LIST FROM SERVER ---
         async function loadFeed() {
             const feedContainer = document.getElementById('feed-container');
             feedContainer.innerHTML = "<p style='text-align:center;'>Loading reports...</p>";
 
             try {
-                // Fetch ALL complaints from database
-                const response = await fetch(`http://localhost:3001/api/my-complaints?email=${user.email}`);;
+                const response = await fetch(`http://localhost:3001/api/my-complaints?email=${user.email}`);
                 const allComplaints = await response.json();
 
-                const filteredIssues = allComplaints.filter(issue => issue.category.startsWith('Lab Hardware'));
+                // Sort Newest First
+                allComplaints.reverse();
+
+                const filteredIssues = allComplaints.filter(issue => issue.category && issue.category.startsWith('Lab Hardware'));
                 feedContainer.innerHTML = "";
 
                 if (filteredIssues.length === 0) {
-                    feedContainer.innerHTML = "<p style='text-align:center; opacity:0.7;'>No general reports found.</p>";
+                    feedContainer.innerHTML = "<p style='text-align:center; opacity:0.7;'>No hardware reports found.</p>";
                     adjustFeedHeight();
                     return;
                 }
 
-                // Display Filtered Issues
                 filteredIssues.forEach(issue => {
-                    // Create formatted Date/Time
                     const dateObj = new Date(issue.date);
                     const dateStr = dateObj.toLocaleDateString();
                     const timeStr = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
+                    // -- ADMIN REPLY LOGIC --
+                    let adminReplyHTML = '';
+                    if (issue.adminReply && issue.adminReply.trim() !== '') {
+                        const replyTime = issue.replyTimestamp ? new Date(issue.replyTimestamp).toLocaleString() : 'Recently';
+                        adminReplyHTML = `
+                            <div class="admin-reply">
+                                <div class="admin-reply-header">
+                                    <i class="fas fa-user-shield"></i> Official Response
+                                </div>
+                                <div class="admin-reply-text">${issue.adminReply}</div>
+                                <div class="admin-reply-time"><i class="fas fa-clock"></i> ${replyTime}</div>
+                            </div>
+                        `;
+                    }
+
+                    // Ensure status doesn't crash if empty
+                    const issueStatus = issue.status ? issue.status.toLowerCase() : 'pending';
+                    const displayStatus = issue.status || 'Pending';
+
                     const cardHTML = `
-                        <div class="issue-card">
+                        <div class="issue-card" style="animation: fadeIn 0.5s ease;">
                             <div class="tag general">${issue.category}</div>
                             <h3>${issue.location}</h3>
                             <p>${issue.description}</p>
                             <div class="meta">
                                 <span><i class="fas fa-clock"></i> ${dateStr} at ${timeStr}</span>
-                                <span class="status ${issue.status.toLowerCase()}">${issue.status}</span>
+                                <span class="status ${issueStatus}">${displayStatus}</span>
                             </div>
+                            ${adminReplyHTML}
                         </div>
                     `;
                     feedContainer.innerHTML += cardHTML;
@@ -427,6 +457,9 @@ document.getElementById('issueForm').addEventListener('submit', async function(e
             }
         }
 
+        // --- 5. INITIALIZE ---
+        document.addEventListener('DOMContentLoaded', loadFeed);
+
         // --- 6. HEIGHT ADJUSTMENT LOGIC ---
         function adjustFeedHeight() {
             const formWrapper = document.querySelector('.form-wrapper');
@@ -437,12 +470,12 @@ document.getElementById('issueForm').addEventListener('submit', async function(e
                 const formHeight = formWrapper.offsetHeight;
                 const maxListHeight = formHeight - listHeaderHeight;
                 feedContainer.style.maxHeight = maxListHeight + "px";
-            } else {
+            } else if (feedContainer) {
                 feedContainer.style.maxHeight = "none";
             }
         }
 
         window.addEventListener('resize', adjustFeedHeight);
-</script>
+    </script>
 </body>
 </html>

@@ -168,11 +168,7 @@
             margin-bottom: 10px;
             text-transform: uppercase;
         }
-        .action-btn { color: white; }
-        .form-wrapper h2 { color: var(--dark); } 
-
         .tag.general { background-color: #57606f; }
-        .tag.other { background-color: #95a5a6; }
 
         .issue-card h3 { font-size: 1.1rem; margin-bottom: 5px; }
         .issue-card p { font-size: 0.9rem; color: #666; margin-bottom: 10px; }
@@ -190,7 +186,27 @@
         .status { font-weight: bold; }
         .status.pending { color: #e67e22; }
         .status.resolved { color: #27ae60; }
-        
+
+        /* --- ADMIN REPLY STYLING --- */
+        .admin-reply {
+            margin-top: 15px;
+            padding: 12px;
+            background-color: #f8f9fa;
+            border-left: 4px solid #27ae60;
+            border-radius: 5px;
+        }
+        .admin-reply-header {
+            font-weight: bold;
+            color: #27ae60;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .admin-reply-text { font-size: 0.9rem; color: #444; line-height: 1.4; }
+        .admin-reply-time { font-size: 0.7rem; color: #999; margin-top: 5px;}
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -213,9 +229,7 @@
             background-color: #1e1e1e;
             color: #ffffff;
         }
-        body.dark-mode .form-wrapper h2 { color: #fff; }
-        body.dark-mode .logo { color: #fff; }
-        body.dark-mode nav a { color: #fff; }
+        body.dark-mode .form-wrapper h2, body.dark-mode .logo, body.dark-mode nav a { color: #fff; }
         body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
             background-color: #2d2d2d;
             border-color: #444;
@@ -223,10 +237,10 @@
         }
         body.dark-mode #theme-btn { color: #fbbf24; }
         body.dark-mode .issue-card p { color: #aaa; }
+        body.dark-mode .admin-reply { background-color: #252525; border-left-color: #2ecc71; }
+        body.dark-mode .admin-reply-text { color: #ddd; }
 
-        /* =====================================================
-           TOAST NOTIFICATION STYLES
-        ====================================================== */
+        /* --- TOAST NOTIFICATION STYLES --- */
         #toast-container {
             position: fixed;
             bottom: 30px;
@@ -255,42 +269,17 @@
             transform: translateX(60px);
             transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
         }
-        .toast.show {
-            opacity: 1;
-            transform: translateX(0);
-        }
-        .toast.hide {
-            opacity: 0;
-            transform: translateX(60px);
-            transition: opacity 0.3s ease, transform 0.3s ease;
-        }
+        .toast.show { opacity: 1; transform: translateX(0); }
+        .toast.hide { opacity: 0; transform: translateX(60px); transition: opacity 0.3s ease, transform 0.3s ease; }
         .toast.success { background: linear-gradient(135deg, #10b981, #059669); }
         .toast.error   { background: linear-gradient(135deg, #ef4444, #dc2626); }
         .toast.info    { background: linear-gradient(135deg, #3b82f6, #2563eb); }
         .toast-icon  { font-size: 1.4rem; flex-shrink: 0; }
         .toast-body  { flex: 1; }
         .toast-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 2px; }
-        .toast-msg   { font-size: 0.82rem; opacity: 0.9; }
-        /* Progress bar at bottom — drains over 5s */
-        .toast-bar {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            height: 4px;
-            width: 100%;
-            background: rgba(255,255,255,0.5);
-        }
-        .toast-bar-inner {
-            height: 100%;
-            width: 100%;
-            background: rgba(255,255,255,0.9);
-            transform-origin: left;
-            animation: drainBar 5s linear forwards;
-        }
-        @keyframes drainBar {
-            from { transform: scaleX(1); }
-            to   { transform: scaleX(0); }
-        }
+        .toast-bar { position: absolute; bottom: 0; left: 0; height: 4px; width: 100%; background: rgba(255,255,255,0.5); }
+        .toast-bar-inner { height: 100%; width: 100%; background: rgba(255,255,255,0.9); transform-origin: left; animation: drainBar 5s linear forwards; }
+        @keyframes drainBar { from { transform: scaleX(1); } to { transform: scaleX(0); } }
 
         /* RESPONSIVE */
         @media (max-width: 768px) {
@@ -308,7 +297,6 @@
 </head>
 <body>
 
-    <!-- Toast container -->
     <div id="toast-container"></div>
 
     <header>
@@ -327,6 +315,7 @@
         <p>Report any issues not covered in specific sections, including facilities, staff, or services.</p>
         <a href="#report" class="cta-button">File a Complaint Now</a>
     </section>
+
     <div class="container" id="report">
         <div class="form-wrapper">
             <h2><i class="fas fa-bullhorn"></i> Report Hygiene Issue</h2>
@@ -370,36 +359,27 @@
     </footer>
 
 <script>
-    // --- 1. AUTHENTICATION CHECK ---
     const user = JSON.parse(localStorage.getItem('currentUser'));
     if (!user) { window.location.href = "UserLogin.html"; }
 
-    // --- 2. DARK MODE ---
     const themeBtn = document.getElementById('theme-btn');
-    const body = document.body;
-
     if (localStorage.getItem('theme') === 'dark') {
-        body.classList.add('dark-mode');
+        document.body.classList.add('dark-mode');
         if (themeBtn) themeBtn.classList.replace('fa-moon', 'fa-sun');
     }
 
     if (themeBtn) {
         themeBtn.addEventListener('click', () => {
-            body.classList.toggle('dark-mode');
-            const isDark = body.classList.contains('dark-mode');
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
             themeBtn.classList.replace(isDark ? 'fa-moon' : 'fa-sun', isDark ? 'fa-sun' : 'fa-moon');
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
         });
     }
-    // TOAST NOTIFICATION SYSTEM
+
     function showToast(type, title, message) {
         const container = document.getElementById('toast-container');
-        const icons = {
-            success: 'fas fa-check-circle',
-            error:   'fas fa-times-circle',
-            info:    'fas fa-info-circle'
-        };
-
+        const icons = { success: 'fas fa-check-circle', error: 'fas fa-times-circle', info: 'fas fa-info-circle' };
         const toast = document.createElement('div');
         toast.className = `toast ${type}`;
         toast.innerHTML = `
@@ -411,13 +391,7 @@
             <div class="toast-bar"><div class="toast-bar-inner"></div></div>
         `;
         container.appendChild(toast);
-
-        // Trigger show transition on next frame (allows CSS transition to fire)
-        requestAnimationFrame(() => {
-            requestAnimationFrame(() => toast.classList.add('show'));
-        });
-
-        // Dismiss after 5 seconds
+        requestAnimationFrame(() => { requestAnimationFrame(() => toast.classList.add('show')); });
         setTimeout(() => {
             toast.classList.add('hide');
             toast.classList.remove('show');
@@ -425,67 +399,53 @@
         }, 5000);
     }
 
-    // --- 3. LOAD FEED ON PAGE READY ---
-    document.addEventListener('DOMContentLoaded', loadFeed);
-
-    // --- 4. SUBMIT FORM ---
     document.getElementById('issueForm').addEventListener('submit', async function(e) {
         e.preventDefault();
-
         const submitBtn = document.querySelector('.submit-btn');
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
         submitBtn.disabled = true;
 
-        const subCategory = document.getElementById('category').value;
-        const location    = document.getElementById('location').value;
-        const rawDesc     = document.getElementById('desc').value;
-        const formattedCategory = `Hygiene: ${subCategory}`;
-
         const payload = {
-            email:       user.email,
-            fullname:    user.fullname,
-            category:    formattedCategory,
-            location:    location,
-            description: rawDesc,
-            date:        new Date().toISOString()
+            email: user.email,
+            fullname: user.fullname,
+            category: `Hygiene: ${document.getElementById('category').value}`,
+            location: document.getElementById('location').value,
+            description: document.getElementById('desc').value,
+            date: new Date().toISOString()
         };
 
         try {
             const response = await fetch('http://localhost:3001/api/submit', {
-                method:  'POST',
+                method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body:    JSON.stringify(payload)
+                body: JSON.stringify(payload)
             });
 
             if (response.ok) {
-                // ✅ Replace alert() with toast
                 showToast('success', 'Complaint Submitted!', 'Your hygiene report has been sent successfully.');
                 document.getElementById('issueForm').reset();
                 loadFeed();
             } else {
-                showToast('error', 'Server Error', 'Something went wrong. Please try again.');
+                showToast('error', 'Server Error', 'Something went wrong.');
             }
         } catch (error) {
-            console.error(error);
-            showToast('error', 'Connection Failed', 'Could not reach the server. Check your connection.');
+            showToast('error', 'Connection Failed', 'Could not reach server.');
         } finally {
             submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Report';
             submitBtn.disabled = false;
         }
     });
 
-    // --- 5. LOAD & RENDER FEED ---
-       async function loadFeed() {
+    async function loadFeed() {
         const feedContainer = document.getElementById('feed-container');
         feedContainer.innerHTML = "<p style='text-align:center; opacity:0.6;'><i class='fas fa-spinner fa-spin'></i> Loading...</p>";
 
         try {
             const response = await fetch(`http://localhost:3001/api/my-complaints?email=${user.email}`);
             const allComplaints = await response.json();
+            allComplaints.reverse();
 
-            // Filter hygiene only — newest first (server returns newest first, no reverse needed)
-            const filteredIssues = allComplaints.filter(issue => issue.category.startsWith('Hygiene'));
-
+            const filteredIssues = allComplaints.filter(issue => issue.category && issue.category.startsWith('Hygiene'));
             feedContainer.innerHTML = "";
 
             if (filteredIssues.length === 0) {
@@ -498,6 +458,21 @@
                 const dateStr = dateObj.toLocaleDateString();
                 const timeStr = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
+                // --- ADMIN REPLY LOGIC ---
+                let adminReplyHTML = '';
+                if (issue.adminReply && issue.adminReply.trim() !== '') {
+                    const replyTime = issue.replyTimestamp ? new Date(issue.replyTimestamp).toLocaleString() : 'Recently';
+                    adminReplyHTML = `
+                        <div class="admin-reply">
+                            <div class="admin-reply-header">
+                                <i class="fas fa-user-shield"></i> Official Response
+                            </div>
+                            <div class="admin-reply-text">${issue.adminReply}</div>
+                            <div class="admin-reply-time"><i class="fas fa-clock"></i> ${replyTime}</div>
+                        </div>
+                    `;
+                }
+
                 feedContainer.innerHTML += `
                     <div class="issue-card" style="animation: fadeIn 0.5s ease;">
                         <div class="tag general">${issue.category}</div>
@@ -505,8 +480,9 @@
                         <p>${issue.description}</p>
                         <div class="meta">
                             <span><i class="fas fa-clock"></i> ${dateStr} at ${timeStr}</span>
-                            <span class="status ${issue.status.toLowerCase()}">${issue.status}</span>
+                            <span class="status ${issue.status ? issue.status.toLowerCase() : 'pending'}">${issue.status || 'Pending'}</span>
                         </div>
+                        ${adminReplyHTML}
                     </div>
                 `;
             });
@@ -515,13 +491,18 @@
             feedContainer.innerHTML = "<p style='color:red; text-align:center;'>Error loading data.</p>";
         }
     }
+
     function adjustFeedHeight() {
-        const formWrapper    = document.querySelector('.form-wrapper');
-        const feedContainer  = document.getElementById('feed-container');
+        const formWrapper = document.querySelector('.form-wrapper');
+        const feedContainer = document.getElementById('feed-container');
         if (window.innerWidth > 768 && formWrapper && feedContainer) {
             feedContainer.style.maxHeight = (formWrapper.offsetHeight - 60) + 'px';
+        } else if (feedContainer) {
+            feedContainer.style.maxHeight = "none";
         }
     }
+
+    document.addEventListener('DOMContentLoaded', loadFeed);
     window.addEventListener('resize', adjustFeedHeight);
 </script>
 </body>
